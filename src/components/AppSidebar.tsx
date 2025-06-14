@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -35,8 +34,7 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
   return (
     <div className="flex flex-col h-full text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-900 border-r dark:border-gray-200 dark:border-gray-800">
       <div className="p-4 flex items-center justify-center border-b dark:border-gray-800">
-        <img src="/logo.svg" alt="CiudadConecta Logo" className="h-10 w-10 mr-3" />
-        <h1 className="text-2xl font-bold text-primary">CiudadConecta</h1>
+        <img src="/lovable-uploads/0ab84370-a353-4d89-95bd-a0118a04d236.png" alt="CiudadConecta Logo" className="h-12 w-auto" />
       </div>
       <nav className="flex-grow p-4 overflow-y-auto">
         <ul>
