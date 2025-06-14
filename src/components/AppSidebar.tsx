@@ -27,44 +27,53 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
   const location = useLocation();
 
   const handleLinkClick = () => {
-    if (window.innerWidth < 768) { // md breakpoint
+    if (window.innerWidth < 768) {
       closeSidebar();
     }
   };
 
   return (
-    <div className="flex flex-col h-full text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-900 border-r dark:border-gray-200 dark:border-gray-800">
-      <div className="p-4 flex items-center justify-center border-b dark:border-gray-800">
-        <img src="/logo.svg" alt="CiudadConecta Logo" className="h-10 w-10 mr-3" />
-        <h1 className="text-2xl font-bold text-primary">CiudadConecta</h1>
+    <div className="flex flex-col h-full text-gray-700 bg-white/95 backdrop-blur-sm">
+      <div className="p-6 flex items-center justify-center border-b border-gray-200">
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center mr-3">
+          <div className="w-5 h-5 bg-white rounded-md"></div>
+        </div>
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">CiudadConecta</h1>
       </div>
+      
       <nav className="flex-grow p-4 overflow-y-auto">
-        <ul>
+        <ul className="space-y-2">
           {menuItems.map((item) => (
-            <li key={item.href} className="mb-2">
+            <li key={item.href}>
               <Link
                 to={item.href}
                 onClick={handleLinkClick}
                 className={cn(
-                  'flex items-center p-3 rounded-lg hover:bg-primary/10 transition-colors duration-200',
-                  location.pathname === item.href ? 'bg-primary/20 text-primary font-semibold' : 'hover:text-primary'
+                  'flex items-center p-3 rounded-xl transition-all duration-200 group',
+                  location.pathname === item.href 
+                    ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold shadow-lg' 
+                    : 'hover:bg-purple-50 hover:text-purple-700'
                 )}
               >
-                <item.icon className="w-5 h-5 mr-3" />
+                <item.icon className={cn(
+                  "w-5 h-5 mr-3",
+                  location.pathname === item.href ? "text-white" : "text-purple-600"
+                )} />
                 <span className="text-sm">{item.label}</span>
               </Link>
             </li>
           ))}
         </ul>
       </nav>
-      <div className="p-4 border-t dark:border-gray-800">
-        <Link to="#" className="flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
-          <Settings className="w-5 h-5 mr-3" />
-          <span>Configuración</span>
+      
+      <div className="p-4 border-t border-gray-200 space-y-2">
+        <Link to="#" className="flex items-center p-3 rounded-xl hover:bg-purple-50 hover:text-purple-700 transition-all duration-200">
+          <Settings className="w-5 h-5 mr-3 text-purple-600" />
+          <span className="text-sm">Configuración</span>
         </Link>
-        <Link to="#" className="flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
-          <LifeBuoy className="w-5 h-5 mr-3" />
-          <span>Ayuda</span>
+        <Link to="#" className="flex items-center p-3 rounded-xl hover:bg-purple-50 hover:text-purple-700 transition-all duration-200">
+          <LifeBuoy className="w-5 h-5 mr-3 text-purple-600" />
+          <span className="text-sm">Ayuda</span>
         </Link>
       </div>
     </div>
