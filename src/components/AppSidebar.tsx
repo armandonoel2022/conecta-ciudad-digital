@@ -1,14 +1,26 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Megaphone, Recycle, Trophy, Settings, LifeBuoy } from 'lucide-react';
+import { 
+  Home, Megaphone, Recycle, Trophy, Settings, LifeBuoy, Users, Briefcase, GitCompare, 
+  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LightbulbOff
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const menuItems = [
   { href: '/', label: 'Inicio', icon: Home },
   { href: '/reportar', label: 'Reportar Incidencia', icon: Megaphone },
+  { href: '/reportar-iluminacion', label: 'Falta de Iluminación', icon: LightbulbOff },
+  { href: '/pago-basura', label: 'Pago de basura', icon: Trash2 },
   { href: '/guia-reciclaje', label: 'Guía de Reciclaje', icon: Recycle },
+  { href: '/guia-comunicacion', label: 'Guía de comunicación', icon: BookOpen },
   { href: '/logros', label: 'Logros', icon: Trophy },
+  { href: '/antes-y-despues', label: 'Antes y después', icon: GitCompare },
+  { href: '/oportunidades', label: 'Oportunidades', icon: Briefcase },
+  { href: '/quienes-somos', label: '¿Quiénes somos?', icon: Users },
+  { href: '/mision-vision-valores', label: 'Misión, visión y valores', icon: Gem },
+  { href: '/boton-panico', label: 'Botón de pánico', icon: AlarmClockOff },
+  { href: '/alerta-amber', label: 'Alerta Amber', icon: Siren },
 ];
 
 const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
@@ -26,7 +38,7 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
         <img src="/logo.svg" alt="CiudadConecta Logo" className="h-10 w-10 mr-3" />
         <h1 className="text-2xl font-bold text-primary">CiudadConecta</h1>
       </div>
-      <nav className="flex-grow p-4">
+      <nav className="flex-grow p-4 overflow-y-auto">
         <ul>
           {menuItems.map((item) => (
             <li key={item.href} className="mb-2">
@@ -39,7 +51,7 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
                 )}
               >
                 <item.icon className="w-5 h-5 mr-3" />
-                <span>{item.label}</span>
+                <span className="text-sm">{item.label}</span>
               </Link>
             </li>
           ))}
