@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Megaphone, LightbulbOff, Trash2, Recycle, AlarmClockOff, Siren } from "lucide-react";
@@ -46,11 +45,9 @@ const features = [
 const Index = () => {
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="bg-gradient-to-br from-primary via-violet-600 to-indigo-700 p-8 md:p-12 rounded-2xl shadow-lg text-center text-white">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-          Bienvenido a <span className="font-extrabold">CiudadConecta</span>
-        </h1>
-        <p className="mt-4 text-lg text-indigo-100 max-w-2xl mx-auto">
+      <div className="bg-gradient-to-br from-primary via-violet-600 to-indigo-700 p-8 md:p-12 rounded-2xl shadow-lg text-center text-white flex flex-col items-center">
+        <img src="/lovable-uploads/0ab84370-a353-4d89-95bd-a0118a04d236.png" alt="CiudadConecta Logo" className="h-24 md:h-32 w-auto mb-4" />
+        <p className="text-lg text-indigo-100 max-w-2xl mx-auto">
           Tu voz para una ciudad mejor. Reporta incidencias, consulta servicios y participa en el progreso de tu comunidad.
         </p>
         <div className="mt-8">

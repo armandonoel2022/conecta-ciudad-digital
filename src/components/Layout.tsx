@@ -16,7 +16,7 @@ const Layout = () => {
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-gray-900 border-b dark:border-gray-800">
-          <img src="/lovable-uploads/0ab84370-a353-4d89-95bd-a0118a04d236.png" alt="CiudadConecta Logo" className="h-10 w-auto" />
+          <h1 className="text-xl font-bold text-primary">CiudadConecta</h1>
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
