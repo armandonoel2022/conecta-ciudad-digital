@@ -60,7 +60,7 @@ const Index = () => {
             <h1 className="text-3xl font-bold tracking-tight mb-3">
               Fácil y <br />
               rápido <br />
-              <span className="text-4xl font-extrabold">¡CiudadConecta!</span>
+              <span className="text-4xl font-extrabold">CiudadConecta</span>
             </h1>
             <p className="text-lg text-white/90 mb-8 leading-relaxed">
               Tu voz para una ciudad mejor. Reporta, consulta y participa.
