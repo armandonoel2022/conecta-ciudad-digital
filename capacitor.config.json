@@ -1,0 +1,11 @@
+
+{
+  "appId": "app.lovable.3aae6aac723c4f198bc0e936a90c7a7a",
+  "appName": "CiudadConecta",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://3aae6aac-723c-4f19-8bc0-e936a90c7a7a.lovable.project.com?forceHideBadge=true",
+    "cleartext": true
+  }
+}
