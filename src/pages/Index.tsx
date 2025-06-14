@@ -1,57 +1,86 @@
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Megaphone, MessageSquare, ShieldCheck } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Megaphone, LightbulbOff, Trash2, Recycle, AlarmClockOff, Siren } from "lucide-react";
 import { Link } from "react-router-dom";
+
+const features = [
+  {
+    title: "Reportar Incidencia",
+    description: "Informa sobre problemas en tu área.",
+    icon: Megaphone,
+    href: "/reportar",
+  },
+  {
+    title: "Falta de Iluminación",
+    description: "Reporta fallas en el alumbrado público.",
+    icon: LightbulbOff,
+    href: "/reportar-iluminacion",
+  },
+  {
+    title: "Pago de Basura",
+    description: "Realiza el pago de tu servicio.",
+    icon: Trash2,
+    href: "/pago-basura",
+  },
+  {
+    title: "Guía de Reciclaje",
+    description: "Aprende a separar tus residuos.",
+    icon: Recycle,
+    href: "/guia-reciclaje",
+  },
+  {
+    title: "Botón de Pánico",
+    description: "Alerta a las autoridades en emergencias.",
+    icon: AlarmClockOff,
+    href: "/boton-panico",
+  },
+  {
+    title: "Alerta Amber",
+    description: "Ayuda a encontrar a menores desaparecidos.",
+    icon: Siren,
+    href: "/alerta-amber",
+  },
+];
 
 const Index = () => {
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="bg-white dark:bg-gray-900/50 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-          Bienvenido a <span className="text-primary">CiudadConecta</span>
+      <div className="bg-gradient-to-br from-primary via-violet-600 to-indigo-700 p-8 md:p-12 rounded-2xl shadow-lg text-center text-white">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+          Bienvenido a <span className="font-extrabold">CiudadConecta</span>
         </h1>
-        <p className="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+        <p className="mt-4 text-lg text-indigo-100 max-w-2xl mx-auto">
           Tu voz para una ciudad mejor. Reporta incidencias, consulta servicios y participa en el progreso de tu comunidad.
         </p>
         <div className="mt-8">
-          <Button asChild size="lg" className="text-lg">
-            <Link to="/reportar">Reportar una Incidencia</Link>
+          <Button asChild size="lg" className="text-lg bg-white text-primary font-bold hover:bg-gray-100 shadow-md transition-transform transform hover:scale-105">
+            <Link to="/reportar">Comenzar</Link>
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Reportes Enviados</CardTitle>
-            <Megaphone className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1,234</div>
-            <p className="text-xs text-muted-foreground">+20.1% desde el mes pasado</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Reportes Resueltos</CardTitle>
-            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">987</div>
-            <p className="text-xs text-muted-foreground">+180.1% desde el mes pasado</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Comentarios</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+573</div>
-            <p className="text-xs text-muted-foreground">+201 desde la semana pasada</p>
-          </CardContent>
-        </Card>
+      <div className="space-y-6">
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Servicios Principales</h2>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {features.map((feature) => (
+            <Link to={feature.href} key={feature.title} className="group">
+              <Card className="h-full hover:border-primary/40 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                <CardHeader>
+                  <div className="flex items-center gap-4">
+                    <div className="bg-primary/10 p-3 rounded-xl">
+                      <feature.icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <CardTitle className="text-base font-semibold">{feature.title}</CardTitle>
+                      <CardDescription className="text-sm mt-1">{feature.description}</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
