@@ -59,7 +59,6 @@ const Index = () => {
           <div className="relative z-10">
             <h1 className="text-3xl font-bold tracking-tight mb-3">
                 <br />
-                <br />
               <span className="text-4xl font-extrabold">CiudadConecta</span>
             </h1>
             <p className="text-lg text-white/90 mb-8 leading-relaxed">
