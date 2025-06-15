@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +15,7 @@ const PanicButton = () => {
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
-  const { createPanicAlert, resolvePanicAlert, alerts } = usePanicAlerts();
+  const { createPanicAlert, resolvePanicAlert, alerts, refetch } = usePanicAlerts();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -30,8 +31,8 @@ const PanicButton = () => {
             console.error('Error fetching user profile:', error);
           } else if (data) {
             setUserProfile(data);
-          }
-        } catch (error) {
+        }
+      } catch (error) {
           console.error('Error fetching user profile:', error);
         }
       }
@@ -123,6 +124,8 @@ const PanicButton = () => {
     setIsResolving(true);
     try {
       await resolvePanicAlert(userActiveAlert.id);
+      // Refresh alerts to get updated state
+      await refetch();
       toast({
         title: "Alerta resuelta",
         description: "Tu alerta de pánico ha sido marcada como resuelta.",
