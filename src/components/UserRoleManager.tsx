@@ -52,14 +52,22 @@ const UserRoleManager = () => {
 
       if (profilesError) throw profilesError;
 
-      // Obtener todos los roles
+      // Obtener todos los roles activos
       const rolesData = await getAllUserRoles();
+      
+      // Crear un mapa de roles por usuario para facilitar la búsqueda
+      const userRolesMap = new Map<string, UserRole[]>();
+      rolesData?.forEach(roleData => {
+        if (!userRolesMap.has(roleData.user_id)) {
+          userRolesMap.set(roleData.user_id, []);
+        }
+        userRolesMap.get(roleData.user_id)?.push(roleData.role);
+      });
       
       // Combinar usuarios con sus roles
       const usersWithRoles = profiles?.map(profile => ({
         ...profile,
-        roles: rolesData?.filter(roleData => roleData.user_id === profile.id)
-          .map(roleData => roleData.role) || []
+        roles: userRolesMap.get(profile.id) || []
       })) || [];
 
       setUsers(usersWithRoles);

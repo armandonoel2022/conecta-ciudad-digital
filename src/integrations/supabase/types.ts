@@ -182,6 +182,57 @@ export type Database = {
           },
         ]
       }
+      generated_reports: {
+        Row: {
+          created_at: string | null
+          date_range_end: string | null
+          date_range_start: string | null
+          description: string | null
+          filters: Json | null
+          generated_by: string | null
+          google_chart_url: string | null
+          google_sheets_url: string | null
+          id: string
+          pdf_url: string | null
+          report_type: string
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date_range_end?: string | null
+          date_range_start?: string | null
+          description?: string | null
+          filters?: Json | null
+          generated_by?: string | null
+          google_chart_url?: string | null
+          google_sheets_url?: string | null
+          id?: string
+          pdf_url?: string | null
+          report_type: string
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date_range_end?: string | null
+          date_range_start?: string | null
+          description?: string | null
+          filters?: Json | null
+          generated_by?: string | null
+          google_chart_url?: string | null
+          google_sheets_url?: string | null
+          id?: string
+          pdf_url?: string | null
+          report_type?: string
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       help_messages: {
         Row: {
           admin_response: string | null
@@ -395,6 +446,86 @@ export type Database = {
         }
         Relationships: []
       }
+      report_metrics: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          id: string
+          metric_name: string
+          metric_type: string | null
+          metric_value: number | null
+          report_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          metric_name: string
+          metric_type?: string | null
+          metric_value?: number | null
+          report_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          metric_name?: string
+          metric_type?: string | null
+          metric_value?: number | null
+          report_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_metrics_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "generated_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      report_schedules: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          filters: Json | null
+          frequency: string
+          id: string
+          is_active: boolean | null
+          last_generated_at: string | null
+          name: string
+          next_generation_at: string | null
+          report_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          filters?: Json | null
+          frequency: string
+          id?: string
+          is_active?: boolean | null
+          last_generated_at?: string | null
+          name: string
+          next_generation_at?: string | null
+          report_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          filters?: Json | null
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          last_generated_at?: string | null
+          name?: string
+          next_generation_at?: string | null
+          report_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       reports: {
         Row: {
           address: string | null
@@ -499,6 +630,10 @@ export type Database = {
         Returns: string
       }
       generate_monthly_bills: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      generate_scheduled_reports: {
         Args: Record<PropertyKey, never>
         Returns: number
       }

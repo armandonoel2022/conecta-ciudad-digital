@@ -113,14 +113,7 @@ export const useUserRoles = () => {
     try {
       const { data, error } = await supabase
         .from('user_roles')
-        .select(`
-          *,
-          profiles!user_roles_user_id_fkey (
-            first_name,
-            last_name,
-            full_name
-          )
-        `)
+        .select('*')
         .eq('is_active', true)
         .order('assigned_at', { ascending: false });
 
