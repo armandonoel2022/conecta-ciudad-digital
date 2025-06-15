@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -20,6 +20,7 @@ export const usePanicAlerts = () => {
   const { user } = useAuth();
   const [alerts, setAlerts] = useState<PanicAlert[]>([]);
   const [loading, setLoading] = useState(false);
+  const channelRef = useRef<any>(null);
 
   const fetchActiveAlerts = async () => {
     if (!user) return;
@@ -99,9 +100,15 @@ export const usePanicAlerts = () => {
     if (user) {
       fetchActiveAlerts();
 
+      // Clean up existing channel if it exists
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+
       // Set up real-time subscription for panic alerts
-      const channel = supabase
-        .channel('panic-alerts-changes')
+      channelRef.current = supabase
+        .channel(`panic-alerts-${user.id}-${Date.now()}`)
         .on(
           'postgres_changes',
           {
@@ -117,8 +124,17 @@ export const usePanicAlerts = () => {
         .subscribe();
 
       return () => {
-        supabase.removeChannel(channel);
+        if (channelRef.current) {
+          supabase.removeChannel(channelRef.current);
+          channelRef.current = null;
+        }
       };
+    } else {
+      // Clean up channel when user logs out
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     }
   }, [user]);
 

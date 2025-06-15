@@ -43,8 +43,7 @@ const App = () => {
               <Route path="/perfil-setup" element={
                 <ProtectedRoute>
                   <ProfileSetup />
-                </Protecte
-
+                </ProtectedRoute>
               } />
               <Route element={
                 <ProtectedRoute>
