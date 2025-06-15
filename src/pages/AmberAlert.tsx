@@ -20,19 +20,13 @@ const formSchema = z.object({
   gender: z.enum(["nino", "nina"], {
     required_error: "Debes seleccionar el género del menor",
   }),
-  name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-  age: z.string().min(1, "La edad es requerida"),
-  height: z.string().min(1, "La estatura es requerida"),
-  weight: z.string().min(1, "El peso es requerido"),
-  hair_color: z.string().min(1, "El color de cabello es requerido"),
-  eye_color: z.string().min(1, "El color de ojos es requerido"),
-  skin_color: z.string().min(1, "El color de piel es requerido"),
-  clothing_description: z.string().min(5, "Describe la ropa que llevaba puesta"),
+  child_full_name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  child_nickname: z.string().optional(),
   last_seen_location: z.string().min(5, "Indica dónde fue visto por última vez"),
-  last_seen_date: z.string().min(1, "La fecha es requerida"),
-  last_seen_time: z.string().min(1, "La hora es requerida"),
-  circumstances: z.string().min(10, "Describe las circunstancias de la desaparición"),
-  additional_info: z.string().optional(),
+  disappearance_time: z.string().min(1, "La fecha y hora son requeridas"),
+  medical_conditions: z.string().optional(),
+  contact_number: z.string().min(10, "El número de contacto es requerido"),
+  additional_details: z.string().optional(),
 });
 
 const AmberAlert = () => {
@@ -46,19 +40,13 @@ const AmberAlert = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       gender: undefined,
-      name: "",
-      age: "",
-      height: "",
-      weight: "",
-      hair_color: "",
-      eye_color: "",
-      skin_color: "",
-      clothing_description: "",
+      child_full_name: "",
+      child_nickname: "",
       last_seen_location: "",
-      last_seen_date: "",
-      last_seen_time: "",
-      circumstances: "",
-      additional_info: "",
+      disappearance_time: "",
+      medical_conditions: "",
+      contact_number: "",
+      additional_details: "",
     },
   });
 
@@ -111,26 +99,19 @@ const AmberAlert = () => {
         photoUrl = publicUrl;
       }
 
-      // Crear la alerta
+      // Crear la alerta Amber
       const { error } = await supabase
         .from('amber_alerts')
         .insert({
           user_id: user.id,
-          gender: values.gender,
-          name: values.name,
-          age: parseInt(values.age),
-          height: values.height,
-          weight: values.weight,
-          hair_color: values.hair_color,
-          eye_color: values.eye_color,
-          skin_color: values.skin_color,
-          clothing_description: values.clothing_description,
+          child_full_name: values.child_full_name,
+          child_nickname: values.child_nickname || null,
           last_seen_location: values.last_seen_location,
-          last_seen_date: values.last_seen_date,
-          last_seen_time: values.last_seen_time,
-          circumstances: values.circumstances,
-          additional_info: values.additional_info || null,
-          photo_url: photoUrl,
+          disappearance_time: new Date(values.disappearance_time).toISOString(),
+          medical_conditions: values.medical_conditions || null,
+          contact_number: values.contact_number,
+          additional_details: values.additional_details || null,
+          child_photo_url: photoUrl,
           is_active: true,
         });
 
@@ -244,7 +225,7 @@ const AmberAlert = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="name"
+                  name="child_full_name"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Nombre completo *</FormLabel>
@@ -258,12 +239,12 @@ const AmberAlert = () => {
 
                 <FormField
                   control={form.control}
-                  name="age"
+                  name="child_nickname"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Edad *</FormLabel>
+                      <FormLabel>Apodo o sobrenombre</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="Edad en años" {...field} />
+                        <Input placeholder="Apodo común" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -271,142 +252,9 @@ const AmberAlert = () => {
                 />
               </div>
 
-              {/* Características Físicas */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">Características Físicas</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="height"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Estatura *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="ej: 1.20 m" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="weight"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Peso *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="ej: 30 kg" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="hair_color"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Color de cabello *</FormLabel>
-                        <FormControl>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccionar" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="negro">Negro</SelectItem>
-                              <SelectItem value="castano-oscuro">Castaño oscuro</SelectItem>
-                              <SelectItem value="castano-claro">Castaño claro</SelectItem>
-                              <SelectItem value="rubio">Rubio</SelectItem>
-                              <SelectItem value="pelirrojo">Pelirrojo</SelectItem>
-                              <SelectItem value="gris">Gris</SelectItem>
-                              <SelectItem value="otro">Otro</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="eye_color"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Color de ojos *</FormLabel>
-                        <FormControl>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccionar" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="marrones">Marrones</SelectItem>
-                              <SelectItem value="negros">Negros</SelectItem>
-                              <SelectItem value="azules">Azules</SelectItem>
-                              <SelectItem value="verdes">Verdes</SelectItem>
-                              <SelectItem value="avellana">Avellana</SelectItem>
-                              <SelectItem value="grises">Grises</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="skin_color"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Color de piel *</FormLabel>
-                        <FormControl>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccionar" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="blanca">Blanca</SelectItem>
-                              <SelectItem value="morena-clara">Morena clara</SelectItem>
-                              <SelectItem value="morena">Morena</SelectItem>
-                              <SelectItem value="morena-oscura">Morena oscura</SelectItem>
-                              <SelectItem value="negra">Negra</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* Ropa y Apariencia */}
-              <FormField
-                control={form.control}
-                name="clothing_description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Descripción de la ropa *</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder={getGenderText("Describe detalladamente la ropa que el menor llevaba puesta al momento de la desaparición")}
-                        className="min-h-[80px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               {/* Ubicación y Fecha */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800">Última Vez Visto</h3>
+                <h3 className="text-lg font-semibold text-gray-800">Información de la Desaparición</h3>
                 <FormField
                   control={form.control}
                   name="last_seen_location"
@@ -424,50 +272,49 @@ const AmberAlert = () => {
                   )}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="last_seen_date"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Fecha *</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="last_seen_time"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Hora aproximada *</FormLabel>
-                        <FormControl>
-                          <Input type="time" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="disappearance_time"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Fecha y hora de la desaparición *</FormLabel>
+                      <FormControl>
+                        <Input type="datetime-local" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              {/* Circunstancias */}
+              {/* Información Médica */}
               <FormField
                 control={form.control}
-                name="circumstances"
+                name="medical_conditions"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Circunstancias de la desaparición *</FormLabel>
+                    <FormLabel>Condiciones médicas especiales</FormLabel>
                     <FormControl>
                       <Textarea 
-                        placeholder={getGenderText("Describe detalladamente las circunstancias en las que el menor desaparecida")}
-                        className="min-h-[100px]"
+                        placeholder={getGenderText("Medicamentos que toma el menor, condiciones médicas importantes, alergias, etc.")}
+                        className="min-h-[80px]"
                         {...field} 
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Contacto */}
+              <FormField
+                control={form.control}
+                name="contact_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Número de contacto *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Número de teléfono para contacto" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -477,13 +324,13 @@ const AmberAlert = () => {
               {/* Información Adicional */}
               <FormField
                 control={form.control}
-                name="additional_info"
+                name="additional_details"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Información adicional</FormLabel>
+                    <FormLabel>Detalles adicionales</FormLabel>
                     <FormControl>
                       <Textarea 
-                        placeholder={getGenderText("Cualquier otro detalle que pueda ayudar a localizar al menor (medicamentos, condiciones médicas, etc.)")}
+                        placeholder={getGenderText("Cualquier información adicional que pueda ayudar a localizar al menor")}
                         className="min-h-[80px]"
                         {...field} 
                       />
