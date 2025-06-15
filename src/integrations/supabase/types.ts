@@ -95,6 +95,45 @@ export type Database = {
           },
         ]
       }
+      panic_alerts: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          latitude: number | null
+          location_description: string | null
+          longitude: number | null
+          resolved_at: string | null
+          resolved_by: string | null
+          user_full_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          latitude?: number | null
+          location_description?: string | null
+          longitude?: number | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          user_full_name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          latitude?: number | null
+          location_description?: string | null
+          longitude?: number | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          user_full_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
