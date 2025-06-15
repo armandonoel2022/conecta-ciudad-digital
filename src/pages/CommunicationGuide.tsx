@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Phone, Building, Shield, AlertTriangle, Clock, ArrowLeft } from "lucide-react";
+import { Phone, Building, Shield, AlertTriangle, Clock, ArrowLeft, Cross, Car, Flame, Droplets, Wrench, DollarSign, TreePine } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const contacts = [
@@ -15,6 +15,21 @@ const contacts = [
         name: "Sistema Nacional de Emergencias",
         number: "9-1-1",
         description: "Para emergencias médicas, de seguridad y rescate",
+      },
+      {
+        name: "Cruz Roja Dominicana",
+        number: "809-238-5312",
+        description: "Servicios de emergencia médica y rescate",
+      },
+      {
+        name: "Cuerpo de Bomberos Santo Domingo Este",
+        number: "809-695-1408",
+        description: "Emergencias de incendios y rescates",
+      },
+      {
+        name: "Cuerpo de Bomberos Santo Domingo Este (Alt.)",
+        number: "809-695-1409",
+        description: "Línea alternativa de bomberos",
       }
     ]
   },
@@ -42,10 +57,71 @@ const contacts = [
     ]
   },
   {
-    category: "Instituciones Oficiales",
-    icon: Shield,
+    category: "Alcaldía Santo Domingo Este",
+    icon: Building,
     color: "text-purple-600",
     bgColor: "bg-purple-100",
+    contacts: [
+      {
+        name: "Recepción Alcaldía",
+        number: "809-788-7676",
+        description: "Extensión: 1001 - Información general de la alcaldía",
+      },
+      {
+        name: "Drenaje Pluvial ASDE",
+        number: "809-788-7676",
+        description: "Extensión: 30 - Problemas de drenajes y aguas pluviales",
+      },
+      {
+        name: "Ingeniería y Obras ASDE",
+        number: "809-788-7676",
+        description: "Extensión: 3038 - Obras públicas e infraestructura",
+      },
+      {
+        name: "Rentas y Arbitrios",
+        number: "809-788-7676",
+        description: "Extensión: 1057 - Pagos de impuestos municipales",
+      },
+      {
+        name: "Gestión Ambiental y Riesgos",
+        number: "809-788-7676",
+        description: "Extensión: 7007 - Temas ambientales y gestión de riesgos",
+      }
+    ]
+  },
+  {
+    category: "Servicios Funerarios",
+    icon: Cross,
+    color: "text-gray-600",
+    bgColor: "bg-gray-100",
+    contacts: [
+      {
+        name: "Cementerio Cristo Salvador",
+        number: "809-937-0842",
+        description: "Servicios de cementerio municipal",
+      },
+      {
+        name: "Funeraria Municipal Villa Carmen",
+        number: "809-728-2762",
+        description: "Servicios funerarios municipales",
+      },
+      {
+        name: "Funeraria Los Frailes",
+        number: "809-599-6850",
+        description: "Servicios funerarios especializados",
+      },
+      {
+        name: "Funeraria Municipal Isabelita",
+        number: "809-599-2798",
+        description: "Servicios funerarios municipales",
+      }
+    ]
+  },
+  {
+    category: "Instituciones Oficiales",
+    icon: Shield,
+    color: "text-indigo-600",
+    bgColor: "bg-indigo-100",
     contacts: [
       {
         name: "Palacio Nacional",
@@ -61,20 +137,16 @@ const contacts = [
         name: "Ministerio de Interior y Policía",
         number: "809-686-6251",
         description: "Extensiones: 3227 y 3228",
-      }
-    ]
-  },
-  {
-    category: "Gobierno Local",
-    icon: Building,
-    color: "text-green-600",
-    bgColor: "bg-green-100",
-    contacts: [
+      },
       {
-        name: "Ayuntamiento de Santo Domingo Este",
-        number: "809-788-7676",
-        description: "Carr. Mella #49, Esq. Santo Domingo Este",
-        hours: "Lun-Vie: 8:00 AM - 4:00 PM"
+        name: "Universidad Autónoma de Santo Domingo (UASD)",
+        number: "809-597-0018",
+        description: "Institución educativa superior",
+      },
+      {
+        name: "Autoridad Metropolitana de Transporte (AMET)",
+        number: "809-686-6520",
+        description: "Control y regulación del transporte",
       }
     ]
   }
