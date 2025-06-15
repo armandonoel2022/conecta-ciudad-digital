@@ -24,7 +24,7 @@ const profileSchema = z.object({
   phone_prefix: z.enum(['809', '829', '849'], {
     required_error: 'Selecciona un prefijo'
   }),
-  phone: z.string().regex(/^\d{10}$/, 'El teléfono debe tener exactamente 10 dígitos'),
+  phone: z.string().regex(/^\d{7}$/, 'El teléfono debe tener exactamente 7 dígitos'),
   address: z.string().min(5, 'La dirección debe tener al menos 5 caracteres'),
   neighborhood: z.string().min(2, 'Ingresa tu barrio'),
   birth_date: z.string().min(1, 'Selecciona tu fecha de nacimiento'),
@@ -72,8 +72,8 @@ const ProfileSetup = () => {
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Only allow digits and limit to 10
-    const numbers = e.target.value.replace(/\D/g, '').slice(0, 10);
+    // Only allow digits and limit to 7
+    const numbers = e.target.value.replace(/\D/g, '').slice(0, 7);
     setValue('phone', numbers);
   };
 
@@ -218,9 +218,9 @@ const ProfileSetup = () => {
                 <Input
                   {...register('phone')}
                   onChange={handlePhoneChange}
-                  placeholder="0000000000"
+                  placeholder="0000000"
                   className="bg-white flex-1"
-                  maxLength={10}
+                  maxLength={7}
                 />
               </div>
               {watchedPrefix && watchedPhone && (
