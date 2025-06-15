@@ -6,14 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { MapPin, Paperclip, ArrowLeft } from "lucide-react";
+import { MapPin, Paperclip, ArrowLeft, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 const formSchema = z.object({
@@ -32,6 +32,9 @@ const ReportIssue = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [currentLocation, setCurrentLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -65,6 +68,66 @@ const ReportIssue = () => {
     }
   }, []);
 
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error("Por favor selecciona solo archivos de imagen");
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("La imagen debe ser menor a 5MB");
+        return;
+      }
+
+      setSelectedImage(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user!.id}-${Date.now()}.${fileExt}`;
+      const filePath = `reports/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('report-images')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Error uploading image:', uploadError);
+        return null;
+      }
+
+      const { data } = supabase.storage
+        .from('report-images')
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (error) {
+      console.error('Error in uploadImage:', error);
+      return null;
+    }
+  };
+
   const onSubmit = async (data: FormData) => {
     if (!user) {
       toast.error("Debes estar autenticado para enviar un reporte");
@@ -74,6 +137,16 @@ const ReportIssue = () => {
     setIsSubmitting(true);
 
     try {
+      let imageUrl = null;
+      
+      // Upload image if selected
+      if (selectedImage) {
+        imageUrl = await uploadImage(selectedImage);
+        if (!imageUrl) {
+          toast.error("Error al subir la imagen. El reporte se enviará sin foto.");
+        }
+      }
+
       const reportData = {
         user_id: user.id,
         title: data.title,
@@ -83,6 +156,7 @@ const ReportIssue = () => {
         neighborhood: data.neighborhood || null,
         latitude: currentLocation?.latitude || null,
         longitude: currentLocation?.longitude || null,
+        image_url: imageUrl,
         status: 'pendiente' as const,
         priority: 'media' as const,
       };
@@ -231,17 +305,53 @@ const ReportIssue = () => {
                   )}
                 />
 
-                <div className="space-y-2">
-                  <Label className="text-gray-800 font-semibold">Adjuntar Foto</Label>
+                <div className="space-y-3">
+                  <Label className="text-gray-800 font-semibold">Adjuntar Foto (Opcional)</Label>
+                  
+                  {/* Image Preview */}
+                  {imagePreview && (
+                    <div className="relative">
+                      <img 
+                        src={imagePreview} 
+                        alt="Vista previa" 
+                        className="w-full h-32 object-cover rounded-xl border-2 border-gray-200"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2 h-8 w-8 p-0 rounded-full"
+                        onClick={removeImage}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {/* File Input Button */}
                   <Button 
                     type="button"
                     variant="outline" 
                     className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-gray-200 hover:border-purple-500 py-6"
+                    onClick={() => fileInputRef.current?.click()}
                   >
                     <Paperclip className="h-5 w-5 text-purple-600" />
-                    <span className="text-gray-700">Seleccionar archivo</span>
+                    <span className="text-gray-700">
+                      {selectedImage ? selectedImage.name : "Seleccionar imagen"}
+                    </span>
                   </Button>
-                  <Input id="photo" type="file" className="hidden" />
+                  
+                  <Input 
+                    ref={fileInputRef}
+                    type="file" 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                  />
+                  
+                  <p className="text-xs text-gray-500 text-center">
+                    Formatos: JPG, PNG, GIF. Tamaño máximo: 5MB
+                  </p>
                 </div>
 
                 {currentLocation && (
