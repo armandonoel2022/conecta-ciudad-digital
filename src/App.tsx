@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import GlobalPanicAlerts from "@/components/GlobalPanicAlerts";
 import GlobalAmberAlerts from "@/components/GlobalAmberAlerts";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -20,6 +21,7 @@ import Opportunities from "./pages/Opportunities";
 import BeforeAfter from "./pages/BeforeAfter";
 import CommunicationGuide from "./pages/CommunicationGuide";
 import MissionVisionValues from "./pages/MissionVisionValues";
+import PanicButton from "./pages/PanicButton";
 import AmberAlert from "./pages/AmberAlert";
 import GarbagePayment from "./pages/GarbagePayment";
 import ProfileSetup from "./pages/ProfileSetup";
@@ -35,6 +37,7 @@ const App = () => {
         <Sonner />
         <AuthProvider>
           <BrowserRouter>
+            <GlobalPanicAlerts />
             <GlobalAmberAlerts />
             <Routes>
               <Route path="/auth" element={<Auth />} />
@@ -57,6 +60,7 @@ const App = () => {
                 <Route path="/antes-y-despues" element={<BeforeAfter />} />
                 <Route path="/guia-comunicacion" element={<CommunicationGuide />} />
                 <Route path="/mision-vision-valores" element={<MissionVisionValues />} />
+                <Route path="/boton-panico" element={<PanicButton />} />
                 <Route path="/alerta-amber" element={<AmberAlert />} />
                 <Route path="/pago-basura" element={<GarbagePayment />} />
                 <Route path="/configuracion" element={<Settings />} />
