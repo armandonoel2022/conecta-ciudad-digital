@@ -59,9 +59,9 @@ const Index = () => {
             .eq('id', user.id)
             .single();
 
-          if (error) {
+          if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
             console.error('Error fetching user profile:', error);
-          } else {
+          } else if (data) {
             setUserProfile(data);
           }
         } catch (error) {
@@ -77,7 +77,7 @@ const Index = () => {
     if (userProfile?.first_name) {
       return `¡Hola, ${userProfile.first_name}!`;
     }
-    return user?.email ? `Bienvenido, ${user.email}` : 'Bienvenido';
+    return user?.email ? `¡Hola!` : 'Bienvenido';
   };
 
   return (

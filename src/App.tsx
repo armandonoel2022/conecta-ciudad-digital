@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -22,6 +21,7 @@ import MissionVisionValues from "./pages/MissionVisionValues";
 import PanicButton from "./pages/PanicButton";
 import AmberAlert from "./pages/AmberAlert";
 import GarbagePayment from "./pages/GarbagePayment";
+import ProfileSetup from "./pages/ProfileSetup";
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
@@ -35,6 +35,11 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/perfil-setup" element={
+                <ProtectedRoute>
+                  <ProfileSetup />
+                </ProtectedRoute>
+              } />
               <Route element={
                 <ProtectedRoute>
                   <Layout />
