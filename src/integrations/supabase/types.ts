@@ -146,6 +146,87 @@ export type Database = {
           },
         ]
       }
+      job_applications: {
+        Row: {
+          additional_courses: string | null
+          address: string | null
+          availability: string | null
+          birth_date: string | null
+          career_field: string | null
+          created_at: string
+          cv_file_name: string | null
+          cv_file_url: string | null
+          document_number: string | null
+          document_type: string | null
+          education_level: string
+          email: string
+          expected_salary: string | null
+          full_name: string
+          graduation_year: number | null
+          id: string
+          institution_name: string | null
+          notes: string | null
+          phone: string
+          skills: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          work_experience: string | null
+        }
+        Insert: {
+          additional_courses?: string | null
+          address?: string | null
+          availability?: string | null
+          birth_date?: string | null
+          career_field?: string | null
+          created_at?: string
+          cv_file_name?: string | null
+          cv_file_url?: string | null
+          document_number?: string | null
+          document_type?: string | null
+          education_level: string
+          email: string
+          expected_salary?: string | null
+          full_name: string
+          graduation_year?: number | null
+          id?: string
+          institution_name?: string | null
+          notes?: string | null
+          phone: string
+          skills?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          work_experience?: string | null
+        }
+        Update: {
+          additional_courses?: string | null
+          address?: string | null
+          availability?: string | null
+          birth_date?: string | null
+          career_field?: string | null
+          created_at?: string
+          cv_file_name?: string | null
+          cv_file_url?: string | null
+          document_number?: string | null
+          document_type?: string | null
+          education_level?: string
+          email?: string
+          expected_salary?: string | null
+          full_name?: string
+          graduation_year?: number | null
+          id?: string
+          institution_name?: string | null
+          notes?: string | null
+          phone?: string
+          skills?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          work_experience?: string | null
+        }
+        Relationships: []
+      }
       panic_alerts: {
         Row: {
           created_at: string | null
