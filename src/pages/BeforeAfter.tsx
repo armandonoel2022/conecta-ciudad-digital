@@ -1,7 +1,6 @@
 
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import VideoUpload from "@/components/VideoUpload";
 import VideoList from "@/components/VideoList";
 
 const BeforeAfter = () => {
@@ -15,27 +14,21 @@ const BeforeAfter = () => {
           </Link>
           <div>
             <h1 className="text-2xl font-bold">ANTES Y DESPUÉS</h1>
-            <p className="text-white/80">Comparte los resultados y mejoras</p>
+            <p className="text-white/80">Resultados y mejoras en nuestra comunidad</p>
           </div>
         </div>
 
         {/* Content Card */}
         <div className="bg-white rounded-[2rem] p-6 shadow-xl space-y-6">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Videos del Antes y Después</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Transformaciones en la Comunidad</h2>
             <p className="text-gray-600">
-              Comparte videos que muestren las mejoras y transformaciones en tu comunidad
+              Mira cómo hemos transformado y mejorado nuestra comunidad
             </p>
-          </div>
-
-          {/* Upload Section */}
-          <div className="mb-8">
-            <VideoUpload />
           </div>
 
           {/* Videos List */}
           <div>
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Videos Compartidos</h3>
             <VideoList />
           </div>
         </div>
