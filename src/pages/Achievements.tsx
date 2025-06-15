@@ -1,13 +1,12 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Trophy, Road, Trash2, Heart, Shield, Users, Stethoscope, Palette, DollarSign } from "lucide-react";
+import { ArrowLeft, Trophy, Construction, Trash2, Heart, Shield, Users, Stethoscope, Palette, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const achievements = [
   {
     category: "Infraestructura",
-    icon: Road,
+    icon: Construction,
     color: "text-blue-600",
     bgColor: "bg-blue-100",
     borderColor: "border-blue-500",
