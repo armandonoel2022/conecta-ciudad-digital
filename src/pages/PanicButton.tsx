@@ -1,22 +1,24 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlarmClockOff, ArrowLeft, MapPin, AlertTriangle, Clock, User, Locate } from "lucide-react";
+import { AlarmClockOff, ArrowLeft, MapPin, AlertTriangle, Clock, User, Locate, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { usePanicAlerts } from "@/hooks/usePanicAlerts";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 const PanicButton = () => {
   const [isActivating, setIsActivating] = useState(false);
+  const [isDeactivating, setIsDeactivating] = useState<string | null>(null);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [manualAddress, setManualAddress] = useState("");
   const [location, setLocation] = useState<{ latitude: number; longitude: number; address?: string } | null>(null);
-  const { alerts, createPanicAlert, loading } = usePanicAlerts();
+  const { alerts, createPanicAlert, deactivatePanicAlert, deactivateAllUserAlerts, loading } = usePanicAlerts();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const getLocation = (): Promise<{ latitude: number; longitude: number; address?: string }> => {
@@ -128,8 +130,61 @@ const PanicButton = () => {
     }
   };
 
-  // Filter active and recent alerts
-  const activeAlerts = alerts.filter(alert => 
+  const handleDeactivateAlert = async (alertId: string) => {
+    setIsDeactivating(alertId);
+    
+    try {
+      await deactivatePanicAlert(alertId);
+      
+      toast({
+        title: "Alerta desactivada",
+        description: "La alerta de pánico ha sido desactivada exitosamente.",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error('Error deactivating alert:', error);
+      toast({
+        title: "Error al desactivar alerta",
+        description: error instanceof Error ? error.message : "Inténtalo nuevamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeactivating(null);
+    }
+  };
+
+  const handleDeactivateAllAlerts = async () => {
+    setIsDeactivating('all');
+    
+    try {
+      await deactivateAllUserAlerts();
+      
+      toast({
+        title: "Todas las alertas desactivadas",
+        description: "Se han desactivado todas tus alertas de pánico activas.",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error('Error deactivating all alerts:', error);
+      toast({
+        title: "Error al desactivar alertas",
+        description: error instanceof Error ? error.message : "Inténtalo nuevamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeactivating(null);
+    }
+  };
+
+  // Filter user's active alerts
+  const userActiveAlerts = alerts.filter(alert => 
+    alert.user_id === user?.id && 
+    alert.is_active && 
+    new Date(alert.expires_at) > new Date()
+  );
+
+  // Filter all active alerts
+  const allActiveAlerts = alerts.filter(alert => 
     alert.is_active && new Date(alert.expires_at) > new Date()
   );
   
@@ -150,6 +205,76 @@ const PanicButton = () => {
             <p className="text-white/80">Alerta de emergencia</p>
           </div>
         </div>
+
+        {/* User's Active Alerts - Show first if they exist */}
+        {userActiveAlerts.length > 0 && (
+          <div className="bg-white rounded-[2rem] p-6 shadow-xl">
+            <h3 className="text-lg font-bold text-red-600 mb-4 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              Tus Alertas Activas ({userActiveAlerts.length})
+            </h3>
+            <div className="space-y-3 mb-4">
+              {userActiveAlerts.map((alert) => (
+                <div key={alert.id} className="p-3 bg-red-50 rounded-lg border border-red-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle className="h-4 w-4 text-red-600" />
+                    <span className="font-medium text-red-800">Tu alerta está activa</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-red-600 mb-2">
+                    <Clock className="h-4 w-4" />
+                    <span>Activada: {format(new Date(alert.created_at), 'HH:mm:ss', { locale: es })}</span>
+                  </div>
+                  {alert.address && (
+                    <div className="flex items-start gap-2 text-sm text-red-600 mb-3">
+                      <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      <span className="line-clamp-2">{alert.address}</span>
+                    </div>
+                  )}
+                  <Button
+                    onClick={() => handleDeactivateAlert(alert.id)}
+                    disabled={isDeactivating === alert.id}
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-green-600 text-green-600 hover:bg-green-50"
+                  >
+                    {isDeactivating === alert.id ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 mr-2"></div>
+                        Desactivando...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Desactivar Alerta
+                      </>
+                    )}
+                  </Button>
+                </div>
+              ))}
+            </div>
+            
+            {userActiveAlerts.length > 1 && (
+              <Button
+                onClick={handleDeactivateAllAlerts}
+                disabled={isDeactivating === 'all'}
+                variant="outline"
+                className="w-full border-green-600 text-green-600 hover:bg-green-50"
+              >
+                {isDeactivating === 'all' ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 mr-2"></div>
+                    Desactivando todas...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Desactivar Todas Mis Alertas
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        )}
 
         {/* Main Panic Button */}
         <div className="bg-white rounded-[2rem] p-6 shadow-xl">
@@ -239,15 +364,15 @@ const PanicButton = () => {
           </Card>
         </div>
 
-        {/* Active Alerts */}
-        {activeAlerts.length > 0 && (
+        {/* Other Active Alerts */}
+        {allActiveAlerts.filter(alert => alert.user_id !== user?.id).length > 0 && (
           <div className="bg-white rounded-[2rem] p-6 shadow-xl">
             <h3 className="text-lg font-bold text-red-600 mb-4 flex items-center gap-2">
               <AlertTriangle className="h-5 w-5" />
-              Alertas Activas ({activeAlerts.length})
+              Otras Alertas Activas ({allActiveAlerts.filter(alert => alert.user_id !== user?.id).length})
             </h3>
             <div className="space-y-3">
-              {activeAlerts.map((alert) => (
+              {allActiveAlerts.filter(alert => alert.user_id !== user?.id).map((alert) => (
                 <div key={alert.id} className="p-3 bg-red-50 rounded-lg border border-red-200">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -297,6 +422,11 @@ const PanicButton = () => {
                       <div className="flex items-center gap-2 mb-1">
                         <User className="h-4 w-4 text-gray-600" />
                         <span className="font-medium text-gray-800">{alert.user_full_name}</span>
+                        {alert.user_id === user?.id && (
+                          <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
+                            Tuya
+                          </span>
+                        )}
                         {alert.is_active && new Date(alert.expires_at) > new Date() && (
                           <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">
                             Activa

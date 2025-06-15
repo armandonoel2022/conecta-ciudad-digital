@@ -66,6 +66,35 @@ export const usePanicAlerts = () => {
     return data;
   };
 
+  const deactivatePanicAlert = async (alertId: string) => {
+    if (!user) throw new Error('User not authenticated');
+
+    const { data, error } = await supabase
+      .from('panic_alerts')
+      .update({ is_active: false })
+      .eq('id', alertId)
+      .eq('user_id', user.id) // Ensure users can only deactivate their own alerts
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  };
+
+  const deactivateAllUserAlerts = async () => {
+    if (!user) throw new Error('User not authenticated');
+
+    const { data, error } = await supabase
+      .from('panic_alerts')
+      .update({ is_active: false })
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .select();
+
+    if (error) throw error;
+    return data;
+  };
+
   useEffect(() => {
     fetchAlerts();
 
@@ -97,6 +126,8 @@ export const usePanicAlerts = () => {
     alerts,
     loading,
     createPanicAlert,
+    deactivatePanicAlert,
+    deactivateAllUserAlerts,
     refetch: fetchAlerts,
   };
 };
