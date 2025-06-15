@@ -83,6 +83,8 @@ const ProfileSetup = () => {
     try {
       const fullPhoneNumber = `+1${data.phone_prefix}${data.phone}`;
       
+      console.log('Submitting profile data:', data);
+      
       const { error } = await supabase
         .from('profiles')
         .update({
@@ -106,8 +108,14 @@ const ProfileSetup = () => {
         return;
       }
 
+      console.log('Profile updated successfully');
       toast.success('¡Perfil completado exitosamente!');
-      navigate('/');
+      
+      // Use window.location.href for a complete page refresh
+      // This ensures the profile check hook will re-run and detect the completed profile
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1000);
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error inesperado. Intenta nuevamente.');
