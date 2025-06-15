@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, MapPin, Phone } from 'lucide-react';
+import { AlertTriangle, MapPin, Phone, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { usePanicAlerts } from '@/hooks/usePanicAlerts';
@@ -10,11 +9,12 @@ import { supabase } from '@/integrations/supabase/client';
 
 const PanicButton = () => {
   const [isActivating, setIsActivating] = useState(false);
+  const [isResolving, setIsResolving] = useState(false);
   const [userProfile, setUserProfile] = useState<{ first_name?: string; last_name?: string } | null>(null);
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
-  const { createPanicAlert, alerts } = usePanicAlerts();
+  const { createPanicAlert, resolvePanicAlert, alerts } = usePanicAlerts();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -117,6 +117,28 @@ const PanicButton = () => {
     }
   };
 
+  const handleResolveAlert = async () => {
+    if (!userActiveAlert) return;
+
+    setIsResolving(true);
+    try {
+      await resolvePanicAlert(userActiveAlert.id);
+      toast({
+        title: "Alerta resuelta",
+        description: "Tu alerta de pánico ha sido marcada como resuelta.",
+      });
+    } catch (error) {
+      console.error('Error resolving alert:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo resolver la alerta. Inténtalo nuevamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResolving(false);
+    }
+  };
+
   // Check if user has an active alert
   const userActiveAlert = alerts.find(alert => alert.user_id === user?.id && alert.is_active);
 
@@ -137,13 +159,36 @@ const PanicButton = () => {
                 Ya tienes una alerta de pánico activa. Las autoridades han sido notificadas.
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <div className="space-y-2 text-sm">
                 <p><strong>Activada:</strong> {new Date(userActiveAlert.created_at).toLocaleString()}</p>
                 {userActiveAlert.location_description && (
                   <p><strong>Ubicación:</strong> {userActiveAlert.location_description}</p>
                 )}
               </div>
+              
+              <Button
+                onClick={handleResolveAlert}
+                disabled={isResolving}
+                size="lg"
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold"
+              >
+                {isResolving ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <span>Resolviendo...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="h-5 w-5" />
+                    <span>Marcar como Solucionada</span>
+                  </div>
+                )}
+              </Button>
+              
+              <p className="text-xs text-red-200 text-center">
+                Solo marca como solucionada si ya no necesitas ayuda de emergencia
+              </p>
             </CardContent>
           </Card>
         ) : (
