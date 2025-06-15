@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Settings as SettingsIcon, ArrowLeft, Palette, Fingerprint, Moon, Sun, Monitor } from "lucide-react";
+import { Settings as SettingsIcon, ArrowLeft, Palette, Fingerprint, Moon, Sun, Monitor, LocateFixed } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -14,12 +14,14 @@ type Theme = 'light' | 'dark' | 'system';
 const Settings = () => {
   const [theme, setTheme] = useState<Theme>('system');
   const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [locationServicesEnabled, setLocationServicesEnabled] = useState(false);
   const { toast } = useToast();
 
   // Load settings from localStorage on component mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as Theme;
     const savedBiometric = localStorage.getItem('biometricEnabled') === 'true';
+    const savedLocationServices = localStorage.getItem('locationServicesEnabled') === 'true';
     
     if (savedTheme) {
       setTheme(savedTheme);
@@ -27,6 +29,7 @@ const Settings = () => {
     }
     
     setBiometricEnabled(savedBiometric);
+    setLocationServicesEnabled(savedLocationServices);
   }, []);
 
   const applyTheme = (selectedTheme: Theme) => {
@@ -78,6 +81,47 @@ const Settings = () => {
       toast({
         title: "Autenticación biométrica desactivada",
         description: "Se ha desactivado el acceso biométrico",
+      });
+    }
+  };
+
+  const handleLocationServicesToggle = async (enabled: boolean) => {
+    if (enabled) {
+      try {
+        // Check if geolocation is supported
+        if (!navigator.geolocation) {
+          throw new Error('Geolocalización no soportada en este dispositivo');
+        }
+
+        // Request location permission
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            resolve,
+            reject,
+            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+          );
+        });
+
+        setLocationServicesEnabled(true);
+        localStorage.setItem('locationServicesEnabled', 'true');
+        
+        toast({
+          title: "Servicios de ubicación activados",
+          description: "El botón de pánico podrá acceder a tu ubicación automáticamente",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "No se pudo activar los servicios de ubicación. Verifica los permisos del navegador.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      setLocationServicesEnabled(false);
+      localStorage.setItem('locationServicesEnabled', 'false');
+      toast({
+        title: "Servicios de ubicación desactivados",
+        description: "El botón de pánico te pedirá permisos cuando sea necesario",
       });
     }
   };
@@ -148,6 +192,47 @@ const Settings = () => {
                   </Label>
                 </div>
               </RadioGroup>
+            </CardContent>
+          </Card>
+
+          {/* Location Services */}
+          <Card className="border-none shadow-xl">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <LocateFixed className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Servicios de ubicación</CardTitle>
+                  <CardDescription>
+                    Permite el acceso automático a tu ubicación para emergencias
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+                <div className="flex items-center gap-3">
+                  <LocateFixed className="h-5 w-5 text-blue-600" />
+                  <div>
+                    <p className="font-medium text-sm">Ubicación automática</p>
+                    <p className="text-xs text-gray-500">
+                      Para el botón de pánico y emergencias
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  checked={locationServicesEnabled}
+                  onCheckedChange={handleLocationServicesToggle}
+                />
+              </div>
+              {locationServicesEnabled && (
+                <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm text-green-800">
+                    ✅ Los servicios de ubicación están activados. El botón de pánico funcionará sin demoras.
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
