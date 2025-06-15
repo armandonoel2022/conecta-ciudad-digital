@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,42 +24,44 @@ import AmberAlert from "./pages/AmberAlert";
 import GarbagePayment from "./pages/GarbagePayment";
 import ReportLighting from "./pages/ReportLighting";
 
-const queryClient = new QueryClient();
+const App = () => {
+  const [queryClient] = useState(() => new QueryClient());
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<Auth />} />
-            <Route element={
-              <ProtectedRoute>
-                <Layout />
-              </ProtectedRoute>
-            }>
-              <Route path="/" element={<Index />} />
-              <Route path="/reportar" element={<ReportIssue />} />
-              <Route path="/guia-reciclaje" element={<RecyclingGuide />} />
-              <Route path="/logros" element={<Achievements />} />
-              <Route path="/quienes-somos" element={<AboutUs />} />
-              <Route path="/oportunidades" element={<Opportunities />} />
-              <Route path="/antes-y-despues" element={<BeforeAfter />} />
-              <Route path="/guia-comunicacion" element={<CommunicationGuide />} />
-              <Route path="/mision-vision-valores" element={<MissionVisionValues />} />
-              <Route path="/boton-panico" element={<PanicButton />} />
-              <Route path="/alerta-amber" element={<AmberAlert />} />
-              <Route path="/pago-basura" element={<GarbagePayment />} />
-              <Route path="/reportar-iluminacion" element={<ReportLighting />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route path="/" element={<Index />} />
+                <Route path="/reportar" element={<ReportIssue />} />
+                <Route path="/guia-reciclaje" element={<RecyclingGuide />} />
+                <Route path="/logros" element={<Achievements />} />
+                <Route path="/quienes-somos" element={<AboutUs />} />
+                <Route path="/oportunidades" element={<Opportunities />} />
+                <Route path="/antes-y-despues" element={<BeforeAfter />} />
+                <Route path="/guia-comunicacion" element={<CommunicationGuide />} />
+                <Route path="/mision-vision-valores" element={<MissionVisionValues />} />
+                <Route path="/boton-panico" element={<PanicButton />} />
+                <Route path="/alerta-amber" element={<AmberAlert />} />
+                <Route path="/pago-basura" element={<GarbagePayment />} />
+                <Route path="/reportar-iluminacion" element={<ReportLighting />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
