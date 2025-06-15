@@ -2,7 +2,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AlarmClockOff, ArrowLeft, MapPin, AlertTriangle, Clock, User } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { AlarmClockOff, ArrowLeft, MapPin, AlertTriangle, Clock, User, Locate } from "lucide-react";
 import { Link } from "react-router-dom";
 import { usePanicAlerts } from "@/hooks/usePanicAlerts";
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +13,8 @@ import { es } from 'date-fns/locale';
 
 const PanicButton = () => {
   const [isActivating, setIsActivating] = useState(false);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [manualAddress, setManualAddress] = useState("");
   const [location, setLocation] = useState<{ latitude: number; longitude: number; address?: string } | null>(null);
   const { alerts, createPanicAlert, loading } = usePanicAlerts();
   const { toast } = useToast();
@@ -48,13 +52,10 @@ const PanicButton = () => {
     });
   };
 
-  const handlePanicActivation = async () => {
-    if (isActivating) return;
-
-    setIsActivating(true);
+  const handleGetCurrentLocation = async () => {
+    setIsGettingLocation(true);
     
     try {
-      // Get location first
       toast({
         title: "Obteniendo ubicación...",
         description: "Por favor permite el acceso a tu ubicación.",
@@ -62,6 +63,49 @@ const PanicButton = () => {
 
       const locationData = await getLocation();
       setLocation(locationData);
+      setManualAddress(locationData.address || "");
+
+      toast({
+        title: "Ubicación obtenida",
+        description: "Se ha actualizado tu ubicación actual.",
+      });
+
+    } catch (error) {
+      console.error('Error getting location:', error);
+      toast({
+        title: "Error al obtener ubicación",
+        description: error instanceof Error ? error.message : "Inténtalo nuevamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGettingLocation(false);
+    }
+  };
+
+  const handlePanicActivation = async () => {
+    if (isActivating) return;
+
+    setIsActivating(true);
+    
+    try {
+      let locationData = location;
+      
+      // If we have a manual address but no coordinates, use just the address
+      if (manualAddress && !locationData) {
+        locationData = { latitude: 0, longitude: 0, address: manualAddress };
+      } else if (manualAddress && locationData) {
+        // If we have both coordinates and manual address, use the manual address
+        locationData = { ...locationData, address: manualAddress };
+      } else if (!locationData && !manualAddress) {
+        // If no location data at all, try to get it
+        toast({
+          title: "Obteniendo ubicación...",
+          description: "Por favor permite el acceso a tu ubicación.",
+        });
+
+        locationData = await getLocation();
+        setLocation(locationData);
+      }
 
       // Create panic alert
       await createPanicAlert(locationData);
@@ -121,7 +165,54 @@ const PanicButton = () => {
                 Presiona el botón para enviar una alerta de emergencia a todos los usuarios
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              {/* Location Input Section */}
+              <div className="space-y-4 text-left">
+                <div className="space-y-2">
+                  <Label htmlFor="address" className="text-sm font-medium text-gray-700">
+                    Dirección o ubicación
+                  </Label>
+                  <Input
+                    id="address"
+                    placeholder="Ingresa tu dirección actual..."
+                    value={manualAddress}
+                    onChange={(e) => setManualAddress(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                
+                <Button
+                  onClick={handleGetCurrentLocation}
+                  disabled={isGettingLocation}
+                  variant="outline"
+                  className="w-full flex items-center gap-2"
+                >
+                  {isGettingLocation ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                      Obteniendo ubicación...
+                    </>
+                  ) : (
+                    <>
+                      <Locate className="h-4 w-4" />
+                      Usar mi ubicación actual
+                    </>
+                  )}
+                </Button>
+
+                {location && (
+                  <div className="text-xs text-gray-500 bg-green-50 p-3 rounded-lg border border-green-200">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-green-800 mb-1">Ubicación detectada:</p>
+                        <p>{location.address || `${location.latitude}, ${location.longitude}`}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <Button
                 onClick={handlePanicActivation}
                 disabled={isActivating}
