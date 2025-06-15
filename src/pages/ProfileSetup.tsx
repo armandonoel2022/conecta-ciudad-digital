@@ -15,13 +15,16 @@ import { toast } from 'sonner';
 import { ArrowRight, User } from 'lucide-react';
 
 const profileSchema = z.object({
-  first_name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  last_name: z.string().min(2, 'El apellido debe tener al menos 2 caracteres'),
+  first_name: z.string().min(2, 'Los nombres deben tener al menos 2 caracteres'),
+  last_name: z.string().min(2, 'Los apellidos deben tener al menos 2 caracteres'),
   document_type: z.enum(['cedula', 'pasaporte', 'tarjeta_identidad'], {
     required_error: 'Selecciona un tipo de documento'
   }),
-  document_number: z.string().min(5, 'El número de documento debe tener al menos 5 caracteres'),
-  phone: z.string().min(10, 'El teléfono debe tener al menos 10 dígitos'),
+  document_number: z.string().regex(/^\d{3}-\d{7}-\d{1}$/, 'La cédula debe tener el formato 000-0000000-0'),
+  phone_prefix: z.enum(['809', '829', '849'], {
+    required_error: 'Selecciona un prefijo'
+  }),
+  phone: z.string().regex(/^\d{10}$/, 'El teléfono debe tener exactamente 10 dígitos'),
   address: z.string().min(5, 'La dirección debe tener al menos 5 caracteres'),
   neighborhood: z.string().min(2, 'Ingresa tu barrio'),
   birth_date: z.string().min(1, 'Selecciona tu fecha de nacimiento'),
@@ -43,13 +46,43 @@ const ProfileSetup = () => {
     watch,
     formState: { errors, isSubmitting }
   } = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema)
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      phone_prefix: '809'
+    }
   });
+
+  const formatCedula = (value: string) => {
+    // Remove all non-digits
+    const numbers = value.replace(/\D/g, '');
+    
+    // Apply format: 000-0000000-0
+    if (numbers.length <= 3) {
+      return numbers;
+    } else if (numbers.length <= 10) {
+      return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+    } else {
+      return `${numbers.slice(0, 3)}-${numbers.slice(3, 10)}-${numbers.slice(10, 11)}`;
+    }
+  };
+
+  const handleCedulaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCedula(e.target.value);
+    setValue('document_number', formatted);
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Only allow digits and limit to 10
+    const numbers = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setValue('phone', numbers);
+  };
 
   const onSubmit = async (data: ProfileFormData) => {
     if (!user) return;
 
     try {
+      const fullPhoneNumber = `+1${data.phone_prefix}${data.phone}`;
+      
       const { error } = await supabase
         .from('profiles')
         .update({
@@ -57,7 +90,7 @@ const ProfileSetup = () => {
           last_name: data.last_name,
           document_type: data.document_type,
           document_number: data.document_number,
-          phone: data.phone,
+          phone: fullPhoneNumber,
           address: data.address,
           neighborhood: data.neighborhood,
           birth_date: data.birth_date,
@@ -81,6 +114,9 @@ const ProfileSetup = () => {
     }
   };
 
+  const watchedPrefix = watch('phone_prefix');
+  const watchedPhone = watch('phone');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 flex items-center justify-center">
       <Card className="w-full max-w-2xl bg-white/95 backdrop-blur-sm shadow-2xl">
@@ -101,11 +137,11 @@ const ProfileSetup = () => {
             {/* Nombres */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="first_name">Nombre</Label>
+                <Label htmlFor="first_name">Nombres</Label>
                 <Input
                   id="first_name"
                   {...register('first_name')}
-                  placeholder="Tu nombre"
+                  placeholder="Tus nombres"
                   className="bg-white"
                 />
                 {errors.first_name && (
@@ -136,7 +172,7 @@ const ProfileSetup = () => {
                     <SelectValue placeholder="Seleccionar" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="cedula">Cédula de Ciudadanía</SelectItem>
+                    <SelectItem value="cedula">Cédula de Identidad</SelectItem>
                     <SelectItem value="pasaporte">Pasaporte</SelectItem>
                     <SelectItem value="tarjeta_identidad">Tarjeta de Identidad</SelectItem>
                   </SelectContent>
@@ -151,8 +187,10 @@ const ProfileSetup = () => {
                 <Input
                   id="document_number"
                   {...register('document_number')}
-                  placeholder="Número de documento"
+                  onChange={handleCedulaChange}
+                  placeholder="000-0000000-0"
                   className="bg-white"
+                  maxLength={13}
                 />
                 {errors.document_number && (
                   <p className="text-sm text-red-600">{errors.document_number.message}</p>
@@ -160,15 +198,39 @@ const ProfileSetup = () => {
               </div>
             </div>
 
-            {/* Contacto */}
+            {/* Teléfono */}
             <div className="space-y-2">
-              <Label htmlFor="phone">Teléfono</Label>
-              <Input
-                id="phone"
-                {...register('phone')}
-                placeholder="Número de teléfono"
-                className="bg-white"
-              />
+              <Label>Teléfono</Label>
+              <div className="flex gap-2">
+                <div className="flex items-center bg-white border border-input rounded-md px-3 py-2 text-sm">
+                  +1
+                </div>
+                <Select onValueChange={(value) => setValue('phone_prefix', value as any)} defaultValue="809">
+                  <SelectTrigger className="bg-white w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="809">809</SelectItem>
+                    <SelectItem value="829">829</SelectItem>
+                    <SelectItem value="849">849</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  {...register('phone')}
+                  onChange={handlePhoneChange}
+                  placeholder="0000000000"
+                  className="bg-white flex-1"
+                  maxLength={10}
+                />
+              </div>
+              {watchedPrefix && watchedPhone && (
+                <p className="text-xs text-gray-600">
+                  Número completo: +1{watchedPrefix}{watchedPhone}
+                </p>
+              )}
+              {errors.phone_prefix && (
+                <p className="text-sm text-red-600">{errors.phone_prefix.message}</p>
+              )}
               {errors.phone && (
                 <p className="text-sm text-red-600">{errors.phone.message}</p>
               )}
