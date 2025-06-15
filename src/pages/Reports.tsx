@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -118,7 +117,7 @@ const Reports = () => {
     refetch();
   };
 
-  const isValidUrl = (url?: string) => {
+  const isValidUrl = (url: string | null | undefined): url is string => {
     if (!url) return false;
     // Verificar que no sea una URL de ejemplo
     if (url.includes('example')) return false;
@@ -130,7 +129,7 @@ const Reports = () => {
     }
   };
 
-  const handleLinkClick = (url?: string, type: string) => {
+  const handleLinkClick = (url: string | null | undefined, type: string) => {
     if (!isValidUrl(url)) {
       toast.error(`El enlace para ${type} no está disponible aún. El reporte puede estar siendo procesado.`);
       return;
