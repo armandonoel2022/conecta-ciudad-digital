@@ -99,10 +99,8 @@ export const usePanicAlerts = () => {
       
       console.log('Panic alert resolved successfully:', data);
       
-      // Update local state immediately to remove the resolved alert
-      setAlerts(prevAlerts => 
-        prevAlerts.filter(alert => alert.id !== alertId)
-      );
+      // Immediately fetch fresh data to ensure UI is updated
+      await fetchActiveAlerts();
       
     } catch (error) {
       console.error('Error resolving panic alert:', error);

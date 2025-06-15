@@ -22,7 +22,7 @@ const GlobalPanicAlerts = () => {
       await resolvePanicAlert(alertId);
       toast({
         title: "Alerta resuelta",
-        description: "La alerta de pánico ha sido marcada como resuelta.",
+        description: "La alerta de pánico ha sido marcada como resuelta exitosamente.",
       });
     } catch (error) {
       console.error('GlobalPanicAlerts: Error resolving alert:', error);
