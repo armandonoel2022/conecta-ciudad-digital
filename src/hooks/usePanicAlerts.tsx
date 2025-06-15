@@ -33,6 +33,7 @@ export const usePanicAlerts = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      console.log('Fetched active alerts:', data);
       setAlerts(data || []);
     } catch (error) {
       console.error('Error fetching panic alerts:', error);
@@ -89,7 +90,6 @@ export const usePanicAlerts = () => {
           resolved_by: user.id
         })
         .eq('id', alertId)
-        .eq('is_active', true) // Only update if still active
         .select();
 
       if (error) {
@@ -99,7 +99,7 @@ export const usePanicAlerts = () => {
       
       console.log('Panic alert resolved successfully:', data);
       
-      // Update local state immediately
+      // Update local state immediately to remove the resolved alert
       setAlerts(prevAlerts => 
         prevAlerts.filter(alert => alert.id !== alertId)
       );
@@ -131,7 +131,7 @@ export const usePanicAlerts = () => {
             table: 'panic_alerts'
           },
           (payload) => {
-            console.log('Panic alert change:', payload);
+            console.log('Panic alert real-time change:', payload);
             fetchActiveAlerts(); // Refresh alerts when any change occurs
           }
         )
