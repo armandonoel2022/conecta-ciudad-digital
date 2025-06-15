@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Megaphone, Trash2, Recycle, Siren } from "lucide-react";
+import { Megaphone, Trash2, Recycle, Siren, AlarmClockOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
@@ -28,6 +28,13 @@ const features = [
     icon: Recycle,
     href: "/guia-reciclaje",
     gradient: "from-purple-600 to-pink-500",
+  },
+  {
+    title: "Botón de Pánico",
+    description: "Alerta a las autoridades en emergencias.",
+    icon: AlarmClockOff,
+    href: "/boton-panico",
+    gradient: "from-red-500 to-red-600",
   },
   {
     title: "Alerta Amber",
