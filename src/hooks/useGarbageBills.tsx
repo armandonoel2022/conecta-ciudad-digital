@@ -42,7 +42,14 @@ export const useGarbageBills = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setBills(data || []);
+      
+      // Type assertion to ensure the status field matches our interface
+      const typedBills: GarbageBill[] = (data || []).map(bill => ({
+        ...bill,
+        status: bill.status as 'pending' | 'paid' | 'overdue' | 'cancelled'
+      }));
+      
+      setBills(typedBills);
     } catch (error) {
       console.error('Error fetching bills:', error);
     }
@@ -62,7 +69,18 @@ export const useGarbageBills = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPayments(data || []);
+      
+      // Type assertion to ensure the payment_status field matches our interface
+      const typedPayments: GarbagePayment[] = (data || []).map(payment => ({
+        ...payment,
+        payment_status: payment.payment_status as 'pending' | 'completed' | 'failed' | 'refunded',
+        garbage_bills: payment.garbage_bills ? {
+          ...payment.garbage_bills,
+          status: payment.garbage_bills.status as 'pending' | 'paid' | 'overdue' | 'cancelled'
+        } : undefined
+      }));
+      
+      setPayments(typedPayments);
     } catch (error) {
       console.error('Error fetching payments:', error);
     }
