@@ -3,10 +3,11 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, Megaphone, Recycle, Trophy, Settings, LifeBuoy, Users, Briefcase, GitCompare, 
-  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LogOut
+  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LogOut, UserCog
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRoles } from '@/hooks/useUserRoles';
 import { Button } from '@/components/ui/button';
 
 const menuItems = [
@@ -27,6 +28,7 @@ const menuItems = [
 const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useUserRoles();
 
   const handleLinkClick = () => {
     if (window.innerWidth < 768) {
@@ -63,7 +65,9 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
             </div>
             <div>
               <p className="text-sm font-semibold text-gray-800">{user.email}</p>
-              <p className="text-xs text-gray-500">Usuario</p>
+              <p className="text-xs text-gray-500">
+                {isAdmin ? 'Administrador' : 'Usuario'}
+              </p>
             </div>
           </div>
         </div>
@@ -91,6 +95,28 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
               </Link>
             </li>
           ))}
+          
+          {/* Admin-only menu item */}
+          {isAdmin && (
+            <li>
+              <Link
+                to="/gestion-usuarios"
+                onClick={handleLinkClick}
+                className={cn(
+                  'flex items-center p-3 rounded-xl transition-all duration-200 group',
+                  location.pathname === '/gestion-usuarios'
+                    ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold shadow-lg' 
+                    : 'hover:bg-purple-50 hover:text-purple-700'
+                )}
+              >
+                <UserCog className={cn(
+                  "w-5 h-5 mr-3",
+                  location.pathname === '/gestion-usuarios' ? "text-white" : "text-purple-600"
+                )} />
+                <span className="text-sm">Gestión de Usuarios</span>
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
       

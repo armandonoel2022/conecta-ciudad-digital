@@ -29,6 +29,7 @@ import ProfileSetup from "./pages/ProfileSetup";
 import Settings from "./pages/Settings";
 import PanicButton from "./pages/PanicButton";
 import HelpSupport from "./pages/HelpSupport";
+import UserManagement from "./pages/UserManagement";
 
 const AppContent = () => {
   const { showAlert, dismissAlert, triggerTestAlert } = useGarbageAlerts();
@@ -65,6 +66,7 @@ const AppContent = () => {
           <Route path="/pago-basura" element={<GarbagePayment />} />
           <Route path="/configuracion" element={<Settings />} />
           <Route path="/ayuda" element={<HelpSupport />} />
+          <Route path="/gestion-usuarios" element={<UserManagement />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
