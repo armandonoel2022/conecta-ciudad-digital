@@ -3,15 +3,14 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { FileText, Download, Calendar, Filter, Plus, BarChart3, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import CreateReportDialog from '@/components/CreateReportDialog';
 
 interface GeneratedReport {
   id: string;
@@ -32,6 +31,7 @@ const Reports = () => {
   const { isAdmin, isCommunityLeader, loading: rolesLoading } = useUserRoles();
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const { data: reports, isLoading, refetch } = useQuery({
     queryKey: ['generated-reports', selectedType, selectedStatus],
@@ -110,8 +110,11 @@ const Reports = () => {
   };
 
   const handleCreateReport = () => {
-    // TODO: Implementar creación de reportes
-    console.log('Crear nuevo reporte');
+    setCreateDialogOpen(true);
+  };
+
+  const handleReportCreated = () => {
+    refetch();
   };
 
   return (
@@ -276,6 +279,12 @@ const Reports = () => {
             )}
           </CardContent>
         </Card>
+
+        <CreateReportDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+          onReportCreated={handleReportCreated}
+        />
       </div>
     </div>
   );
