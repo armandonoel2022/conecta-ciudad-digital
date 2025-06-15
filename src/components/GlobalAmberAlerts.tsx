@@ -22,6 +22,8 @@ const GlobalAmberAlerts = () => {
         title: "Alerta resuelta",
         description: "La Alerta Amber ha sido marcada como resuelta.",
       });
+      // The alert will automatically disappear since it's no longer active
+      // and the component will re-render with the updated alerts state
     } catch (error) {
       toast({
         title: "Error",
