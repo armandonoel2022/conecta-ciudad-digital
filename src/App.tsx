@@ -25,6 +25,7 @@ import PanicButton from "./pages/PanicButton";
 import AmberAlert from "./pages/AmberAlert";
 import GarbagePayment from "./pages/GarbagePayment";
 import ProfileSetup from "./pages/ProfileSetup";
+import Settings from "./pages/Settings";
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
@@ -62,6 +63,7 @@ const App = () => {
                 <Route path="/boton-panico" element={<PanicButton />} />
                 <Route path="/alerta-amber" element={<AmberAlert />} />
                 <Route path="/pago-basura" element={<GarbagePayment />} />
+                <Route path="/configuracion" element={<Settings />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

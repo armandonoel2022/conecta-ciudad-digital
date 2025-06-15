@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -94,8 +95,20 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
       </nav>
       
       <div className="p-4 border-t border-gray-200 space-y-2">
-        <Link to="#" className="flex items-center p-3 rounded-xl hover:bg-purple-50 hover:text-purple-700 transition-all duration-200">
-          <Settings className="w-5 h-5 mr-3 text-purple-600" />
+        <Link 
+          to="/configuracion" 
+          onClick={handleLinkClick}
+          className={cn(
+            'flex items-center p-3 rounded-xl transition-all duration-200',
+            location.pathname === '/configuracion'
+              ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold shadow-lg'
+              : 'hover:bg-purple-50 hover:text-purple-700'
+          )}
+        >
+          <Settings className={cn(
+            "w-5 h-5 mr-3",
+            location.pathname === '/configuracion' ? "text-white" : "text-purple-600"
+          )} />
           <span className="text-sm">Configuración</span>
         </Link>
         <Link to="#" className="flex items-center p-3 rounded-xl hover:bg-purple-50 hover:text-purple-700 transition-all duration-200">
