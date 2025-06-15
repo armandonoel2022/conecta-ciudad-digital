@@ -7,10 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { FileText, Download, Calendar, Filter, Plus, BarChart3, Eye } from 'lucide-react';
+import { FileText, Download, Calendar, Filter, Plus, BarChart3, Eye, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import CreateReportDialog from '@/components/CreateReportDialog';
+import { toast } from 'sonner';
 
 interface GeneratedReport {
   id: string;
@@ -115,6 +116,26 @@ const Reports = () => {
 
   const handleReportCreated = () => {
     refetch();
+  };
+
+  const isValidUrl = (url?: string) => {
+    if (!url) return false;
+    // Verificar que no sea una URL de ejemplo
+    if (url.includes('example')) return false;
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleLinkClick = (url?: string, type: string) => {
+    if (!isValidUrl(url)) {
+      toast.error(`El enlace para ${type} no está disponible aún. El reporte puede estar siendo procesado.`);
+      return;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -238,30 +259,52 @@ const Reports = () => {
                       
                       {report.status === 'completed' && (
                         <div className="flex gap-2">
-                          {report.google_sheets_url && (
-                            <Button size="sm" variant="outline" asChild>
-                              <a href={report.google_sheets_url} target="_blank" rel="noopener noreferrer">
-                                <Eye className="w-4 h-4 mr-1" />
-                                Ver Datos
-                              </a>
-                            </Button>
-                          )}
-                          {report.google_chart_url && (
-                            <Button size="sm" variant="outline" asChild>
-                              <a href={report.google_chart_url} target="_blank" rel="noopener noreferrer">
-                                <BarChart3 className="w-4 h-4 mr-1" />
-                                Ver Gráficos
-                              </a>
-                            </Button>
-                          )}
-                          {report.pdf_url && (
-                            <Button size="sm" variant="outline" asChild>
-                              <a href={report.pdf_url} target="_blank" rel="noopener noreferrer">
-                                <Download className="w-4 h-4 mr-1" />
-                                Descargar PDF
-                              </a>
-                            </Button>
-                          )}
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => handleLinkClick(report.google_sheets_url, 'datos')}
+                            disabled={!isValidUrl(report.google_sheets_url)}
+                            className={!isValidUrl(report.google_sheets_url) ? 'opacity-50 cursor-not-allowed' : ''}
+                          >
+                            <Eye className="w-4 h-4 mr-1" />
+                            Ver Datos
+                            {isValidUrl(report.google_sheets_url) && <ExternalLink className="w-3 h-3 ml-1" />}
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => handleLinkClick(report.google_chart_url, 'gráficos')}
+                            disabled={!isValidUrl(report.google_chart_url)}
+                            className={!isValidUrl(report.google_chart_url) ? 'opacity-50 cursor-not-allowed' : ''}
+                          >
+                            <BarChart3 className="w-4 h-4 mr-1" />
+                            Ver Gráficos
+                            {isValidUrl(report.google_chart_url) && <ExternalLink className="w-3 h-3 ml-1" />}
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => handleLinkClick(report.pdf_url, 'PDF')}
+                            disabled={!isValidUrl(report.pdf_url)}
+                            className={!isValidUrl(report.pdf_url) ? 'opacity-50 cursor-not-allowed' : ''}
+                          >
+                            <Download className="w-4 h-4 mr-1" />
+                            Descargar PDF
+                            {isValidUrl(report.pdf_url) && <ExternalLink className="w-3 h-3 ml-1" />}
+                          </Button>
+                        </div>
+                      )}
+                      
+                      {report.status === 'generating' && (
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                          <span>Procesando reporte...</span>
+                        </div>
+                      )}
+
+                      {report.status === 'failed' && (
+                        <div className="flex items-center gap-2 text-sm text-red-500">
+                          <span>Error al generar el reporte</span>
                         </div>
                       )}
                     </div>
