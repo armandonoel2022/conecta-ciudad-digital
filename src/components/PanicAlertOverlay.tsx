@@ -104,11 +104,11 @@ const PanicAlertOverlay: React.FC<PanicAlertOverlayProps> = ({ alert, onDismiss 
             <Button
               variant="outline"
               onClick={() => {
-                window.open('tel:123', '_self'); // Emergency number
+                window.open('tel:911', '_self');
               }}
               className="flex-1"
             >
-              Llamar 123
+              Llamar 911
             </Button>
           </div>
         </div>
