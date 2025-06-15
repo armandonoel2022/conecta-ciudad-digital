@@ -78,18 +78,32 @@ export const usePanicAlerts = () => {
   const resolvePanicAlert = async (alertId: string) => {
     if (!user) return;
 
+    console.log('Attempting to resolve panic alert:', alertId, 'by user:', user.id);
+    
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('panic_alerts')
         .update({
           is_active: false,
           resolved_at: new Date().toISOString(),
           resolved_by: user.id
         })
-        .eq('id', alertId);
+        .eq('id', alertId)
+        .eq('is_active', true) // Only update if still active
+        .select();
 
-      if (error) throw error;
-      console.log('Panic alert resolved:', alertId);
+      if (error) {
+        console.error('Supabase update error:', error);
+        throw error;
+      }
+      
+      console.log('Panic alert resolved successfully:', data);
+      
+      // Update local state immediately
+      setAlerts(prevAlerts => 
+        prevAlerts.filter(alert => alert.id !== alertId)
+      );
+      
     } catch (error) {
       console.error('Error resolving panic alert:', error);
       throw error;

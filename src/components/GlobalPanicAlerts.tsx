@@ -16,6 +16,8 @@ const GlobalPanicAlerts = () => {
   const activeAlert = alerts.find(alert => alert.is_active);
 
   const handleResolve = async (alertId: string) => {
+    console.log('GlobalPanicAlerts: Attempting to resolve alert:', alertId);
+    
     try {
       await resolvePanicAlert(alertId);
       toast({
@@ -23,6 +25,7 @@ const GlobalPanicAlerts = () => {
         description: "La alerta de pánico ha sido marcada como resuelta.",
       });
     } catch (error) {
+      console.error('GlobalPanicAlerts: Error resolving alert:', error);
       toast({
         title: "Error",
         description: "No se pudo resolver la alerta. Inténtalo nuevamente.",
@@ -43,6 +46,8 @@ const GlobalPanicAlerts = () => {
   if (!user || !activeAlert) {
     return null;
   }
+
+  console.log('GlobalPanicAlerts: Showing alert for user:', user.id, 'Alert:', activeAlert);
 
   return (
     <PanicAlertOverlay
