@@ -34,8 +34,16 @@ const PanicAlertOverlay = ({ alert, onResolve, onReport }: PanicAlertOverlayProp
       <div 
         className={`w-full max-w-md mx-4 transition-colors duration-500 ${
           isFlashing ? 'bg-red-600' : 'bg-red-500'
-        } rounded-2xl shadow-2xl border-4 border-white`}
+        } rounded-2xl shadow-2xl border-4 border-white relative`}
       >
+        {/* Close button */}
+        <button
+          onClick={() => onResolve(alert.id)}
+          className="absolute -top-2 -right-2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors z-10"
+        >
+          <X className="h-5 w-5 text-red-600" />
+        </button>
+
         <Card className="bg-transparent border-none text-white">
           <CardHeader className="text-center pb-4">
             <div className="mx-auto bg-white/20 p-4 rounded-full w-fit mb-4">
