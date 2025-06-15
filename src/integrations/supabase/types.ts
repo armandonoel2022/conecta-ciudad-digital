@@ -11,23 +11,50 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          address: string | null
+          birth_date: string | null
+          city: string | null
           created_at: string | null
+          document_number: string | null
+          document_type: string | null
+          first_name: string | null
           full_name: string | null
+          gender: string | null
           id: string
+          last_name: string | null
+          neighborhood: string | null
           phone: string | null
           updated_at: string | null
         }
         Insert: {
+          address?: string | null
+          birth_date?: string | null
+          city?: string | null
           created_at?: string | null
+          document_number?: string | null
+          document_type?: string | null
+          first_name?: string | null
           full_name?: string | null
+          gender?: string | null
           id: string
+          last_name?: string | null
+          neighborhood?: string | null
           phone?: string | null
           updated_at?: string | null
         }
         Update: {
+          address?: string | null
+          birth_date?: string | null
+          city?: string | null
           created_at?: string | null
+          document_number?: string | null
+          document_type?: string | null
+          first_name?: string | null
           full_name?: string | null
+          gender?: string | null
           id?: string
+          last_name?: string | null
+          neighborhood?: string | null
           phone?: string | null
           updated_at?: string | null
         }
@@ -35,39 +62,60 @@ export type Database = {
       }
       reports: {
         Row: {
+          address: string | null
+          assigned_to: string | null
           category: Database["public"]["Enums"]["report_category"]
+          citizen_satisfaction: number | null
           created_at: string | null
           description: string
           id: string
           image_url: string | null
           latitude: number | null
           longitude: number | null
+          neighborhood: string | null
+          priority: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
           status: Database["public"]["Enums"]["report_status"] | null
           title: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          address?: string | null
+          assigned_to?: string | null
           category: Database["public"]["Enums"]["report_category"]
+          citizen_satisfaction?: number | null
           created_at?: string | null
           description: string
           id?: string
           image_url?: string | null
           latitude?: number | null
           longitude?: number | null
+          neighborhood?: string | null
+          priority?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
           status?: Database["public"]["Enums"]["report_status"] | null
           title: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          address?: string | null
+          assigned_to?: string | null
           category?: Database["public"]["Enums"]["report_category"]
+          citizen_satisfaction?: number | null
           created_at?: string | null
           description?: string
           id?: string
           image_url?: string | null
           latitude?: number | null
           longitude?: number | null
+          neighborhood?: string | null
+          priority?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
           status?: Database["public"]["Enums"]["report_status"] | null
           title?: string
           updated_at?: string | null
