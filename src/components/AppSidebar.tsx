@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, Megaphone, Recycle, Trophy, Settings, LifeBuoy, Users, Briefcase, GitCompare, 
-  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LogOut, UserCog
+  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LogOut, UserCog, BarChart3
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,7 +27,7 @@ const menuItems = [
 const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
   const location = useLocation();
   const { user, signOut } = useAuth();
-  const { isAdmin } = useUserRoles();
+  const { isAdmin, isCommunityLeader } = useUserRoles();
 
   const handleLinkClick = () => {
     if (window.innerWidth < 768) {
@@ -66,7 +65,7 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
             <div>
               <p className="text-sm font-semibold text-gray-800">{user.email}</p>
               <p className="text-xs text-gray-500">
-                {isAdmin ? 'Administrador' : 'Usuario'}
+                {isAdmin ? 'Administrador' : isCommunityLeader ? 'Líder Comunitario' : 'Usuario'}
               </p>
             </div>
           </div>
@@ -95,6 +94,28 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
               </Link>
             </li>
           ))}
+          
+          {/* Admin and Community Leader menu items */}
+          {(isAdmin || isCommunityLeader) && (
+            <li>
+              <Link
+                to="/reportes"
+                onClick={handleLinkClick}
+                className={cn(
+                  'flex items-center p-3 rounded-xl transition-all duration-200 group',
+                  location.pathname === '/reportes'
+                    ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold shadow-lg' 
+                    : 'hover:bg-purple-50 hover:text-purple-700'
+                )}
+              >
+                <BarChart3 className={cn(
+                  "w-5 h-5 mr-3",
+                  location.pathname === '/reportes' ? "text-white" : "text-purple-600"
+                )} />
+                <span className="text-sm">Reportes</span>
+              </Link>
+            </li>
+          )}
           
           {/* Admin-only menu item */}
           {isAdmin && (
