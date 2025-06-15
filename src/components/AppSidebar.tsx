@@ -111,8 +111,20 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
           )} />
           <span className="text-sm">Configuración</span>
         </Link>
-        <Link to="#" className="flex items-center p-3 rounded-xl hover:bg-purple-50 hover:text-purple-700 transition-all duration-200">
-          <LifeBuoy className="w-5 h-5 mr-3 text-purple-600" />
+        <Link 
+          to="/ayuda"
+          onClick={handleLinkClick}
+          className={cn(
+            'flex items-center p-3 rounded-xl transition-all duration-200',
+            location.pathname === '/ayuda'
+              ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold shadow-lg'
+              : 'hover:bg-purple-50 hover:text-purple-700'
+          )}
+        >
+          <LifeBuoy className={cn(
+            "w-5 h-5 mr-3",
+            location.pathname === '/ayuda' ? "text-white" : "text-purple-600"
+          )} />
           <span className="text-sm">Ayuda</span>
         </Link>
         <Button
