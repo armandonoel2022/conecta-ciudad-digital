@@ -3,9 +3,11 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, Megaphone, Recycle, Trophy, Settings, LifeBuoy, Users, Briefcase, GitCompare, 
-  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LightbulbOff
+  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LightbulbOff, LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
 
 const menuItems = [
   { href: '/', label: 'Inicio', icon: Home },
@@ -25,10 +27,20 @@ const menuItems = [
 
 const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const handleLinkClick = () => {
     if (window.innerWidth < 768) {
       closeSidebar();
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      closeSidebar();
+    } catch (error) {
+      console.error('Error signing out:', error);
     }
   };
 
@@ -40,6 +52,23 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
         </div>
         <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">CiudadConecta</h1>
       </div>
+
+      {/* User Info */}
+      {user && (
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold text-sm">
+                {user.email?.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-800">{user.email}</p>
+              <p className="text-xs text-gray-500">Usuario</p>
+            </div>
+          </div>
+        </div>
+      )}
       
       <nav className="flex-grow p-4 overflow-y-auto">
         <ul className="space-y-2">
@@ -75,6 +104,14 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
           <LifeBuoy className="w-5 h-5 mr-3 text-purple-600" />
           <span className="text-sm">Ayuda</span>
         </Link>
+        <Button
+          onClick={handleSignOut}
+          variant="ghost"
+          className="w-full justify-start p-3 rounded-xl hover:bg-red-50 hover:text-red-700 transition-all duration-200"
+        >
+          <LogOut className="w-5 h-5 mr-3 text-red-600" />
+          <span className="text-sm">Cerrar Sesión</span>
+        </Button>
       </div>
     </div>
   );

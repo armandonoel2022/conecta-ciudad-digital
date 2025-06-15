@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Megaphone, LightbulbOff, Trash2, Recycle, AlarmClockOff, Siren } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const features = [
   {
@@ -50,6 +51,8 @@ const features = [
 ];
 
 const Index = () => {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-md mx-auto space-y-6">
@@ -61,9 +64,15 @@ const Index = () => {
                 <br />
               <span className="text-4xl font-extrabold">CiudadConecta</span>
             </h1>
-            <p className="text-lg text-white/90 mb-8 leading-relaxed">
+            <p className="text-lg text-white/90 mb-6 leading-relaxed">
               Tu voz para una ciudad mejor. Reporta, consulta y participa.
             </p>
+            {user && (
+              <div className="mb-6 p-4 bg-white/10 rounded-xl">
+                <p className="text-sm text-white/80">Bienvenido,</p>
+                <p className="font-semibold">{user.email}</p>
+              </div>
+            )}
             <Button asChild size="lg" className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-12 py-3 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all">
               <Link to="/reportar">COMENZAR</Link>
             </Button>

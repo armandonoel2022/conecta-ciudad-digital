@@ -9,7 +9,72 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          category: Database["public"]["Enums"]["report_category"]
+          created_at: string | null
+          description: string
+          id: string
+          image_url: string | null
+          latitude: number | null
+          longitude: number | null
+          status: Database["public"]["Enums"]["report_status"] | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["report_category"]
+          created_at?: string | null
+          description: string
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          status?: Database["public"]["Enums"]["report_status"] | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["report_category"]
+          created_at?: string | null
+          description?: string
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          status?: Database["public"]["Enums"]["report_status"] | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +83,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      report_category:
+        | "basura"
+        | "iluminacion"
+        | "baches"
+        | "seguridad"
+        | "otros"
+      report_status: "pendiente" | "en_proceso" | "resuelto" | "rechazado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +204,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      report_category: [
+        "basura",
+        "iluminacion",
+        "baches",
+        "seguridad",
+        "otros",
+      ],
+      report_status: ["pendiente", "en_proceso", "resuelto", "rechazado"],
+    },
   },
 } as const
