@@ -69,9 +69,12 @@ export const usePanicAlerts = () => {
   useEffect(() => {
     fetchAlerts();
 
+    // Create a unique channel name to avoid conflicts
+    const channelName = `panic_alerts_${Math.random().toString(36).substring(7)}`;
+    
     // Set up real-time subscription
     const channel = supabase
-      .channel('panic_alerts_changes')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
