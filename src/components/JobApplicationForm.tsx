@@ -10,7 +10,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, FileText, Loader2 } from 'lucide-react';
-import { useJobApplications, JobApplication } from '@/hooks/useJobApplications';
+import { useJobApplications } from '@/hooks/useJobApplications';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
   full_name: z.string().min(2, 'El nombre completo es requerido'),
@@ -62,20 +63,37 @@ const JobApplicationForm = ({ onSuccess }: JobApplicationFormProps) => {
         cvData = await uploadCV(cvFile);
       }
       
-      const applicationData: Omit<JobApplication, 'id' | 'user_id' | 'created_at' | 'updated_at'> = {
-        ...data,
-        graduation_year: data.graduation_year || undefined,
+      const applicationData = {
+        full_name: data.full_name,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        birth_date: data.birth_date,
+        document_type: data.document_type,
+        document_number: data.document_number,
+        education_level: data.education_level,
+        institution_name: data.institution_name,
+        career_field: data.career_field,
+        graduation_year: data.graduation_year,
+        additional_courses: data.additional_courses,
+        work_experience: data.work_experience,
+        skills: data.skills,
+        availability: data.availability,
+        expected_salary: data.expected_salary,
         cv_file_url: cvData?.url,
         cv_file_name: cvData?.name,
+        status: 'pending' as const,
       };
       
       await createApplication.mutateAsync(applicationData);
       
       form.reset();
       setCvFile(null);
+      toast.success('¡Aplicación enviada exitosamente!');
       onSuccess?.();
     } catch (error) {
       console.error('Error submitting application:', error);
+      toast.error('Error al enviar la aplicación. Por favor intenta nuevamente.');
     } finally {
       setIsSubmitting(false);
     }
@@ -86,7 +104,7 @@ const JobApplicationForm = ({ onSuccess }: JobApplicationFormProps) => {
     if (file && file.type === 'application/pdf') {
       setCvFile(file);
     } else {
-      alert('Por favor selecciona un archivo PDF válido');
+      toast.error('Por favor selecciona un archivo PDF válido');
     }
   };
 

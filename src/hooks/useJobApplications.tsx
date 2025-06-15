@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 export interface JobApplication {
   id?: string;
-  user_id: string;
+  user_id?: string;
   full_name: string;
   email: string;
   phone: string;
