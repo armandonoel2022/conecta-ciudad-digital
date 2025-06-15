@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
 const GlobalAmberAlerts = () => {
-  const { alerts, resolveAmberAlert } = useAmberAlerts();
+  const { alerts, resolveAmberAlert, fetchActiveAlerts } = useAmberAlerts();
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -18,12 +18,12 @@ const GlobalAmberAlerts = () => {
   const handleResolve = async (alertId: string) => {
     try {
       await resolveAmberAlert(alertId);
+      // Refresh the alerts to ensure the UI updates
+      await fetchActiveAlerts();
       toast({
         title: "Alerta resuelta",
         description: "La Alerta Amber ha sido marcada como resuelta.",
       });
-      // The alert will automatically disappear since it's no longer active
-      // and the component will re-render with the updated alerts state
     } catch (error) {
       toast({
         title: "Error",
