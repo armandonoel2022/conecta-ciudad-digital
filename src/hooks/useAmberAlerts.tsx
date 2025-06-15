@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -35,6 +35,7 @@ export const useAmberAlerts = () => {
   const { user } = useAuth();
   const [alerts, setAlerts] = useState<AmberAlert[]>([]);
   const [loading, setLoading] = useState(false);
+  const channelRef = useRef<any>(null);
 
   const fetchActiveAlerts = async () => {
     if (!user) return;
@@ -126,9 +127,16 @@ export const useAmberAlerts = () => {
     if (user) {
       fetchActiveAlerts();
 
-      // Set up real-time subscription for Amber alerts
+      // Clean up existing channel if it exists
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+
+      // Set up real-time subscription with a unique channel name
+      const channelName = `amber-alerts-${Date.now()}-${Math.random()}`;
       const channel = supabase
-        .channel('amber-alerts-changes')
+        .channel(channelName)
         .on(
           'postgres_changes',
           {
@@ -143,8 +151,13 @@ export const useAmberAlerts = () => {
         )
         .subscribe();
 
+      channelRef.current = channel;
+
       return () => {
-        supabase.removeChannel(channel);
+        if (channelRef.current) {
+          supabase.removeChannel(channelRef.current);
+          channelRef.current = null;
+        }
       };
     }
   }, [user]);
