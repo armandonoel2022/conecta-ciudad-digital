@@ -9,6 +9,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import GlobalAmberAlerts from "@/components/GlobalAmberAlerts";
 import GlobalPanicAlerts from "@/components/GlobalPanicAlerts";
 import GarbageAlert from "@/components/GarbageAlert";
+import TestMenu from "@/components/TestMenu";
 import { useGarbageAlerts } from "@/hooks/useGarbageAlerts";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -30,13 +31,14 @@ import PanicButton from "./pages/PanicButton";
 import HelpSupport from "./pages/HelpSupport";
 
 const AppContent = () => {
-  const { showAlert, dismissAlert } = useGarbageAlerts();
+  const { showAlert, dismissAlert, triggerTestAlert } = useGarbageAlerts();
 
   return (
     <>
       <GlobalAmberAlerts />
       <GlobalPanicAlerts />
       <GarbageAlert isVisible={showAlert} onDismiss={dismissAlert} />
+      <TestMenu onTriggerGarbageAlert={triggerTestAlert} />
       <Routes>
         <Route path="/auth" element={<Auth />} />
         <Route path="/perfil-setup" element={
