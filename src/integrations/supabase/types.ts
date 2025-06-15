@@ -263,6 +263,42 @@ export type Database = {
         }
         Relationships: []
       }
+      panic_alerts: {
+        Row: {
+          address: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          is_active: boolean
+          latitude: number | null
+          longitude: number | null
+          user_full_name: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          user_full_name: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          user_full_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -382,6 +418,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      deactivate_expired_panic_alerts: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       generate_bill_number: {
         Args: Record<PropertyKey, never>
         Returns: string
