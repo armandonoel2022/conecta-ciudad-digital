@@ -1,24 +1,43 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GitCompare } from "lucide-react";
+import { GitCompare, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const BeforeAfter = () => {
   return (
-    <div className="flex items-center justify-center h-full animate-fade-in">
-      <Card className="w-full max-w-md text-center">
-        <CardHeader>
-          <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit">
-            <GitCompare className="h-10 w-10 text-primary" />
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
+      <div className="max-w-md mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-4 text-white mb-4">
+          <Link to="/" className="p-2 hover:bg-white/20 rounded-xl transition-colors">
+            <ArrowLeft className="h-6 w-6" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold">ANTES Y DESPUÉS</h1>
+            <p className="text-white/80">Resultados de los reportes</p>
           </div>
-          <CardTitle className="mt-4 text-2xl">Antes y Después</CardTitle>
-          <CardDescription>
-            ¡Estamos trabajando en esta sección! Aquí verás el antes y después de los reportes.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">Vuelve pronto para ver el contenido.</p>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Content Card */}
+        <div className="bg-white rounded-[2rem] p-6 shadow-xl">
+          <div className="flex items-center justify-center h-64">
+            <Card className="w-full text-center border-none shadow-none">
+              <CardHeader>
+                <div className="mx-auto bg-purple-100 p-4 rounded-full w-fit">
+                  <GitCompare className="h-12 w-12 text-purple-600" />
+                </div>
+                <CardTitle className="mt-4 text-2xl text-gray-800">Antes y Después</CardTitle>
+                <CardDescription className="text-gray-600">
+                  ¡Estamos trabajando en esta sección! Aquí verás el antes y después de los reportes.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-500">Vuelve pronto para ver el contenido.</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
