@@ -1,9 +1,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Megaphone, LightbulbOff, Trash2, Recycle, AlarmClockOff, Siren } from "lucide-react";
+import { Megaphone, Trash2, Recycle, AlarmClockOff, Siren } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const features = [
   {
@@ -12,13 +14,6 @@ const features = [
     icon: Megaphone,
     href: "/reportar",
     gradient: "from-purple-500 to-purple-600",
-  },
-  {
-    title: "Falta de Iluminación",
-    description: "Reporta fallas en el alumbrado público.",
-    icon: LightbulbOff,
-    href: "/reportar-iluminacion",
-    gradient: "from-pink-500 to-purple-500",
   },
   {
     title: "Pago de Basura",
@@ -52,6 +47,38 @@ const features = [
 
 const Index = () => {
   const { user } = useAuth();
+  const [userProfile, setUserProfile] = useState<{ first_name: string | null } | null>(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (user) {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('first_name')
+            .eq('id', user.id)
+            .single();
+
+          if (error) {
+            console.error('Error fetching user profile:', error);
+          } else {
+            setUserProfile(data);
+          }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
+
+  const getUserGreeting = () => {
+    if (userProfile?.first_name) {
+      return `¡Hola, ${userProfile.first_name}!`;
+    }
+    return user?.email ? `Bienvenido, ${user.email}` : 'Bienvenido';
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
@@ -69,8 +96,8 @@ const Index = () => {
             </p>
             {user && (
               <div className="mb-6 p-4 bg-white/10 rounded-xl">
-                <p className="text-sm text-white/80">Bienvenido,</p>
-                <p className="font-semibold">{user.email}</p>
+                <p className="text-lg font-semibold">{getUserGreeting()}</p>
+                <p className="text-sm text-white/80 mt-1">Tu participación hace la diferencia</p>
               </div>
             )}
             <Button asChild size="lg" className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-12 py-3 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all">

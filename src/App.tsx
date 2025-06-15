@@ -22,7 +22,6 @@ import MissionVisionValues from "./pages/MissionVisionValues";
 import PanicButton from "./pages/PanicButton";
 import AmberAlert from "./pages/AmberAlert";
 import GarbagePayment from "./pages/GarbagePayment";
-import ReportLighting from "./pages/ReportLighting";
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
@@ -53,7 +52,6 @@ const App = () => {
                 <Route path="/boton-panico" element={<PanicButton />} />
                 <Route path="/alerta-amber" element={<AmberAlert />} />
                 <Route path="/pago-basura" element={<GarbagePayment />} />
-                <Route path="/reportar-iluminacion" element={<ReportLighting />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, Megaphone, Recycle, Trophy, Settings, LifeBuoy, Users, Briefcase, GitCompare, 
-  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LightbulbOff, LogOut
+  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,7 +11,6 @@ import { Button } from '@/components/ui/button';
 const menuItems = [
   { href: '/', label: 'Inicio', icon: Home },
   { href: '/reportar', label: 'Reportar Incidencia', icon: Megaphone },
-  { href: '/reportar-iluminacion', label: 'Falta de Iluminación', icon: LightbulbOff },
   { href: '/pago-basura', label: 'Pago de basura', icon: Trash2 },
   { href: '/guia-reciclaje', label: 'Guía de Reciclaje', icon: Recycle },
   { href: '/guia-comunicacion', label: 'Guía de comunicación', icon: BookOpen },
