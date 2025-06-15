@@ -28,12 +28,12 @@ CREATE POLICY "Usuarios pueden crear alertas de pánico"
   TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
--- Política para que los usuarios puedan resolver alertas (marcarlas como no activas)
+-- Política mejorada para que los usuarios puedan resolver cualquier alerta (no solo las suyas)
 CREATE POLICY "Usuarios pueden resolver alertas de pánico"
   ON public.panic_alerts FOR UPDATE
   TO authenticated
-  USING (true)
-  WITH CHECK (true);
+  USING (is_active = true)
+  WITH CHECK (is_active = false OR resolved_by = auth.uid());
 
 -- Habilitar realtime para esta tabla
 ALTER TABLE public.panic_alerts REPLICA IDENTITY FULL;

@@ -75,8 +75,7 @@ const PanicAlertOverlay = ({ alert, onResolve, onReport }: PanicAlertOverlayProp
               </Button>
               <Button 
                 onClick={() => onResolve(alert.id)}
-                variant="outline"
-                className="flex-1 border-white text-white hover:bg-white/20 font-bold py-3"
+                className="flex-1 bg-white text-red-600 hover:bg-white/90 font-bold py-3"
               >
                 <X className="h-5 w-5 mr-2" />
                 CANCELAR
