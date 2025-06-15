@@ -9,6 +9,57 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      amber_alerts: {
+        Row: {
+          additional_details: string | null
+          child_full_name: string
+          child_nickname: string | null
+          child_photo_url: string | null
+          contact_number: string
+          created_at: string | null
+          disappearance_time: string
+          id: string
+          is_active: boolean | null
+          last_seen_location: string
+          medical_conditions: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          user_id: string
+        }
+        Insert: {
+          additional_details?: string | null
+          child_full_name: string
+          child_nickname?: string | null
+          child_photo_url?: string | null
+          contact_number: string
+          created_at?: string | null
+          disappearance_time: string
+          id?: string
+          is_active?: boolean | null
+          last_seen_location: string
+          medical_conditions?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          user_id: string
+        }
+        Update: {
+          additional_details?: string | null
+          child_full_name?: string
+          child_nickname?: string | null
+          child_photo_url?: string | null
+          contact_number?: string
+          created_at?: string | null
+          disappearance_time?: string
+          id?: string
+          is_active?: boolean | null
+          last_seen_location?: string
+          medical_conditions?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       garbage_bills: {
         Row: {
           amount_due: number

@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import GlobalPanicAlerts from "@/components/GlobalPanicAlerts";
+import GlobalAmberAlerts from "@/components/GlobalAmberAlerts";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -36,12 +37,14 @@ const App = () => {
         <AuthProvider>
           <BrowserRouter>
             <GlobalPanicAlerts />
+            <GlobalAmberAlerts />
             <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route path="/perfil-setup" element={
                 <ProtectedRoute>
                   <ProfileSetup />
-                </ProtectedRoute>
+                </Protecte
+
               } />
               <Route element={
                 <ProtectedRoute>

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertTriangle, MapPin } from "lucide-react";
+import { AlertTriangle, MapPin, Navigation } from "lucide-react";
 import { usePanicAlerts } from '@/hooks/usePanicAlerts';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
@@ -12,9 +12,50 @@ import { useNavigate } from 'react-router-dom';
 const PanicButton = () => {
   const [locationDescription, setLocationDescription] = useState('');
   const [isCreatingAlert, setIsCreatingAlert] = useState(false);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
   const { createPanicAlert, loading } = usePanicAlerts();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      toast({
+        title: "Geolocalización no disponible",
+        description: "Tu dispositivo no soporta geolocalización.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const locationText = `Lat: ${latitude.toFixed(6)}, Lng: ${longitude.toFixed(6)}`;
+        setLocationDescription(prev => 
+          prev ? `${prev} - Coordenadas: ${locationText}` : `Coordenadas: ${locationText}`
+        );
+        setIsGettingLocation(false);
+        toast({
+          title: "Ubicación obtenida",
+          description: "Las coordenadas GPS han sido agregadas a tu ubicación.",
+        });
+      },
+      (error) => {
+        setIsGettingLocation(false);
+        toast({
+          title: "Error de ubicación",
+          description: "No se pudo obtener tu ubicación. Por favor describe tu ubicación manualmente.",
+          variant: "destructive",
+        });
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
+  };
 
   const handlePanicAlert = async () => {
     if (!locationDescription.trim()) {
@@ -91,6 +132,17 @@ const PanicButton = () => {
                 Sé lo más específico posible para facilitar tu ubicación
               </p>
             </div>
+
+            {/* Share Location Button */}
+            <Button 
+              onClick={handleGetLocation}
+              disabled={loading || isCreatingAlert || isGettingLocation}
+              variant="outline"
+              className="w-full border-blue-300 text-blue-600 hover:bg-blue-50"
+            >
+              <Navigation className="h-5 w-5 mr-2" />
+              {isGettingLocation ? "Obteniendo ubicación..." : "Compartir Ubicación GPS"}
+            </Button>
 
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
