@@ -9,6 +9,92 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      garbage_bills: {
+        Row: {
+          amount_due: number
+          bill_number: string
+          billing_period_end: string
+          billing_period_start: string
+          created_at: string
+          due_date: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_due: number
+          bill_number: string
+          billing_period_end: string
+          billing_period_start: string
+          created_at?: string
+          due_date: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_due?: number
+          bill_number?: string
+          billing_period_end?: string
+          billing_period_start?: string
+          created_at?: string
+          due_date?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      garbage_payments: {
+        Row: {
+          amount_paid: number
+          bill_id: string
+          created_at: string
+          id: string
+          payment_date: string | null
+          payment_method: string | null
+          payment_status: string
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_paid: number
+          bill_id: string
+          created_at?: string
+          id?: string
+          payment_date?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_paid?: number
+          bill_id?: string
+          created_at?: string
+          id?: string
+          payment_date?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "garbage_payments_bill_id_fkey"
+            columns: ["bill_id"]
+            isOneToOne: false
+            referencedRelation: "garbage_bills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null
@@ -128,7 +214,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_bill_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_monthly_bills: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
     }
     Enums: {
       report_category:
