@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -9,6 +8,8 @@ import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import GlobalAmberAlerts from "@/components/GlobalAmberAlerts";
 import GlobalPanicAlerts from "@/components/GlobalPanicAlerts";
+import GarbageAlert from "@/components/GarbageAlert";
+import { useGarbageAlerts } from "@/hooks/useGarbageAlerts";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -28,6 +29,47 @@ import Settings from "./pages/Settings";
 import PanicButton from "./pages/PanicButton";
 import HelpSupport from "./pages/HelpSupport";
 
+const AppContent = () => {
+  const { showAlert, dismissAlert } = useGarbageAlerts();
+
+  return (
+    <>
+      <GlobalAmberAlerts />
+      <GlobalPanicAlerts />
+      <GarbageAlert isVisible={showAlert} onDismiss={dismissAlert} />
+      <Routes>
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/perfil-setup" element={
+          <ProtectedRoute>
+            <ProfileSetup />
+          </ProtectedRoute>
+        } />
+        <Route element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }>
+          <Route path="/" element={<Index />} />
+          <Route path="/reportar" element={<ReportIssue />} />
+          <Route path="/guia-reciclaje" element={<RecyclingGuide />} />
+          <Route path="/logros" element={<Achievements />} />
+          <Route path="/quienes-somos" element={<AboutUs />} />
+          <Route path="/oportunidades" element={<Opportunities />} />
+          <Route path="/antes-y-despues" element={<BeforeAfter />} />
+          <Route path="/guia-comunicacion" element={<CommunicationGuide />} />
+          <Route path="/mision-vision-valores" element={<MissionVisionValues />} />
+          <Route path="/boton-panico" element={<PanicButton />} />
+          <Route path="/alerta-amber" element={<AmberAlert />} />
+          <Route path="/pago-basura" element={<GarbagePayment />} />
+          <Route path="/configuracion" element={<Settings />} />
+          <Route path="/ayuda" element={<HelpSupport />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
+  );
+};
+
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
 
@@ -38,37 +80,7 @@ const App = () => {
         <Sonner />
         <AuthProvider>
           <BrowserRouter>
-            <GlobalAmberAlerts />
-            <GlobalPanicAlerts />
-            <Routes>
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/perfil-setup" element={
-                <ProtectedRoute>
-                  <ProfileSetup />
-                </ProtectedRoute>
-              } />
-              <Route element={
-                <ProtectedRoute>
-                  <Layout />
-                </ProtectedRoute>
-              }>
-                <Route path="/" element={<Index />} />
-                <Route path="/reportar" element={<ReportIssue />} />
-                <Route path="/guia-reciclaje" element={<RecyclingGuide />} />
-                <Route path="/logros" element={<Achievements />} />
-                <Route path="/quienes-somos" element={<AboutUs />} />
-                <Route path="/oportunidades" element={<Opportunities />} />
-                <Route path="/antes-y-despues" element={<BeforeAfter />} />
-                <Route path="/guia-comunicacion" element={<CommunicationGuide />} />
-                <Route path="/mision-vision-valores" element={<MissionVisionValues />} />
-                <Route path="/boton-panico" element={<PanicButton />} />
-                <Route path="/alerta-amber" element={<AmberAlert />} />
-                <Route path="/pago-basura" element={<GarbagePayment />} />
-                <Route path="/configuracion" element={<Settings />} />
-                <Route path="/ayuda" element={<HelpSupport />} />
-              </Route>
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AppContent />
           </BrowserRouter>
         </AuthProvider>
       </TooltipProvider>
