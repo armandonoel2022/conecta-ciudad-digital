@@ -1,7 +1,6 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Phone, Building, Shield, AlertTriangle, Clock, ArrowLeft, Cross, Car, Flame, Droplets, Wrench, DollarSign, TreePine } from "lucide-react";
+import { Phone, Building, Shield, AlertTriangle, Clock, ArrowLeft, Cross } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const contacts = [
@@ -213,12 +212,6 @@ const CommunicationGuide = () => {
                       <CardDescription className="text-gray-600">
                         {contact.description}
                       </CardDescription>
-                      {contact.hours && (
-                        <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
-                          <Clock className="h-4 w-4" />
-                          {contact.hours}
-                        </div>
-                      )}
                     </CardContent>
                   </Card>
                 ))}

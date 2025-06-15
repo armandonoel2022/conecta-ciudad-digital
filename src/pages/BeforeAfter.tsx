@@ -1,12 +1,13 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GitCompare, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import VideoUpload from "@/components/VideoUpload";
+import VideoList from "@/components/VideoList";
 
 const BeforeAfter = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
-      <div className="max-w-md mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4 text-white mb-4">
           <Link to="/" className="p-2 hover:bg-white/20 rounded-xl transition-colors">
@@ -14,27 +15,28 @@ const BeforeAfter = () => {
           </Link>
           <div>
             <h1 className="text-2xl font-bold">ANTES Y DESPUÉS</h1>
-            <p className="text-white/80">Resultados de los reportes</p>
+            <p className="text-white/80">Comparte los resultados y mejoras</p>
           </div>
         </div>
 
         {/* Content Card */}
-        <div className="bg-white rounded-[2rem] p-6 shadow-xl">
-          <div className="flex items-center justify-center h-64">
-            <Card className="w-full text-center border-none shadow-none">
-              <CardHeader>
-                <div className="mx-auto bg-purple-100 p-4 rounded-full w-fit">
-                  <GitCompare className="h-12 w-12 text-purple-600" />
-                </div>
-                <CardTitle className="mt-4 text-2xl text-gray-800">Antes y Después</CardTitle>
-                <CardDescription className="text-gray-600">
-                  ¡Estamos trabajando en esta sección! Aquí verás el antes y después de los reportes.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-500">Vuelve pronto para ver el contenido.</p>
-              </CardContent>
-            </Card>
+        <div className="bg-white rounded-[2rem] p-6 shadow-xl space-y-6">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Videos del Antes y Después</h2>
+            <p className="text-gray-600">
+              Comparte videos que muestren las mejoras y transformaciones en tu comunidad
+            </p>
+          </div>
+
+          {/* Upload Section */}
+          <div className="mb-8">
+            <VideoUpload />
+          </div>
+
+          {/* Videos List */}
+          <div>
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Videos Compartidos</h3>
+            <VideoList />
           </div>
         </div>
       </div>
