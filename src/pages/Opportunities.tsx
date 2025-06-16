@@ -41,7 +41,7 @@ const Opportunities = () => {
                 <h2 className="text-3xl font-bold text-gray-800 mb-4">Oportunidades de Empleo</h2>
                 <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-6">
                   Aplica a oportunidades de empleo en tu comunidad. Completa tu aplicación 
-                  y conecta con empleadores locales que buscan talento como el tuyo.
+                  y conecta con Recursos Humanos locales que buscan talento como el tuyo.
                 </p>
                 
                 <Button 
@@ -130,7 +130,7 @@ const Opportunities = () => {
                     </div>
                     <h4 className="font-semibold text-gray-800">3. Espera respuesta</h4>
                     <p className="text-sm text-gray-600">
-                      Los empleadores revisarán tu aplicación y te contactarán
+                      RR.HH revisará tu aplicación y te contactará
                     </p>
                   </div>
                 </div>
