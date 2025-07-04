@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -82,6 +82,27 @@ const AppContent = () => {
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
+
+  // Inicializar tema desde localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'system' | null;
+    const root = window.document.documentElement;
+    
+    if (savedTheme) {
+      root.classList.remove('light', 'dark');
+      
+      if (savedTheme === 'system') {
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        root.classList.add(systemTheme);
+      } else {
+        root.classList.add(savedTheme);
+      }
+    } else {
+      // Detectar preferencia del sistema por defecto
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      root.classList.add(systemTheme);
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

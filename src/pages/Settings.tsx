@@ -170,21 +170,21 @@ const Settings = () => {
             </CardHeader>
             <CardContent className="pt-0">
               <RadioGroup value={theme} onValueChange={handleThemeChange} className="space-y-3">
-                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 dark:hover:bg-muted/10 transition-colors">
                   <RadioGroupItem value="light" id="light" />
                   <Label htmlFor="light" className="flex items-center gap-2 cursor-pointer flex-1">
                     <Sun className="h-4 w-4 text-yellow-500" />
                     <span>Tema claro</span>
                   </Label>
                 </div>
-                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 dark:hover:bg-muted/10 transition-colors">
                   <RadioGroupItem value="dark" id="dark" />
                   <Label htmlFor="dark" className="flex items-center gap-2 cursor-pointer flex-1">
                     <Moon className="h-4 w-4 text-blue-500" />
                     <span>Tema oscuro</span>
                   </Label>
                 </div>
-                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 dark:hover:bg-muted/10 transition-colors">
                   <RadioGroupItem value="system" id="system" />
                   <Label htmlFor="system" className="flex items-center gap-2 cursor-pointer flex-1">
                     <Monitor className="h-4 w-4 text-gray-500" />
