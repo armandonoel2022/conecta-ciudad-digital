@@ -124,12 +124,12 @@ const Settings = () => {
               </div>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-secondary">
                 <div className="flex items-center gap-3">
                   <LocateFixed className="h-5 w-5 text-blue-600" />
                   <div>
                     <p className="font-medium text-sm">Ubicación automática</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       Para el botón de pánico y emergencias
                     </p>
                   </div>
@@ -165,12 +165,12 @@ const Settings = () => {
               </div>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-secondary">
                 <div className="flex items-center gap-3">
                   <Fingerprint className="h-5 w-5 text-green-600" />
                   <div>
                     <p className="font-medium text-sm">Acceso biométrico</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       Desbloquea con huella o Face ID
                     </p>
                   </div>

@@ -37,7 +37,7 @@ const PaymentHistory = ({ payments }: PaymentHistoryProps) => {
       case 'refunded':
         return <RotateCcw className="h-4 w-4 text-blue-600" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-600" />;
+        return <Clock className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -52,7 +52,7 @@ const PaymentHistory = ({ payments }: PaymentHistoryProps) => {
       case 'refunded':
         return 'bg-blue-100 text-blue-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -78,7 +78,7 @@ const PaymentHistory = ({ payments }: PaymentHistoryProps) => {
           <CardTitle>Historial de Pagos</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-gray-500 py-8">
+          <p className="text-center text-muted-foreground py-8">
             No tienes pagos registrados aún.
           </p>
         </CardContent>

@@ -97,15 +97,15 @@ const GarbagePayment = () => {
     <div className="container mx-auto p-6 max-w-6xl">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Link to="/" className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-            <ArrowLeft className="h-6 w-6 text-gray-600" />
+          <Link to="/" className="p-2 hover:bg-white/20 rounded-xl transition-colors">
+            <ArrowLeft className="h-6 w-6" />
           </Link>
           <div className="bg-green-100 p-3 rounded-full">
             <Trash2 className="h-8 w-8 text-green-600" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Pago de Basura</h1>
-            <p className="text-gray-600">Gestiona tus facturas y pagos de basura</p>
+            <h1 className="text-3xl font-bold text-white">Pago de Basura</h1>
+            <p className="text-white/80">Gestiona tus facturas y pagos de basura</p>
           </div>
         </div>
         

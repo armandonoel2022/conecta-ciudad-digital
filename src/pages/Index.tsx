@@ -192,9 +192,9 @@ const Index = () => {
 
         {/* Services Section */}
         <div className="bg-white rounded-[2rem] p-6 shadow-xl">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">SERVICIOS PRINCIPALES</h2>
-          </div>
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-foreground mb-2">SERVICIOS PRINCIPALES</h2>
+            </div>
           
           <div className="space-y-4">
             {features.map((feature, index) => (

@@ -70,7 +70,7 @@ const BillCard = ({ bill, onPay }: BillCardProps) => {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -105,13 +105,13 @@ const BillCard = ({ bill, onPay }: BillCardProps) => {
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <p className="text-sm font-medium text-gray-600">Período de Facturación</p>
+            <p className="text-sm font-medium text-muted-foreground">Período de Facturación</p>
             <p className="text-sm">
               {formatDate(bill.billing_period_start)} - {formatDate(bill.billing_period_end)}
             </p>
           </div>
           <div className="space-y-2">
-            <p className="text-sm font-medium text-gray-600">Fecha de Vencimiento</p>
+            <p className="text-sm font-medium text-muted-foreground">Fecha de Vencimiento</p>
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
               <p className="text-sm">{formatDate(bill.due_date)}</p>
