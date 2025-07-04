@@ -12,14 +12,14 @@ interface PaymentHistoryProps {
 
 const PaymentHistory = ({ payments }: PaymentHistoryProps) => {
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('es-CO', {
+    return new Intl.NumberFormat('es-DO', {
       style: 'currency',
-      currency: 'COP'
+      currency: 'DOP'
     }).format(amount / 100);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-CO', {
+    return new Date(dateString).toLocaleDateString('es-DO', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'

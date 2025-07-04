@@ -1,30 +1,64 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, DollarSign, Receipt } from 'lucide-react';
+import { Calendar, DollarSign, Receipt, Loader2 } from 'lucide-react';
 import { GarbageBill } from '@/hooks/useGarbageBills';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface BillCardProps {
   bill: GarbageBill;
-  onPay: (bill: GarbageBill) => void;
+  onPay?: (bill: GarbageBill) => void;
 }
 
 const BillCard = ({ bill, onPay }: BillCardProps) => {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { toast } = useToast();
+
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('es-CO', {
+    return new Intl.NumberFormat('es-DO', {
       style: 'currency',
-      currency: 'COP'
+      currency: 'DOP'
     }).format(amount / 100);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-CO', {
+    return new Date(dateString).toLocaleDateString('es-DO', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  const handlePayment = async () => {
+    setIsProcessing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-payment', {
+        body: { billId: bill.id }
+      });
+
+      if (error) throw error;
+      
+      if (data?.url) {
+        // Open Stripe checkout in a new tab
+        window.open(data.url, '_blank');
+        toast({
+          title: "Redirigiendo a Stripe",
+          description: "Se ha abierto una nueva pestaña para completar el pago",
+        });
+      }
+    } catch (error) {
+      console.error('Error creating payment:', error);
+      toast({
+        title: "Error al procesar el pago",
+        description: "Hubo un problema al crear la sesión de pago. Por favor, intenta de nuevo.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -95,10 +129,18 @@ const BillCard = ({ bill, onPay }: BillCardProps) => {
           
           {bill.status === 'pending' && (
             <Button 
-              onClick={() => onPay(bill)}
+              onClick={handlePayment}
+              disabled={isProcessing}
               className="bg-green-600 hover:bg-green-700"
             >
-              Pagar Ahora
+              {isProcessing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Procesando...
+                </>
+              ) : (
+                'Pagar Ahora'
+              )}
             </Button>
           )}
         </div>

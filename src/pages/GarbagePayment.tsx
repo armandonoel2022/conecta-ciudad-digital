@@ -1,18 +1,66 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from 'sonner';
-import { Trash2, Plus, RefreshCw, CreditCard, History } from "lucide-react";
+import { Trash2, Plus, RefreshCw, CreditCard, History, CheckCircle, XCircle } from "lucide-react";
 import { useGarbageBills } from '@/hooks/useGarbageBills';
+import { supabase } from '@/integrations/supabase/client';
 import BillCard from '@/components/BillCard';
 import PaymentHistory from '@/components/PaymentHistory';
-import type { GarbageBill } from '@/hooks/useGarbageBills';
+import SubscriptionPlans from '@/components/SubscriptionPlans';
 
 const GarbagePayment = () => {
-  const { bills, payments, loading, generateBills } = useGarbageBills();
+  const { bills, payments, loading, generateBills, fetchBills, fetchPayments } = useGarbageBills();
   const [generatingBills, setGeneratingBills] = useState(false);
+
+  // Check for payment success/failure on page load
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    const paymentStatus = urlParams.get('payment');
+    const subscriptionStatus = urlParams.get('subscription');
+
+    if (sessionId && paymentStatus === 'success') {
+      verifyPayment(sessionId);
+    } else if (paymentStatus === 'cancelled') {
+      toast.error('Pago cancelado');
+    } else if (subscriptionStatus === 'success') {
+      toast.success('¡Suscripción creada exitosamente!');
+      fetchBills();
+      fetchPayments();
+    } else if (subscriptionStatus === 'cancelled') {
+      toast.error('Suscripción cancelada');
+    }
+
+    // Clean up URL parameters
+    if (sessionId || paymentStatus || subscriptionStatus) {
+      window.history.replaceState({}, '', '/garbage-payment');
+    }
+  }, []);
+
+  const verifyPayment = async (sessionId: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-payment', {
+        body: { sessionId }
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast.success('¡Pago completado exitosamente!');
+        // Refresh bills and payments
+        fetchBills();
+        fetchPayments();
+      } else {
+        toast.error('El pago no se pudo completar');
+      }
+    } catch (error) {
+      console.error('Error verifying payment:', error);
+      toast.error('Error al verificar el pago');
+    }
+  };
 
   const handleGenerateBills = async () => {
     setGeneratingBills(true);
@@ -28,16 +76,6 @@ const GarbagePayment = () => {
     } finally {
       setGeneratingBills(false);
     }
-  };
-
-  const handlePayBill = async (bill: GarbageBill) => {
-    // Simulate payment process
-    toast.info(`Procesando pago para factura ${bill.bill_number}...`);
-    
-    // In a real implementation, you would integrate with Stripe here
-    setTimeout(() => {
-      toast.success('¡Pago procesado exitosamente!');
-    }, 2000);
   };
 
   const pendingBills = bills.filter(bill => bill.status === 'pending');
@@ -98,6 +136,8 @@ const GarbagePayment = () => {
         </TabsList>
 
         <TabsContent value="bills" className="space-y-6">
+          <SubscriptionPlans />
+          
           {pendingBills.length === 0 ? (
             <Card>
               <CardHeader className="text-center">
@@ -130,7 +170,6 @@ const GarbagePayment = () => {
                 <BillCard 
                   key={bill.id} 
                   bill={bill} 
-                  onPay={handlePayBill}
                 />
               ))}
             </div>
@@ -153,7 +192,6 @@ const GarbagePayment = () => {
                 <BillCard 
                   key={bill.id} 
                   bill={bill} 
-                  onPay={handlePayBill}
                 />
               ))}
             </div>
