@@ -1,127 +1,96 @@
 # 🏙️ CiudadConecta - Plataforma Digital de Participación Ciudadana
 
-CiudadConecta es una plataforma web integral que facilita la participación ciudadana, mejora la comunicación entre ciudadanos y autoridades, y crea una ciudad más conectada y transparente.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+![GitHub last commit](https://img.shields.io/github/last-commit/yourusername/CiudadConecta)
+![GitHub repo size](https://img.shields.io/github/repo-size/yourusername/CiudadConecta)
 
-## 📱 Funcionalidades Principales
+Plataforma innovadora que conecta a los ciudadanos con sus autoridades locales, facilitando la gestión de reportes urbanos, alertas de emergencia y participación comunitaria.
 
-### 🔐 Sistema de Autenticación y Perfiles
-- **Registro e inicio de sesión** con Supabase Auth
-- **Perfiles de usuario** con información personal completa
-- **Sistema de roles** (Administrador, Líder Comunitario, Usuario)
-- **Autenticación biométrica** y servicios de ubicación configurables
+## 🌟 Características Principales
 
-### 📢 Gestión de Reportes Ciudadanos
-- **Reporte de incidencias** por categorías (basura, iluminación, baches, seguridad, otros)
-- **Subida de imágenes** y geolocalización automática
-- **Estados de seguimiento** (pendiente, en proceso, resuelto, rechazado)
-- **Visualización de reportes propios** con historial completo
+### 🔐 Autenticación y Gestión de Usuarios
+- Registro e inicio de sesión seguro con Supabase Auth
+- Perfiles de usuario completos con roles personalizados (Admin, Líder Comunitario, Ciudadano)
+- Configuración de preferencias y privacidad
 
-### 🚨 Sistema de Alertas de Emergencia
-- **Botón de Pánico**: Alertas de emergencia con ubicación GPS automática
-- **Alertas Amber**: Sistema para reportar menores desaparecidos
-- **Notificaciones globales** en tiempo real
-- **Expiración automática** de alertas
+### 📢 Sistema de Reportes Ciudadanos
+- Reporte de incidencias con categorización (infraestructura, servicios, seguridad)
+- Geolocalización automática y carga de evidencias multimedia
+- Seguimiento en tiempo real del estado de cada reporte
 
-### 💰 Gestión de Pagos de Servicios
-- **Facturas automáticas** de recolección de basura
-- **Integración con Stripe** para pagos seguros
-- **Historial de pagos** y estados de facturación
-- **Generación automática** de números de factura
+### 🚨 Alertas de Emergencia
+- Botón de pánico con activación rápida y geolocalización
+- Sistema AMBER para reportar personas desaparecidas
+- Notificaciones push en tiempo real
 
-### 📊 Dashboard Analítico (Administradores)
-- **Métricas Principales**: Total de reportes, alertas pánico/amber, usuarios activos
-- **Análisis Temporal**: Tendencias mensuales con gráficos interactivos
-- **Distribución Geográfica**: Mapa de calor de incidencias
-- **Demografía**: Análisis por edad, género y ubicación
-- **KPIs**: Tiempo promedio de resolución, tasa de resolución, barrios más activos
+### 💰 Gestión de Pagos Municipales
+- Facturación electrónica de servicios municipales
+- Integración con pasarelas de pago seguras
+- Historial financiero personalizado
 
-### 🎥 Antes y Después
-- **Subida de videos** comparativos de mejoras urbanas
-- **Almacenamiento** en Supabase Storage
-- **Galería pública** de transformaciones comunitarias
+### 📊 Dashboard Analítico
+- Visualización interactiva de métricas comunitarias
+- Mapas de calor de incidencias reportadas
+- Reportes personalizables para administradores
 
-### 🔧 Funcionalidades Administrativas
-- **Gestión de Usuarios**: Asignación de roles y permisos
-- **Reportes Programados**: Generación automática de análisis
-- **Sistema de Ayuda**: Mensajes de soporte con prioridades
-- **Postulaciones Laborales**: Formulario completo con carga de CV
+## 🛠️ Tecnologías Utilizadas
 
-### 🌍 Características Técnicas
-- **Diseño responsive** con Tailwind CSS
-- **Componentes reutilizables** con Shadcn/UI
-- **Base de datos PostgreSQL** con Supabase
-- **Almacenamiento de archivos** en la nube
-- **Políticas de seguridad** RLS (Row Level Security)
-- **Autenticación segura** y gestión de sesiones
+- **Frontend**: React + TypeScript + Vite
+- **UI Components**: shadcn-ui + Tailwind CSS
+- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **Maps**: React Leaflet
+- **Charts**: Chart.js
+- **Form Management**: React Hook Form
+
+## 🚀 Cómo Empezar
+
+### Requisitos Previos
+- Node.js v16+ y npm
+- Cuenta de Supabase (para configuración de backend)
+
+### Instalación Local
+
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/yourusername/CiudadConecta.git
+   cd CiudadConecta
+   ```
+
+2. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+
+3. Configurar variables de entorno:
+   Crear un archivo `.env` basado en `.env.example` y completar con tus credenciales de Supabase
+
+4. Iniciar la aplicación:
+   ```bash
+   npm run dev
+   ```
+
+## 🌐 Despliegue
+Puedes desplegar CiudadConecta en cualquier servicio compatible con aplicaciones Vite/React:
+
+- **Vercel**: [Guía de despliegue](https://vercel.com/docs)
+- **Netlify**: [Documentación](https://docs.netlify.com/)
+- **Supabase Hosting**: [Instrucciones](https://supabase.com/docs/guides/hosting)
+
+Para configurar un dominio personalizado, sigue las instrucciones de tu proveedor de hosting.
+
+## 🤝 Cómo Contribuir
+1. Haz fork del proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Haz commit de tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Haz push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+Distribuido bajo la licencia MIT. Consulta `LICENSE` para más información.
+
+## 📧 Contacto
+Equipo CiudadConecta - contacto@ciudadconecta.com
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/3aae6aac-723c-4f19-8bc0-e936a90c7a7a
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/3aae6aac-723c-4f19-8bc0-e936a90c7a7a) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/3aae6aac-723c-4f19-8bc0-e936a90c7a7a) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
