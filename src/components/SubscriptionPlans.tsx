@@ -75,19 +75,19 @@ const SubscriptionPlans = () => {
             <div className={`h-2 bg-gradient-to-r ${plan.color}`} />
             <CardHeader className="text-center">
               <div className={`mx-auto p-3 rounded-full bg-gradient-to-r ${plan.color} w-fit mb-2`}>
-                <Icon className="h-8 w-8 text-white" />
+                <Icon className="h-8 w-8 text-primary-foreground" />
               </div>
               <CardTitle className="text-xl">{plan.name}</CardTitle>
-              <div className="text-3xl font-bold text-green-600">
-                ${plan.price}<span className="text-lg text-gray-500">/mes</span>
+              <div className="text-3xl font-bold text-accent-foreground">
+                ${plan.price}<span className="text-lg text-muted-foreground">/mes</span>
               </div>
             </CardHeader>
             <CardContent className="text-center space-y-4">
-              <p className="text-sm text-gray-600">{plan.description}</p>
+              <p className="text-sm text-muted-foreground">{plan.description}</p>
               <Button 
                 onClick={() => handleSubscribe(plan.id)}
                 disabled={isProcessing}
-                className="w-full bg-green-600 hover:bg-green-700"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 {isProcessing ? (
                   <>

@@ -29,13 +29,13 @@ const PaymentHistory = ({ payments }: PaymentHistoryProps) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
+        return <CheckCircle className="h-4 w-4 text-accent-foreground" />;
       case 'failed':
-        return <XCircle className="h-4 w-4 text-red-600" />;
+        return <XCircle className="h-4 w-4 text-destructive" />;
       case 'pending':
-        return <Clock className="h-4 w-4 text-yellow-600" />;
+        return <Clock className="h-4 w-4 text-secondary-foreground" />;
       case 'refunded':
-        return <RotateCcw className="h-4 w-4 text-blue-600" />;
+        return <RotateCcw className="h-4 w-4 text-primary" />;
       default:
         return <Clock className="h-4 w-4 text-muted-foreground" />;
     }
@@ -44,13 +44,13 @@ const PaymentHistory = ({ payments }: PaymentHistoryProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-accent text-accent-foreground';
       case 'failed':
-        return 'bg-red-100 text-red-800';
+        return 'bg-destructive/10 text-destructive';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-secondary text-secondary-foreground';
       case 'refunded':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-muted text-muted-foreground';
       default:
         return 'bg-muted text-muted-foreground';
     }
@@ -111,7 +111,7 @@ const PaymentHistory = ({ payments }: PaymentHistoryProps) => {
                 <TableCell>
                   {payment.payment_date ? formatDate(payment.payment_date) : formatDate(payment.created_at)}
                 </TableCell>
-                <TableCell className="font-semibold text-green-600">
+                <TableCell className="font-semibold text-accent-foreground">
                   {formatAmount(payment.amount_paid)}
                 </TableCell>
                 <TableCell className="capitalize">
