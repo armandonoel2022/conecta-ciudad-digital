@@ -31,6 +31,8 @@ import PanicButton from "./pages/PanicButton";
 import HelpSupport from "./pages/HelpSupport";
 import UserManagement from "./pages/UserManagement";
 import Reports from "./pages/Reports";
+import Tutorial from "./pages/Tutorial";
+import MisReportes from "./pages/MisReportes";
 
 const AppContent = () => {
   const { showAlert, dismissAlert, triggerTestAlert } = useGarbageAlerts();
@@ -69,6 +71,8 @@ const AppContent = () => {
           <Route path="/ayuda" element={<HelpSupport />} />
           <Route path="/gestion-usuarios" element={<UserManagement />} />
           <Route path="/reportes" element={<Reports />} />
+          <Route path="/tutorial" element={<Tutorial />} />
+          <Route path="/mis-reportes" element={<MisReportes />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
