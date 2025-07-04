@@ -90,7 +90,3 @@ Distribuido bajo la licencia MIT. Consulta `LICENSE` para más información.
 
 ## 📧 Contacto
 Equipo CiudadConecta - contacto@ciudadconecta.com
-
-## Project info
-
-**URL**: https://lovable.dev/projects/3aae6aac-723c-4f19-8bc0-e936a90c7a7a
