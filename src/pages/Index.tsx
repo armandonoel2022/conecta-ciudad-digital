@@ -48,29 +48,66 @@ const features = [
 const Index = () => {
   const { user } = useAuth();
   const [userProfile, setUserProfile] = useState<{ first_name: string | null } | null>(null);
+  const [userActivity, setUserActivity] = useState<{
+    reportsCount: number;
+    pendingBills: number;
+    isNewUser: boolean;
+  }>({ reportsCount: 0, pendingBills: 0, isNewUser: true });
+  const [activityLoading, setActivityLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchUserData = async () => {
       if (user) {
+        setActivityLoading(true);
         try {
-          const { data, error } = await supabase
+          // Fetch user profile
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('first_name')
+            .select('first_name, created_at')
             .eq('id', user.id)
             .single();
 
-          if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-            console.error('Error fetching user profile:', error);
-          } else if (data) {
-            setUserProfile(data);
+          if (profileError && profileError.code !== 'PGRST116') {
+            console.error('Error fetching user profile:', profileError);
+          } else if (profile) {
+            setUserProfile(profile);
           }
+
+          // Fetch user reports count
+          const { count: reportsCount } = await supabase
+            .from('reports')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id);
+
+          // Fetch pending bills count
+          const { count: pendingBills } = await supabase
+            .from('garbage_bills')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('status', 'pending');
+
+          // Determine if user is new (less than 3 reports and account created recently)
+          const accountAge = profile?.created_at ? 
+            (Date.now() - new Date(profile.created_at).getTime()) / (1000 * 60 * 60 * 24) : 0;
+          
+          const isNewUser = (reportsCount || 0) < 3 && accountAge < 30;
+
+          setUserActivity({
+            reportsCount: reportsCount || 0,
+            pendingBills: pendingBills || 0,
+            isNewUser
+          });
         } catch (error) {
-          console.error('Error fetching user profile:', error);
+          console.error('Error fetching user data:', error);
+        } finally {
+          setActivityLoading(false);
         }
+      } else {
+        setActivityLoading(false);
       }
     };
 
-    fetchUserProfile();
+    fetchUserData();
   }, [user]);
 
   const getUserGreeting = () => {
@@ -79,6 +116,48 @@ const Index = () => {
     }
     return user?.email ? `¡Hola!` : 'Bienvenido';
   };
+
+  const getContextualButton = () => {
+    if (!user) {
+      return {
+        text: "COMENZAR",
+        href: "/auth",
+        description: "Inicia sesión para acceder a todos los servicios"
+      };
+    }
+
+    if (userActivity.isNewUser) {
+      return {
+        text: "CONOCE LA PLATAFORMA",
+        href: "/tutorial",
+        description: "Descubre cómo usar CiudadConecta paso a paso"
+      };
+    }
+
+    if (userActivity.pendingBills > 0) {
+      return {
+        text: `PAGAR FACTURAS (${userActivity.pendingBills})`,
+        href: "/pago-basura",
+        description: "Tienes facturas pendientes de pago"
+      };
+    }
+
+    if (userActivity.reportsCount > 0) {
+      return {
+        text: "VER MIS REPORTES",
+        href: "/mis-reportes",
+        description: "Revisa el estado de tus reportes"
+      };
+    }
+
+    return {
+      text: "REPORTAR INCIDENCIA",
+      href: "/reportar",
+      description: "Reporta problemas en tu comunidad"
+    };
+  };
+
+  const contextualButton = getContextualButton();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
@@ -97,11 +176,16 @@ const Index = () => {
             {user && (
               <div className="mb-6 p-4 bg-white/10 rounded-xl">
                 <p className="text-lg font-semibold">{getUserGreeting()}</p>
-                <p className="text-sm text-white/80 mt-1">Tu participación hace la diferencia</p>
+                <p className="text-sm text-white/80 mt-1">{contextualButton.description}</p>
+                {!activityLoading && userActivity.reportsCount > 0 && (
+                  <div className="mt-2 text-xs text-white/70">
+                    {userActivity.reportsCount} reporte(s) • {userActivity.pendingBills} factura(s) pendiente(s)
+                  </div>
+                )}
               </div>
             )}
             <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-12 py-3 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all">
-              <Link to="/reportar">COMENZAR</Link>
+              <Link to={contextualButton.href}>{contextualButton.text}</Link>
             </Button>
           </div>
         </div>
