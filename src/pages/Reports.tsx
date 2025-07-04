@@ -58,7 +58,7 @@ const Reports = () => {
 
   if (rolesLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 flex items-center justify-center">
         <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
           <p className="text-white mt-4">Cargando...</p>
@@ -69,7 +69,7 @@ const Reports = () => {
 
   if (!isAdmin && !isCommunityLeader) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 flex items-center justify-center">
         <Card className="bg-white/95 backdrop-blur-sm max-w-md">
           <CardHeader>
             <CardTitle className="text-red-600">Acceso Restringido</CardTitle>
@@ -138,7 +138,7 @@ const Reports = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-xl text-white">
@@ -223,7 +223,7 @@ const Reports = () => {
           <CardContent>
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 <span className="ml-2">Cargando reportes...</span>
               </div>
             ) : reports && reports.length > 0 ? (
@@ -233,7 +233,7 @@ const Reports = () => {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <FileText className="h-5 w-5 text-purple-600" />
+                          <FileText className="h-5 w-5 text-primary" />
                           <h3 className="text-lg font-semibold">{report.title}</h3>
                           {getStatusBadge(report.status)}
                         </div>
@@ -296,7 +296,7 @@ const Reports = () => {
                       
                       {report.status === 'generating' && (
                         <div className="flex items-center gap-2 text-sm text-gray-500">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
                           <span>Procesando reporte...</span>
                         </div>
                       )}

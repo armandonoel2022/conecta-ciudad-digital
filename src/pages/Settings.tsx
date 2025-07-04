@@ -138,7 +138,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-md mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4 text-white mb-4">
@@ -157,8 +157,8 @@ const Settings = () => {
           <Card className="border-none shadow-xl">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Palette className="h-5 w-5 text-purple-600" />
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Palette className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <CardTitle className="text-lg">Tema de la aplicación</CardTitle>
@@ -297,7 +297,7 @@ const Settings = () => {
         {/* Save Button */}
         <div className="pt-4">
           <Button 
-            className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold py-3 rounded-xl shadow-lg"
+            className="w-full bg-gradient-to-r from-primary to-blue-500 hover:from-primary/90 hover:to-blue-600 text-white font-semibold py-3 rounded-xl shadow-lg"
             onClick={() => {
               toast({
                 title: "Configuración guardada",

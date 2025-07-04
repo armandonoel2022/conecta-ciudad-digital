@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 const MissionVisionValues = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4 text-white mb-4">
@@ -36,10 +36,10 @@ const MissionVisionValues = () => {
             </div>
 
             {/* Vision Section */}
-            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-6">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-6">
               <div className="flex items-center justify-center mb-4">
-                <div className="bg-purple-100 p-3 rounded-full mr-4">
-                  <Eye className="h-8 w-8 text-purple-600" />
+                <div className="bg-blue-100 p-3 rounded-full mr-4">
+                  <Eye className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-800">Nuestra Visión</h3>
               </div>
@@ -74,9 +74,9 @@ const MissionVisionValues = () => {
                 </div>
 
                 {/* Participación */}
-                <div className="bg-purple-50 rounded-xl p-6 text-center">
-                  <div className="bg-purple-100 p-3 rounded-full w-fit mx-auto mb-3">
-                    <Users className="h-6 w-6 text-purple-600" />
+                <div className="bg-blue-50 rounded-xl p-6 text-center">
+                  <div className="bg-blue-100 p-3 rounded-full w-fit mx-auto mb-3">
+                    <Users className="h-6 w-6 text-primary" />
                   </div>
                   <h4 className="text-lg font-semibold text-gray-800 mb-2">Participación</h4>
                   <p className="text-sm text-gray-600">

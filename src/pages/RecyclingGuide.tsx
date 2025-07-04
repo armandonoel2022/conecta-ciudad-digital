@@ -12,7 +12,7 @@ const recyclingItems = [
 
 const RecyclingGuide = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-md mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4 text-white mb-4">
@@ -35,7 +35,7 @@ const RecyclingGuide = () => {
             {recyclingItems.map((category) => (
               <Card key={category.title} className="border-2 border-gray-100">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-purple-600 text-lg">{category.title}</CardTitle>
+                  <CardTitle className="text-primary text-lg">{category.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2">

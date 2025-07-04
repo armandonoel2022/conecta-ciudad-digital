@@ -182,7 +182,7 @@ const ReportIssue = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-md mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4 text-white mb-4">
@@ -216,7 +216,7 @@ const ReportIssue = () => {
                       <FormControl>
                         <Input 
                           placeholder="Ej: Bache en la calle principal" 
-                          className="rounded-xl border-2 border-gray-200 focus:border-purple-500"
+                           className="rounded-xl border-2 border-gray-200 focus:border-primary"
                           {...field} 
                         />
                       </FormControl>
@@ -233,7 +233,7 @@ const ReportIssue = () => {
                       <FormLabel className="text-gray-800 font-semibold">Categoría</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="rounded-xl border-2 border-gray-200 focus:border-purple-500">
+                          <SelectTrigger className="rounded-xl border-2 border-gray-200 focus:border-primary">
                             <SelectValue placeholder="Selecciona una categoría" />
                           </SelectTrigger>
                         </FormControl>
@@ -260,7 +260,7 @@ const ReportIssue = () => {
                         <Textarea 
                           placeholder="Describe el problema con el mayor detalle posible..." 
                           rows={5} 
-                          className="rounded-xl border-2 border-gray-200 focus:border-purple-500 resize-none"
+                          className="rounded-xl border-2 border-gray-200 focus:border-primary resize-none"
                           {...field}
                         />
                       </FormControl>
@@ -278,7 +278,7 @@ const ReportIssue = () => {
                       <FormControl>
                         <Input 
                           placeholder="Ej: Calle 50 #45-30" 
-                          className="rounded-xl border-2 border-gray-200 focus:border-purple-500"
+                           className="rounded-xl border-2 border-gray-200 focus:border-primary"
                           {...field} 
                         />
                       </FormControl>
@@ -296,7 +296,7 @@ const ReportIssue = () => {
                       <FormControl>
                         <Input 
                           placeholder="Ej: El Poblado" 
-                          className="rounded-xl border-2 border-gray-200 focus:border-purple-500"
+                          className="rounded-xl border-2 border-gray-200 focus:border-primary"
                           {...field} 
                         />
                       </FormControl>
@@ -332,10 +332,10 @@ const ReportIssue = () => {
                   <Button 
                     type="button"
                     variant="outline" 
-                    className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-gray-200 hover:border-purple-500 py-6"
+                    className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-gray-200 hover:border-primary py-6"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    <Paperclip className="h-5 w-5 text-purple-600" />
+                    <Paperclip className="h-5 w-5 text-primary" />
                     <span className="text-gray-700">
                       {selectedImage ? selectedImage.name : "Seleccionar imagen"}
                     </span>
@@ -355,7 +355,7 @@ const ReportIssue = () => {
                 </div>
 
                 {currentLocation && (
-                  <div className="flex items-center gap-3 text-sm text-purple-600 p-4 bg-purple-50 rounded-xl border border-purple-200">
+                  <div className="flex items-center gap-3 text-sm text-primary p-4 bg-blue-50 rounded-xl border border-blue-200">
                     <MapPin className="h-5 w-5" />
                     <span className="font-medium">Ubicación detectada automáticamente.</span>
                   </div>
@@ -364,7 +364,7 @@ const ReportIssue = () => {
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="w-full text-lg bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl py-6 font-bold shadow-lg transform hover:scale-105 transition-all disabled:opacity-50 disabled:transform-none"
+                  className="w-full text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 rounded-xl py-6 font-bold shadow-lg transform hover:scale-105 transition-all disabled:opacity-50 disabled:transform-none"
                 >
                   {isSubmitting ? "Enviando..." : "Enviar Reporte"}
                 </Button>

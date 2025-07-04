@@ -10,7 +10,7 @@ const UserManagement = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 flex items-center justify-center">
         <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
           <p className="text-white mt-4">Cargando...</p>
@@ -20,7 +20,7 @@ const UserManagement = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-xl text-white">
