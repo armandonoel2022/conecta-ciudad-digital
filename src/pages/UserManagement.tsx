@@ -3,7 +3,8 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import UserRoleManager from '@/components/UserRoleManager';
 import { useUserRoles } from '@/hooks/useUserRoles';
-import { Users, Shield, Crown, UserCheck } from 'lucide-react';
+import { Users, Shield, Crown, UserCheck, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const UserManagement = () => {
   const { isAdmin, userRoles, loading } = useUserRoles();
@@ -25,6 +26,9 @@ const UserManagement = () => {
         {/* Header */}
         <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-xl text-white">
           <div className="flex items-center gap-3 mb-4">
+            <Link to="/" className="p-2 hover:bg-white/20 rounded-xl transition-colors">
+              <ArrowLeft className="h-6 w-6" />
+            </Link>
             <Users className="h-8 w-8" />
             <h1 className="text-3xl font-bold">Gestión de Usuarios</h1>
           </div>

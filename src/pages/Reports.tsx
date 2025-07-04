@@ -6,11 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { FileText, Download, Calendar, Filter, Plus, BarChart3, Eye, ExternalLink } from 'lucide-react';
+import { FileText, Download, Calendar, Filter, Plus, BarChart3, Eye, ExternalLink, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import CreateReportDialog from '@/components/CreateReportDialog';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 interface GeneratedReport {
   id: string;
@@ -144,6 +145,9 @@ const Reports = () => {
         <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-xl text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
+              <Link to="/" className="p-2 hover:bg-white/20 rounded-xl transition-colors">
+                <ArrowLeft className="h-6 w-6" />
+              </Link>
               <BarChart3 className="h-8 w-8" />
               <div>
                 <h1 className="text-3xl font-bold">Reportes Generados</h1>

@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertTriangle, Upload, Phone, MapPin, Clock, User } from "lucide-react";
+import { AlertTriangle, Upload, Phone, MapPin, Clock, User, ArrowLeft } from "lucide-react";
 import { useAmberAlerts } from '@/hooks/useAmberAlerts';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const AmberAlert = () => {
   const [formData, setFormData] = useState({
@@ -92,6 +92,17 @@ const AmberAlert = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber via-orange-600 to-red-700 p-4 animate-fade-in">
       <div className="max-w-2xl mx-auto space-y-6">
+        {/* Header with Back Button */}
+        <div className="flex items-center gap-4 text-white mb-4">
+          <Link to="/" className="p-2 hover:bg-white/20 rounded-xl transition-colors">
+            <ArrowLeft className="h-6 w-6" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold">ALERTA AMBER</h1>
+            <p className="text-white/80">Sistema de búsqueda de menores</p>
+          </div>
+        </div>
+
         {/* Hero Section */}
         <div className="bg-white/10 backdrop-blur-sm p-8 rounded-[2rem] shadow-xl text-center text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-[2rem]"></div>
@@ -99,7 +110,7 @@ const AmberAlert = () => {
             <div className="mx-auto bg-white/20 p-4 rounded-full w-fit mb-6">
               <AlertTriangle className="h-16 w-16 text-white" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight mb-3">Alerta Amber</h1>
+            <h2 className="text-3xl font-bold tracking-tight mb-3">Alerta Amber</h2>
             <p className="text-lg text-white/90 mb-6 leading-relaxed">
               Sistema de alerta para menores desaparecidos. Tu reporte puede salvar una vida.
             </p>

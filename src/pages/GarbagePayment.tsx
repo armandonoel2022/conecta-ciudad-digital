@@ -4,12 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from 'sonner';
-import { Trash2, Plus, RefreshCw, CreditCard, History, CheckCircle, XCircle } from "lucide-react";
+import { Trash2, Plus, RefreshCw, CreditCard, History, CheckCircle, XCircle, ArrowLeft } from "lucide-react";
 import { useGarbageBills } from '@/hooks/useGarbageBills';
 import { supabase } from '@/integrations/supabase/client';
 import BillCard from '@/components/BillCard';
 import PaymentHistory from '@/components/PaymentHistory';
 import SubscriptionPlans from '@/components/SubscriptionPlans';
+import { Link } from 'react-router-dom';
 
 const GarbagePayment = () => {
   const { bills, payments, loading, generateBills, fetchBills, fetchPayments } = useGarbageBills();
@@ -96,6 +97,9 @@ const GarbagePayment = () => {
     <div className="container mx-auto p-6 max-w-6xl">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
+          <Link to="/" className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+            <ArrowLeft className="h-6 w-6 text-gray-600" />
+          </Link>
           <div className="bg-green-100 p-3 rounded-full">
             <Trash2 className="h-8 w-8 text-green-600" />
           </div>
