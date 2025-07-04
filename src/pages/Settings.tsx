@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Fingerprint, LocateFixed } from "lucide-react";
+import { ArrowLeft, Fingerprint, LocateFixed, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -11,15 +11,25 @@ import { useToast } from "@/hooks/use-toast";
 const Settings = () => {
   const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [locationServicesEnabled, setLocationServicesEnabled] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const { toast } = useToast();
 
   // Load settings from localStorage on component mount
   useEffect(() => {
     const savedBiometric = localStorage.getItem('biometricEnabled') === 'true';
     const savedLocationServices = localStorage.getItem('locationServicesEnabled') === 'true';
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const systemDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
     setBiometricEnabled(savedBiometric);
     setLocationServicesEnabled(savedLocationServices);
+    
+    // Determine if dark mode is active
+    if (savedTheme === 'system') {
+      setIsDarkMode(systemDarkMode);
+    } else {
+      setIsDarkMode(savedTheme === 'dark');
+    }
   }, []);
 
   const handleBiometricToggle = async (enabled: boolean) => {
@@ -92,6 +102,24 @@ const Settings = () => {
     }
   };
 
+  const handleThemeToggle = (enabled: boolean) => {
+    const newTheme = enabled ? 'dark' : 'light';
+    const root = window.document.documentElement;
+    
+    // Remove existing theme classes
+    root.classList.remove('light', 'dark');
+    root.classList.add(newTheme);
+    
+    // Save to localStorage
+    localStorage.setItem('theme', newTheme);
+    setIsDarkMode(enabled);
+    
+    toast({
+      title: enabled ? "Modo oscuro activado" : "Modo claro activado",
+      description: enabled ? "La interfaz ahora usa colores oscuros" : "La interfaz ahora usa colores claros",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-md mx-auto space-y-6">
@@ -146,6 +174,50 @@ const Settings = () => {
                   </p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Theme Toggle */}
+          <Card className="border-none shadow-xl">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  {isDarkMode ? (
+                    <Moon className="h-5 w-5 text-purple-600" />
+                  ) : (
+                    <Sun className="h-5 w-5 text-purple-600" />
+                  )}
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Tema de la aplicación</CardTitle>
+                  <CardDescription>
+                    Cambia entre modo claro y modo oscuro
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-secondary">
+                <div className="flex items-center gap-3">
+                  {isDarkMode ? (
+                    <Moon className="h-5 w-5 text-purple-600" />
+                  ) : (
+                    <Sun className="h-5 w-5 text-purple-600" />
+                  )}
+                  <div>
+                    <p className="font-medium text-sm">
+                      {isDarkMode ? "Modo oscuro" : "Modo claro"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {isDarkMode ? "Colores oscuros para la interfaz" : "Colores claros para la interfaz"}
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  checked={isDarkMode}
+                  onCheckedChange={handleThemeToggle}
+                />
+              </div>
             </CardContent>
           </Card>
 
