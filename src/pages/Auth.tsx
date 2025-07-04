@@ -157,7 +157,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 flex items-center justify-center">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="flex items-center gap-4 text-white mb-6">
@@ -199,7 +199,7 @@ const Auth = () => {
                         placeholder="tu@email.com"
                         value={loginData.email}
                         onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-purple-500"
+                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-primary"
                         disabled={isLoading}
                       />
                     </div>
@@ -217,7 +217,7 @@ const Auth = () => {
                         placeholder="••••••••"
                         value={loginData.password}
                         onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-purple-500"
+                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-primary"
                         disabled={isLoading}
                       />
                     </div>
@@ -225,7 +225,7 @@ const Auth = () => {
 
                   <Button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl py-6 font-bold text-lg"
+                    className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 rounded-xl py-6 font-bold text-lg"
                     disabled={isLoading}
                   >
                     {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
@@ -247,7 +247,7 @@ const Auth = () => {
                         placeholder="Juan Pérez"
                         value={signupData.fullName}
                         onChange={(e) => setSignupData({ ...signupData, fullName: e.target.value })}
-                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-purple-500"
+                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-primary"
                         disabled={isLoading}
                       />
                     </div>
@@ -265,7 +265,7 @@ const Auth = () => {
                         placeholder="+52 123 456 7890"
                         value={signupData.phone}
                         onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })}
-                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-purple-500"
+                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-primary"
                         disabled={isLoading}
                       />
                     </div>
@@ -283,7 +283,7 @@ const Auth = () => {
                         placeholder="tu@email.com"
                         value={signupData.email}
                         onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
-                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-purple-500"
+                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-primary"
                         disabled={isLoading}
                       />
                     </div>
@@ -301,7 +301,7 @@ const Auth = () => {
                         placeholder="••••••••"
                         value={signupData.password}
                         onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
-                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-purple-500"
+                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-primary"
                         disabled={isLoading}
                       />
                     </div>
@@ -309,7 +309,7 @@ const Auth = () => {
 
                   <Button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl py-6 font-bold text-lg"
+                    className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 rounded-xl py-6 font-bold text-lg"
                     disabled={isLoading}
                   >
                     {isLoading ? "Creando cuenta..." : "Crear Cuenta"}

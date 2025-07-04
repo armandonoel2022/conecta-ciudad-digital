@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 const AboutUs = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4 text-white mb-4">
@@ -23,8 +23,8 @@ const AboutUs = () => {
           <div className="space-y-8">
             {/* Mission Section */}
             <div className="text-center">
-              <div className="mx-auto bg-purple-100 p-4 rounded-full w-fit mb-4">
-                <Users className="h-12 w-12 text-purple-600" />
+              <div className="mx-auto bg-blue-100 p-4 rounded-full w-fit mb-4">
+                <Users className="h-12 w-12 text-primary" />
               </div>
               <h2 className="text-3xl font-bold text-gray-800 mb-4">¿Quiénes Somos?</h2>
               <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
@@ -35,7 +35,7 @@ const AboutUs = () => {
             </div>
 
             {/* Academic Section */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-6">
               <div className="flex items-center justify-center mb-4">
                 <div className="bg-blue-100 p-3 rounded-full mr-4">
                   <GraduationCap className="h-8 w-8 text-blue-600" />
@@ -52,10 +52,10 @@ const AboutUs = () => {
             </div>
 
             {/* Vision Section */}
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-6">
               <div className="flex items-center justify-center mb-4">
-                <div className="bg-purple-100 p-3 rounded-full mr-4">
-                  <Heart className="h-8 w-8 text-purple-600" />
+                <div className="bg-blue-100 p-3 rounded-full mr-4">
+                  <Heart className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-800">Nuestra Visión</h3>
               </div>
@@ -77,7 +77,7 @@ const AboutUs = () => {
               
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="text-center bg-white rounded-xl p-6 shadow-sm">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-primary to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
                     <span className="text-white font-bold text-xl">AN</span>
                   </div>
                   <h4 className="text-xl font-semibold text-gray-800 mb-2">Armando Noel Charle</h4>

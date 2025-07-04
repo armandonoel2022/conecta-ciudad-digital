@@ -59,9 +59,9 @@ const achievements = [
   {
     category: "Participación Ciudadana",
     icon: Users,
-    color: "text-purple-600",
-    bgColor: "bg-purple-100",
-    borderColor: "border-purple-500",
+    color: "text-primary",
+    bgColor: "bg-blue-100",
+    borderColor: "border-primary",
     accomplishments: [
       "Implementación del Presupuesto Participativo",
       "Fortalecimiento de juntas de vecinos",
@@ -112,7 +112,7 @@ const achievements = [
 
 const Achievements = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4 text-white mb-4">
@@ -130,7 +130,7 @@ const Achievements = () => {
           <div className="space-y-8">
             {/* Introduction */}
             <div className="text-center">
-              <div className="mx-auto bg-gradient-to-br from-purple-500 to-blue-600 p-4 rounded-full w-fit mb-4">
+              <div className="mx-auto bg-gradient-to-br from-primary to-blue-600 p-4 rounded-full w-fit mb-4">
                 <Trophy className="h-12 w-12 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-gray-800 mb-3">Logros de la Alcaldía</h2>
@@ -171,7 +171,7 @@ const Achievements = () => {
             <div className="mt-8 space-y-4">
               <h3 className="text-xl font-bold text-gray-800 text-center mb-6">Programas Destacados</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-gradient-to-r from-pink-50 to-purple-50 p-6 rounded-xl border border-pink-200">
+                <div className="bg-gradient-to-r from-pink-50 to-blue-50 p-6 rounded-xl border border-pink-200">
                   <div className="flex items-center gap-3 mb-3">
                     <Heart className="h-6 w-6 text-pink-600" />
                     <h4 className="font-bold text-pink-800">Programa "Firulay"</h4>
@@ -195,16 +195,16 @@ const Achievements = () => {
             </div>
 
             {/* Impact Summary */}
-            <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-xl border border-purple-200 mt-8">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200 mt-8">
               <div className="text-center">
-                <h3 className="text-xl font-bold text-purple-800 mb-3">Impacto en la Comunidad</h3>
-                <p className="text-purple-700 leading-relaxed">
+                <h3 className="text-xl font-bold text-blue-800 mb-3">Impacto en la Comunidad</h3>
+                <p className="text-blue-700 leading-relaxed">
                   Estos logros representan el compromiso continuo de la Alcaldía de Santo Domingo Este 
                   con el bienestar de sus ciudadanos, mejorando la calidad de vida a través de 
                   infraestructura moderna, servicios eficientes y programas sociales inclusivos.
                 </p>
                 <div className="flex justify-center gap-2 mt-4 flex-wrap">
-                  <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
+                  <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
                     Infraestructura Mejorada
                   </Badge>
                   <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">

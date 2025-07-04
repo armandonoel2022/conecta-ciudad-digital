@@ -13,21 +13,21 @@ const features = [
     description: "Informa sobre problemas en tu área.",
     icon: Megaphone,
     href: "/reportar",
-    gradient: "from-purple-500 to-purple-600",
+    gradient: "from-primary to-blue-600",
   },
   {
     title: "Pago de Basura",
     description: "Realiza el pago de tu servicio.",
     icon: Trash2,
     href: "/pago-basura",
-    gradient: "from-blue-500 to-purple-500",
+    gradient: "from-blue-500 to-primary",
   },
   {
     title: "Guía de Reciclaje",
     description: "Aprende a separar tus residuos.",
     icon: Recycle,
     href: "/guia-reciclaje",
-    gradient: "from-purple-600 to-pink-500",
+    gradient: "from-primary to-blue-500",
   },
   {
     title: "Botón de Pánico",
@@ -41,7 +41,7 @@ const features = [
     description: "Ayuda a encontrar a menores desaparecidos.",
     icon: Siren,
     href: "/alerta-amber",
-    gradient: "from-purple-500 to-pink-600",
+    gradient: "from-amber to-amber-foreground",
   },
 ];
 
@@ -81,7 +81,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-md mx-auto space-y-6">
         {/* Hero Section */}
         <div className="bg-white/10 backdrop-blur-sm p-8 rounded-[2rem] shadow-xl text-center text-white relative overflow-hidden">
@@ -100,7 +100,7 @@ const Index = () => {
                 <p className="text-sm text-white/80 mt-1">Tu participación hace la diferencia</p>
               </div>
             )}
-            <Button asChild size="lg" className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-12 py-3 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all">
+            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold px-12 py-3 rounded-2xl text-lg shadow-lg transform hover:scale-105 transition-all">
               <Link to="/reportar">COMENZAR</Link>
             </Button>
           </div>

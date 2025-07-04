@@ -58,8 +58,8 @@ const contacts = [
   {
     category: "Alcaldía Santo Domingo Este",
     icon: Building,
-    color: "text-purple-600",
-    bgColor: "bg-purple-100",
+    color: "text-primary",
+    bgColor: "bg-blue-100",
     contacts: [
       {
         name: "Recepción Alcaldía",
@@ -157,7 +157,7 @@ const CommunicationGuide = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-md mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4 text-white mb-4">
@@ -190,7 +190,7 @@ const CommunicationGuide = () => {
 
               <div className="space-y-3">
                 {section.contacts.map((contact, contactIndex) => (
-                  <Card key={contactIndex} className="border-l-4 border-l-purple-500">
+                  <Card key={contactIndex} className="border-l-4 border-l-primary">
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-base text-gray-800">{contact.name}</CardTitle>
@@ -203,7 +203,7 @@ const CommunicationGuide = () => {
                           Llamar
                         </Button>
                       </div>
-                      <div className="flex items-center gap-2 text-lg font-bold text-purple-600">
+                      <div className="flex items-center gap-2 text-lg font-bold text-primary">
                         <Phone className="h-4 w-4" />
                         {contact.number}
                       </div>
