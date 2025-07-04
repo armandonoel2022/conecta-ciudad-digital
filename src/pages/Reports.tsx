@@ -70,6 +70,18 @@ const Reports = () => {
 
   const isLoading = reportsLoading || panicLoading || amberLoading || demographicsLoading;
 
+  // Función helper (definida antes de ser usada)
+  const getCategoryLabel = (category: string) => {
+    const categories = {
+      basura: 'Basura y Limpieza',
+      iluminacion: 'Iluminación Pública',
+      baches: 'Baches y Pavimento',
+      seguridad: 'Seguridad Ciudadana',
+      otros: 'Otros'
+    };
+    return categories[category as keyof typeof categories] || category;
+  };
+
   // Preparar datos para gráficos
   const categoryData = reportsStats ? Object.entries(reportsStats.byCategory).map(([key, value]) => ({
     name: getCategoryLabel(key),
@@ -88,17 +100,6 @@ const Reports = () => {
     .sort(([,a], [,b]) => b - a)
     .slice(0, 10)
     .map(([name, value]) => ({ name, value })) : [];
-
-  const getCategoryLabel = (category: string) => {
-    const categories = {
-      basura: 'Basura y Limpieza',
-      iluminacion: 'Iluminación Pública',
-      baches: 'Baches y Pavimento',
-      seguridad: 'Seguridad Ciudadana',
-      otros: 'Otros'
-    };
-    return categories[category as keyof typeof categories] || category;
-  };
 
   if (rolesLoading || isLoading) {
     return (
