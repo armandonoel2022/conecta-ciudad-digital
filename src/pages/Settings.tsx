@@ -2,59 +2,25 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Settings as SettingsIcon, ArrowLeft, Palette, Fingerprint, Moon, Sun, Monitor, LocateFixed } from "lucide-react";
+import { ArrowLeft, Fingerprint, LocateFixed } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
-type Theme = 'light' | 'dark' | 'system';
-
 const Settings = () => {
-  const [theme, setTheme] = useState<Theme>('system');
   const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [locationServicesEnabled, setLocationServicesEnabled] = useState(false);
   const { toast } = useToast();
 
   // Load settings from localStorage on component mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme;
     const savedBiometric = localStorage.getItem('biometricEnabled') === 'true';
     const savedLocationServices = localStorage.getItem('locationServicesEnabled') === 'true';
-    
-    if (savedTheme) {
-      setTheme(savedTheme);
-      applyTheme(savedTheme);
-    }
     
     setBiometricEnabled(savedBiometric);
     setLocationServicesEnabled(savedLocationServices);
   }, []);
-
-  const applyTheme = (selectedTheme: Theme) => {
-    const root = window.document.documentElement;
-    
-    if (selectedTheme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.classList.remove('light', 'dark');
-      root.classList.add(systemTheme);
-    } else {
-      root.classList.remove('light', 'dark');
-      root.classList.add(selectedTheme);
-    }
-  };
-
-  const handleThemeChange = (newTheme: Theme) => {
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    applyTheme(newTheme);
-    
-    toast({
-      title: "Tema actualizado",
-      description: `Se ha cambiado al tema ${newTheme === 'light' ? 'claro' : newTheme === 'dark' ? 'oscuro' : 'del sistema'}`,
-    });
-  };
 
   const handleBiometricToggle = async (enabled: boolean) => {
     if (enabled) {
@@ -126,17 +92,6 @@ const Settings = () => {
     }
   };
 
-  const getThemeIcon = (themeType: Theme) => {
-    switch (themeType) {
-      case 'light':
-        return <Sun className="h-4 w-4" />;
-      case 'dark':
-        return <Moon className="h-4 w-4" />;
-      case 'system':
-        return <Monitor className="h-4 w-4" />;
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-md mx-auto space-y-6">
@@ -153,48 +108,6 @@ const Settings = () => {
 
         {/* Settings Cards */}
         <div className="space-y-4">
-          {/* Theme Settings */}
-          <Card className="border-none shadow-xl">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Palette className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg">Tema de la aplicación</CardTitle>
-                  <CardDescription>
-                    Personaliza la apariencia de CiudadConecta
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <RadioGroup value={theme} onValueChange={handleThemeChange} className="space-y-3">
-                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 dark:hover:bg-muted/10 transition-colors">
-                  <RadioGroupItem value="light" id="light" />
-                  <Label htmlFor="light" className="flex items-center gap-2 cursor-pointer flex-1">
-                    <Sun className="h-4 w-4 text-yellow-500" />
-                    <span>Tema claro</span>
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 dark:hover:bg-muted/10 transition-colors">
-                  <RadioGroupItem value="dark" id="dark" />
-                  <Label htmlFor="dark" className="flex items-center gap-2 cursor-pointer flex-1">
-                    <Moon className="h-4 w-4 text-blue-500" />
-                    <span>Tema oscuro</span>
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 dark:hover:bg-muted/10 transition-colors">
-                  <RadioGroupItem value="system" id="system" />
-                  <Label htmlFor="system" className="flex items-center gap-2 cursor-pointer flex-1">
-                    <Monitor className="h-4 w-4 text-gray-500" />
-                    <span>Seguir sistema</span>
-                  </Label>
-                </div>
-              </RadioGroup>
-            </CardContent>
-          </Card>
-
           {/* Location Services */}
           <Card className="border-none shadow-xl">
             <CardHeader className="pb-3">
@@ -266,29 +179,6 @@ const Settings = () => {
                   checked={biometricEnabled}
                   onCheckedChange={handleBiometricToggle}
                 />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Additional Settings Placeholder */}
-          <Card className="border-none shadow-xl">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <SettingsIcon className="h-5 w-5 text-blue-600" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg">Configuración adicional</CardTitle>
-                  <CardDescription>
-                    Más opciones próximamente
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-center py-8 text-gray-500">
-                <SettingsIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Más configuraciones se añadirán pronto</p>
               </div>
             </CardContent>
           </Card>
