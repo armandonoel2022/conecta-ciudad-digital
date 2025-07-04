@@ -16,7 +16,7 @@ const Opportunities = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 p-4 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4 text-white mb-4">
@@ -35,8 +35,8 @@ const Opportunities = () => {
             <div className="space-y-8">
               {/* Welcome Section */}
               <div className="text-center">
-                <div className="mx-auto bg-purple-100 p-4 rounded-full w-fit mb-4">
-                  <Briefcase className="h-12 w-12 text-purple-600" />
+                <div className="mx-auto bg-blue-100 p-4 rounded-full w-fit mb-4">
+                  <Briefcase className="h-12 w-12 text-primary" />
                 </div>
                 <h2 className="text-3xl font-bold text-gray-800 mb-4">Oportunidades de Empleo</h2>
                 <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto mb-6">
@@ -46,7 +46,7 @@ const Opportunities = () => {
                 
                 <Button 
                   onClick={() => setShowForm(true)}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 text-lg"
+                  className="bg-gradient-to-r from-primary to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white px-8 py-3 text-lg"
                 >
                   <Plus className="mr-2 h-5 w-5" />
                   Nueva Aplicación
@@ -59,7 +59,7 @@ const Opportunities = () => {
                   <h3 className="text-xl font-semibold text-gray-800">Mis Aplicaciones</h3>
                   <div className="grid gap-4">
                     {applications.map((application) => (
-                      <Card key={application.id} className="border-l-4 border-l-purple-500">
+                      <Card key={application.id} className="border-l-4 border-l-primary">
                         <CardHeader className="pb-3">
                           <div className="flex items-center justify-between">
                             <CardTitle className="text-lg">{application.full_name}</CardTitle>
@@ -77,7 +77,7 @@ const Opportunities = () => {
                           <CardDescription>
                             {application.career_field} • {application.education_level}
                             {application.cv_file_name && (
-                              <span className="flex items-center mt-1 text-purple-600">
+                              <span className="flex items-center mt-1 text-primary">
                                 <FileText className="h-4 w-4 mr-1" />
                                 CV adjunto
                               </span>
@@ -101,7 +101,7 @@ const Opportunities = () => {
               )}
 
               {/* Information Section */}
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-6">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">¿Cómo funciona?</h3>
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="text-center">
@@ -115,8 +115,8 @@ const Opportunities = () => {
                   </div>
                   
                   <div className="text-center">
-                    <div className="bg-purple-100 p-3 rounded-full w-fit mx-auto mb-3">
-                      <Briefcase className="h-6 w-6 text-purple-600" />
+                    <div className="bg-blue-100 p-3 rounded-full w-fit mx-auto mb-3">
+                      <Briefcase className="h-6 w-6 text-primary" />
                     </div>
                     <h4 className="font-semibold text-gray-800">2. Sube tu CV</h4>
                     <p className="text-sm text-gray-600">

@@ -90,7 +90,7 @@ const AmberAlert = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-600 via-orange-600 to-red-700 p-4 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-amber via-orange-600 to-red-700 p-4 animate-fade-in">
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Hero Section */}
         <div className="bg-white/10 backdrop-blur-sm p-8 rounded-[2rem] shadow-xl text-center text-white relative overflow-hidden">
@@ -109,7 +109,7 @@ const AmberAlert = () => {
         {/* Amber Alert Form */}
         <Card className="bg-white/95 backdrop-blur-sm shadow-xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-amber-700">Crear Alerta Amber</CardTitle>
+            <CardTitle className="text-2xl text-amber-foreground">Crear Alerta Amber</CardTitle>
             <CardDescription>
               Completa toda la información disponible del menor desaparecido
             </CardDescription>
@@ -119,7 +119,7 @@ const AmberAlert = () => {
               {/* Child Information */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <User className="h-5 w-5 text-amber-600" />
+                  <User className="h-5 w-5 text-amber" />
                   <h3 className="text-lg font-semibold text-gray-800">Información del Menor</h3>
                 </div>
                 
@@ -201,7 +201,7 @@ const AmberAlert = () => {
               {/* Location and Time */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <MapPin className="h-5 w-5 text-amber-600" />
+                  <MapPin className="h-5 w-5 text-amber" />
                   <h3 className="text-lg font-semibold text-gray-800">Ubicación y Tiempo</h3>
                 </div>
                 
@@ -242,7 +242,7 @@ const AmberAlert = () => {
               {/* Contact Information */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <Phone className="h-5 w-5 text-amber-600" />
+                  <Phone className="h-5 w-5 text-amber" />
                   <h3 className="text-lg font-semibold text-gray-800">Información de Contacto</h3>
                 </div>
                 
@@ -281,12 +281,12 @@ const AmberAlert = () => {
                 />
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <AlertTriangle className="h-5 w-5 text-amber-600" />
-                  <h3 className="font-semibold text-amber-800">¿Qué sucederá?</h3>
+                  <AlertTriangle className="h-5 w-5 text-amber" />
+                  <h3 className="font-semibold text-orange-800">¿Qué sucederá?</h3>
                 </div>
-                <ul className="text-sm text-amber-700 space-y-1">
+                <ul className="text-sm text-orange-700 space-y-1">
                   <li>• Todos los usuarios verán la alerta en pantalla</li>
                   <li>• Se mostrará la información y foto del menor</li>
                   <li>• Las autoridades serán notificadas automáticamente</li>
@@ -297,7 +297,7 @@ const AmberAlert = () => {
               <Button 
                 type="submit"
                 disabled={loading || isCreating}
-                className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 text-lg rounded-xl shadow-lg"
+                className="w-full bg-amber hover:bg-orange-600 text-amber-foreground font-bold py-4 text-lg rounded-xl shadow-lg"
               >
                 {(loading || isCreating) ? (
                   "Creando alerta..."

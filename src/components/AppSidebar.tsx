@@ -47,17 +47,17 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
   return (
     <div className="flex flex-col h-full text-gray-700 bg-white/95 backdrop-blur-sm">
       <div className="p-6 flex items-center justify-center border-b border-gray-200">
-        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center mr-3">
+        <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center mr-3">
           <div className="w-5 h-5 bg-white rounded-md"></div>
         </div>
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">CiudadConecta</h1>
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">CiudadConecta</h1>
       </div>
 
       {/* User Info */}
       {user && (
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-500 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold text-sm">
                 {user.email?.charAt(0).toUpperCase()}
               </span>
@@ -82,13 +82,13 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
                 className={cn(
                   'flex items-center p-3 rounded-xl transition-all duration-200 group',
                   location.pathname === item.href 
-                    ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold shadow-lg' 
-                    : 'hover:bg-purple-50 hover:text-purple-700'
+                    ? 'bg-gradient-to-r from-primary to-blue-500 text-white font-semibold shadow-lg' 
+                    : 'hover:bg-blue-50 hover:text-primary'
                 )}
               >
                 <item.icon className={cn(
                   "w-5 h-5 mr-3",
-                  location.pathname === item.href ? "text-white" : "text-purple-600"
+                  location.pathname === item.href ? "text-white" : "text-primary"
                 )} />
                 <span className="text-sm">{item.label}</span>
               </Link>
@@ -104,13 +104,13 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
                 className={cn(
                   'flex items-center p-3 rounded-xl transition-all duration-200 group',
                   location.pathname === '/reportes'
-                    ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold shadow-lg' 
-                    : 'hover:bg-purple-50 hover:text-purple-700'
+                    ? 'bg-gradient-to-r from-primary to-blue-500 text-white font-semibold shadow-lg' 
+                    : 'hover:bg-blue-50 hover:text-primary'
                 )}
               >
                 <BarChart3 className={cn(
                   "w-5 h-5 mr-3",
-                  location.pathname === '/reportes' ? "text-white" : "text-purple-600"
+                  location.pathname === '/reportes' ? "text-white" : "text-primary"
                 )} />
                 <span className="text-sm">Reportes</span>
               </Link>
@@ -126,13 +126,13 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
                 className={cn(
                   'flex items-center p-3 rounded-xl transition-all duration-200 group',
                   location.pathname === '/gestion-usuarios'
-                    ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold shadow-lg' 
-                    : 'hover:bg-purple-50 hover:text-purple-700'
+                    ? 'bg-gradient-to-r from-primary to-blue-500 text-white font-semibold shadow-lg' 
+                    : 'hover:bg-blue-50 hover:text-primary'
                 )}
               >
                 <UserCog className={cn(
                   "w-5 h-5 mr-3",
-                  location.pathname === '/gestion-usuarios' ? "text-white" : "text-purple-600"
+                  location.pathname === '/gestion-usuarios' ? "text-white" : "text-primary"
                 )} />
                 <span className="text-sm">Gestión de Usuarios</span>
               </Link>
@@ -148,13 +148,13 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
           className={cn(
             'flex items-center p-3 rounded-xl transition-all duration-200',
             location.pathname === '/configuracion'
-              ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold shadow-lg'
-              : 'hover:bg-purple-50 hover:text-purple-700'
+              ? 'bg-gradient-to-r from-primary to-blue-500 text-white font-semibold shadow-lg'
+              : 'hover:bg-blue-50 hover:text-primary'
           )}
         >
           <Settings className={cn(
             "w-5 h-5 mr-3",
-            location.pathname === '/configuracion' ? "text-white" : "text-purple-600"
+            location.pathname === '/configuracion' ? "text-white" : "text-primary"
           )} />
           <span className="text-sm">Configuración</span>
         </Link>
@@ -164,13 +164,13 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
           className={cn(
             'flex items-center p-3 rounded-xl transition-all duration-200',
             location.pathname === '/ayuda'
-              ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold shadow-lg'
-              : 'hover:bg-purple-50 hover:text-purple-700'
+              ? 'bg-gradient-to-r from-primary to-blue-500 text-white font-semibold shadow-lg'
+              : 'hover:bg-blue-50 hover:text-primary'
           )}
         >
           <LifeBuoy className={cn(
             "w-5 h-5 mr-3",
-            location.pathname === '/ayuda' ? "text-white" : "text-purple-600"
+            location.pathname === '/ayuda' ? "text-white" : "text-primary"
           )} />
           <span className="text-sm">Ayuda</span>
         </Link>
