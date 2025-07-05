@@ -11,6 +11,9 @@ import GlobalPanicAlerts from "@/components/GlobalPanicAlerts";
 import GarbageAlert from "@/components/GarbageAlert";
 import TestMenu from "@/components/TestMenu";
 import { useGarbageAlerts } from "@/hooks/useGarbageAlerts";
+import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
+import { initializeAnalytics } from "@/lib/analytics";
+import { initializeSentry, SentryErrorBoundary } from "@/lib/sentry";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -33,9 +36,11 @@ import UserManagement from "./pages/UserManagement";
 import Reports from "./pages/Reports";
 import Tutorial from "./pages/Tutorial";
 import MisReportes from "./pages/MisReportes";
+import APMDashboard from "./pages/APMDashboard";
 
 const AppContent = () => {
   const { showAlert, dismissAlert, triggerTestAlert } = useGarbageAlerts();
+  const { measureOperation } = usePerformanceMonitoring();
 
   return (
     <>
@@ -73,6 +78,7 @@ const AppContent = () => {
           <Route path="/reportes" element={<Reports />} />
           <Route path="/tutorial" element={<Tutorial />} />
           <Route path="/mis-reportes" element={<MisReportes />} />
+          <Route path="/apm-dashboard" element={<APMDashboard />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
@@ -82,6 +88,12 @@ const AppContent = () => {
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
+
+  // Inicializar servicios de monitoreo
+  useEffect(() => {
+    initializeSentry();
+    initializeAnalytics();
+  }, []);
 
   // Inicializar tema desde localStorage
   useEffect(() => {
@@ -105,17 +117,32 @@ const App = () => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <AuthProvider>
-          <BrowserRouter>
-            <AppContent />
-          </BrowserRouter>
-        </AuthProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <SentryErrorBoundary fallback={({ error, resetError }) => (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center p-8">
+          <h1 className="text-2xl font-bold text-destructive mb-4">¡Oops! Algo salió mal</h1>
+          <p className="text-muted-foreground mb-4">Ha ocurrido un error inesperado.</p>
+          <button 
+            onClick={resetError}
+            className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
+          >
+            Intentar de nuevo
+          </button>
+        </div>
+      </div>
+    )}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <AuthProvider>
+            <BrowserRouter>
+              <AppContent />
+            </BrowserRouter>
+          </AuthProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </SentryErrorBoundary>
   );
 };
 

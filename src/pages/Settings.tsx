@@ -3,9 +3,10 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Fingerprint, LocateFixed, Moon, Sun } from "lucide-react";
+import { ArrowLeft, Fingerprint, LocateFixed, Moon, Sun, Activity } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
 const Settings = () => {
@@ -252,6 +253,75 @@ const Settings = () => {
                   onCheckedChange={handleBiometricToggle}
                 />
               </div>
+            </CardContent>
+          </Card>
+
+          {/* APM Configuration */}
+          <Card className="border-none shadow-xl">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-orange-100 rounded-lg">
+                  <Activity className="h-5 w-5 text-orange-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Monitoreo de Rendimiento</CardTitle>
+                  <CardDescription>
+                    Configurar Google Analytics y Sentry APM
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0 space-y-3">
+              <div className="p-3 rounded-lg bg-secondary">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="font-medium text-sm">Google Analytics ID</p>
+                  <Badge variant="outline">No configurado</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mb-2">
+                  ID de medición de Google Analytics (G-XXXXXXXXXX)
+                </p>
+                <input 
+                  type="text" 
+                  placeholder="G-XXXXXXXXXX" 
+                  className="w-full p-2 text-sm border rounded-md bg-background"
+                  onChange={(e) => {
+                    localStorage.setItem('ga_measurement_id', e.target.value);
+                    toast({
+                      title: "Google Analytics configurado",
+                      description: "Recarga la página para aplicar los cambios",
+                    });
+                  }}
+                />
+              </div>
+              
+              <div className="p-3 rounded-lg bg-secondary">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="font-medium text-sm">Sentry DSN</p>
+                  <Badge variant="outline">No configurado</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mb-2">
+                  DSN de tu proyecto Sentry para APM
+                </p>
+                <input 
+                  type="text" 
+                  placeholder="https://xxx@xxx.ingest.sentry.io/xxx" 
+                  className="w-full p-2 text-sm border rounded-md bg-background"
+                  onChange={(e) => {
+                    localStorage.setItem('sentry_dsn', e.target.value);
+                    toast({
+                      title: "Sentry DSN configurado",
+                      description: "Recarga la página para aplicar los cambios",
+                    });
+                  }}
+                />
+              </div>
+              
+              <Link 
+                to="/apm-dashboard" 
+                className="block w-full bg-orange-100 hover:bg-orange-200 text-orange-800 font-medium py-2 px-3 rounded-lg text-center text-sm transition-colors"
+              >
+                Ver Dashboard de APM
+              </Link>
             </CardContent>
           </Card>
         </div>
