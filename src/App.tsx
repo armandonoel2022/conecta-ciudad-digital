@@ -15,6 +15,7 @@ import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
 import { initializeAnalytics } from "@/lib/analytics";
 import { initializeSentry, SentryErrorBoundary } from "@/lib/sentry";
 import { useUserRoles } from "@/hooks/useUserRoles";
+import { useGlobalTestNotifications } from "@/hooks/useGlobalTestNotifications";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -43,13 +44,32 @@ const AppContent = () => {
   const { showAlert, dismissAlert, triggerTestAlert } = useGarbageAlerts();
   const { measureOperation } = usePerformanceMonitoring();
   const { isAdmin } = useUserRoles();
+  const { activeNotification, triggerGlobalNotification, dismissNotification } = useGlobalTestNotifications();
+
+  // Mostrar alerta global si hay una notificación activa
+  const shouldShowGarbageAlert = showAlert || (activeNotification?.notification_type === 'garbage_alert');
+
+  const handleGlobalTestAlert = async () => {
+    const success = await triggerGlobalNotification('garbage_alert', 'Prueba de alerta de recolección de basura');
+    if (success) {
+      console.log('Alerta global de basura enviada a todos los dispositivos');
+    }
+  };
 
   return (
     <>
       <GlobalAmberAlerts />
       <GlobalPanicAlerts />
-      <GarbageAlert isVisible={showAlert} onDismiss={dismissAlert} />
-      {isAdmin && <TestMenu onTriggerGarbageAlert={triggerTestAlert} />}
+      <GarbageAlert 
+        isVisible={shouldShowGarbageAlert} 
+        onDismiss={() => {
+          dismissAlert();
+          if (activeNotification) {
+            dismissNotification();
+          }
+        }} 
+      />
+      {isAdmin && <TestMenu onTriggerGarbageAlert={handleGlobalTestAlert} />}
       <Routes>
         <Route path="/auth" element={<Auth />} />
         <Route path="/perfil-setup" element={

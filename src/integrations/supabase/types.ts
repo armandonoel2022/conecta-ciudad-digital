@@ -233,6 +233,36 @@ export type Database = {
         }
         Relationships: []
       }
+      global_test_notifications: {
+        Row: {
+          expires_at: string
+          id: string
+          is_active: boolean
+          message: string | null
+          notification_type: string
+          triggered_at: string
+          triggered_by: string
+        }
+        Insert: {
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          message?: string | null
+          notification_type: string
+          triggered_at?: string
+          triggered_by: string
+        }
+        Update: {
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          message?: string | null
+          notification_type?: string
+          triggered_at?: string
+          triggered_by?: string
+        }
+        Relationships: []
+      }
       help_messages: {
         Row: {
           admin_response: string | null
@@ -622,6 +652,10 @@ export type Database = {
     }
     Functions: {
       deactivate_expired_panic_alerts: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      deactivate_expired_test_notifications: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
