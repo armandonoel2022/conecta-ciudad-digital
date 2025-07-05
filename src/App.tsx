@@ -50,9 +50,15 @@ const AppContent = () => {
   const shouldShowGarbageAlert = showAlert || (activeNotification?.notification_type === 'garbage_alert');
 
   const handleGlobalTestAlert = async () => {
+    console.log('Handling global test alert...');
     const success = await triggerGlobalNotification('garbage_alert', 'Prueba de alerta de recolección de basura');
     if (success) {
       console.log('Alerta global de basura enviada a todos los dispositivos');
+      // También activar la alerta local como fallback
+      triggerTestAlert();
+    } else {
+      console.error('Error enviando alerta global, usando alerta local');
+      triggerTestAlert();
     }
   };
 

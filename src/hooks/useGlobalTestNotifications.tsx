@@ -19,6 +19,8 @@ export const useGlobalTestNotifications = () => {
   useEffect(() => {
     if (!user) return;
 
+    console.log('Setting up global test notifications subscription');
+
     // Escuchar cambios en tiempo real
     const channel = supabase
       .channel('global-test-notifications')
@@ -30,29 +32,39 @@ export const useGlobalTestNotifications = () => {
           table: 'global_test_notifications'
         },
         (payload) => {
+          console.log('Realtime notification received:', payload);
           const notification = payload.new as GlobalTestNotification;
           if (notification.is_active && new Date(notification.expires_at) > new Date()) {
+            console.log('Activating notification:', notification.notification_type);
             setActiveNotification(notification);
-            console.log('Nueva notificación global recibida:', notification.notification_type);
             
             // Auto-dismiss después del tiempo de expiración
             const timeToExpire = new Date(notification.expires_at).getTime() - Date.now();
             setTimeout(() => {
+              console.log('Auto-dismissing notification');
               setActiveNotification(null);
             }, Math.max(0, timeToExpire));
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+      });
 
     // Cleanup
     return () => {
+      console.log('Cleaning up global test notifications subscription');
       supabase.removeChannel(channel);
     };
   }, [user]);
 
   const triggerGlobalNotification = async (type: string, message?: string) => {
-    if (!user) return false;
+    if (!user) {
+      console.error('No user found for triggering notification');
+      return false;
+    }
+
+    console.log('Triggering global notification:', type);
 
     try {
       const { error } = await supabase
@@ -77,6 +89,7 @@ export const useGlobalTestNotifications = () => {
   };
 
   const dismissNotification = () => {
+    console.log('Dismissing notification manually');
     setActiveNotification(null);
   };
 
