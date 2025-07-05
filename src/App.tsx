@@ -14,6 +14,7 @@ import { useGarbageAlerts } from "@/hooks/useGarbageAlerts";
 import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
 import { initializeAnalytics } from "@/lib/analytics";
 import { initializeSentry, SentryErrorBoundary } from "@/lib/sentry";
+import { useUserRoles } from "@/hooks/useUserRoles";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -41,13 +42,14 @@ import APMDashboard from "./pages/APMDashboard";
 const AppContent = () => {
   const { showAlert, dismissAlert, triggerTestAlert } = useGarbageAlerts();
   const { measureOperation } = usePerformanceMonitoring();
+  const { isAdmin } = useUserRoles();
 
   return (
     <>
       <GlobalAmberAlerts />
       <GlobalPanicAlerts />
       <GarbageAlert isVisible={showAlert} onDismiss={dismissAlert} />
-      <TestMenu onTriggerGarbageAlert={triggerTestAlert} />
+      {isAdmin && <TestMenu onTriggerGarbageAlert={triggerTestAlert} />}
       <Routes>
         <Route path="/auth" element={<Auth />} />
         <Route path="/perfil-setup" element={

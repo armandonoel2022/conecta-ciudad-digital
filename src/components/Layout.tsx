@@ -16,12 +16,16 @@ const Layout = () => {
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="md:hidden flex items-center justify-between p-4 bg-white/10 backdrop-blur-sm border-b border-white/20">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-500 rounded-lg flex items-center justify-center">
+          <Button 
+            variant="ghost" 
+            onClick={() => setSidebarOpen(!sidebarOpen)} 
+            className="flex items-center space-x-3 text-white hover:bg-white/20 px-3 py-2 rounded-xl transition-all duration-300 hover:scale-105"
+          >
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-500 rounded-lg flex items-center justify-center transition-transform duration-300 hover:rotate-180">
               <div className="w-4 h-4 bg-white rounded-sm"></div>
             </div>
-            <h1 className="text-xl font-bold text-white">CiudadConecta</h1>
-          </div>
+            <h1 className="text-xl font-bold">CiudadConecta</h1>
+          </Button>
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)} className="text-white hover:bg-white/20">
             {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
