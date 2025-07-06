@@ -12,6 +12,7 @@ import GarbageAlert from "@/components/GarbageAlert";
 import TestMenu from "@/components/TestMenu";
 import { useGarbageAlerts } from "@/hooks/useGarbageAlerts";
 import { useAmberAlerts } from "@/hooks/useAmberAlerts";
+import { usePanicAlerts } from "@/hooks/usePanicAlerts";
 import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
 import { initializeAnalytics } from "@/lib/analytics";
 import { initializeSentry, SentryErrorBoundary } from "@/lib/sentry";
@@ -47,6 +48,7 @@ import CommunityMessages from "./pages/CommunityMessages";
 const AppContent = () => {
   const { showAlert, dismissAlert, triggerTestAlert } = useGarbageAlerts();
   const { createAmberAlert } = useAmberAlerts();
+  const { createPanicAlert } = usePanicAlerts();
   const { measureOperation } = usePerformanceMonitoring();
   const { isAdmin } = useUserRoles();
   const { activeNotification, triggerGlobalNotification, dismissNotification } = useGlobalTestNotifications();
@@ -84,6 +86,19 @@ const AppContent = () => {
     }
   };
 
+  const handlePanicAlertTest = async () => {
+    try {
+      await createPanicAlert({
+        latitude: 18.4647,
+        longitude: -69.9302,
+        address: "Calle Pedro Henríquez Ureña #123, Santiago de los Caballeros, República Dominicana"
+      });
+      console.log('Alerta de pánico de prueba creada exitosamente');
+    } catch (error) {
+      console.error('Error creando alerta de pánico de prueba:', error);
+    }
+  };
+
   return (
     <>
       <GlobalAmberAlerts />
@@ -97,7 +112,7 @@ const AppContent = () => {
           }
         }} 
       />
-      {isAdmin && <TestMenu onTriggerGarbageAlert={handleGlobalTestAlert} onTriggerAmberAlert={handleAmberAlertTest} />}
+      {isAdmin && <TestMenu onTriggerGarbageAlert={handleGlobalTestAlert} onTriggerAmberAlert={handleAmberAlertTest} onTriggerPanicAlert={handlePanicAlertTest} />}
       <Routes>
         <Route path="/auth" element={<Auth />} />
         <Route path="/perfil-setup" element={

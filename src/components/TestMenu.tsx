@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Truck, TestTube, AlertTriangle, Volume2 } from 'lucide-react';
+import { Truck, TestTube, AlertTriangle, Zap } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,26 +10,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useAlertSound } from '@/hooks/useAlertSound';
 
 interface TestMenuProps {
   onTriggerGarbageAlert: () => void;
   onTriggerAmberAlert: () => void;
+  onTriggerPanicAlert: () => void;
 }
 
-const TestMenu: React.FC<TestMenuProps> = ({ onTriggerGarbageAlert, onTriggerAmberAlert }) => {
-  const { playAlertSound, isAudioReady } = useAlertSound();
-
-  const handleTestAmberSound = () => {
-    console.log('Testing Amber alert sound...');
-    playAlertSound('amber');
-  };
-
-  const handleTestPanicSound = () => {
-    console.log('Testing Panic alert sound...');
-    playAlertSound('panic');
-  };
-
+const TestMenu: React.FC<TestMenuProps> = ({ onTriggerGarbageAlert, onTriggerAmberAlert, onTriggerPanicAlert }) => {
   return (
     <div className="fixed top-4 right-4 z-50">
       <DropdownMenu>
@@ -49,14 +37,9 @@ const TestMenu: React.FC<TestMenuProps> = ({ onTriggerGarbageAlert, onTriggerAmb
             <AlertTriangle className="mr-2 h-4 w-4" />
             <span>Probar Alerta Amber</span>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleTestAmberSound} disabled={!isAudioReady}>
-            <Volume2 className="mr-2 h-4 w-4" />
-            <span>Probar Sonido Amber</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleTestPanicSound} disabled={!isAudioReady}>
-            <Volume2 className="mr-2 h-4 w-4" />
-            <span>Probar Sonido Pánico</span>
+          <DropdownMenuItem onClick={onTriggerPanicAlert}>
+            <Zap className="mr-2 h-4 w-4" />
+            <span>Probar Alerta de Pánico</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
