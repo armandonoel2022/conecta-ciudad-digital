@@ -65,29 +65,14 @@ export const useUserRoles = () => {
     }
 
     try {
-      // Verificar si el usuario ya tiene este rol activo
-      const { data: existingRole } = await supabase
-        .from('user_roles')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('role', role)
-        .eq('is_active', true)
-        .single();
-
-      // Si ya tiene el rol activo, no hacer nada
-      if (existingRole) {
-        console.log(`El usuario ya tiene el rol ${role} activo`);
-        return true;
-      }
-
-      // Desactivar TODOS los roles existentes del usuario
+      // Primero desactivar TODOS los roles existentes del usuario
       await supabase
         .from('user_roles')
         .update({ is_active: false })
         .eq('user_id', userId)
         .eq('is_active', true);
 
-      // Asignar el nuevo rol
+      // Ahora asignar el nuevo rol (siempre insertar, no verificar duplicados)
       const { error } = await supabase
         .from('user_roles')
         .insert({
@@ -112,13 +97,27 @@ export const useUserRoles = () => {
     }
 
     try {
-      const { error } = await supabase
+      // Desactivar el rol específico
+      await supabase
         .from('user_roles')
         .update({ is_active: false })
         .eq('user_id', userId)
-        .eq('role', role);
+        .eq('role', role)
+        .eq('is_active', true);
 
-      if (error) throw error;
+      // Si no es community_user, asignar community_user como rol por defecto
+      if (role !== 'community_user') {
+        const { error } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: userId,
+            role: 'community_user',
+            assigned_by: user.id
+          });
+
+        if (error) throw error;
+        console.log(`Rol community_user asignado como predeterminado al usuario ${userId}`);
+      }
       
       console.log(`Rol ${role} removido exitosamente del usuario ${userId}`);
       return true;
