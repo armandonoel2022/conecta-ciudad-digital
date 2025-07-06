@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PanicAlert } from '@/hooks/usePanicAlerts';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useAlertSound } from '@/hooks/useAlertSound';
 
 interface PanicAlertOverlayProps {
   alert: PanicAlert;
@@ -15,7 +16,8 @@ interface PanicAlertOverlayProps {
 
 const PanicAlertOverlay: React.FC<PanicAlertOverlayProps> = ({ alert, onDismiss }) => {
   const [isFlashing, setIsFlashing] = useState(true);
-  const [audioPlayed, setAudioPlayed] = useState(false);
+  const [alertTriggered, setAlertTriggered] = useState(false);
+  const { triggerAlert } = useAlertSound();
   
   const timeLeft = new Date(alert.expires_at).getTime() - new Date().getTime();
   const isExpired = timeLeft <= 0;
@@ -25,15 +27,19 @@ const PanicAlertOverlay: React.FC<PanicAlertOverlayProps> = ({ alert, onDismiss 
       setIsFlashing(prev => !prev);
     }, 800);
 
-    // Play alert sound
-    if (!audioPlayed) {
-      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+L1v2oTBje+9+zfhz8J');
-      audio.play().catch(e => console.log('Audio play failed:', e));
-      setAudioPlayed(true);
+    // Trigger alert sound and notification
+    if (!alertTriggered && !isExpired) {
+      triggerAlert({
+        type: 'panic',
+        title: '¡ALERTA DE PÁNICO!',
+        message: `Emergencia activada por ${alert.user_full_name}. ${alert.address ? `Ubicación: ${alert.address}` : 'Ubicación no disponible'}`,
+        autoPlay: true
+      });
+      setAlertTriggered(true);
     }
 
     return () => clearInterval(flashInterval);
-  }, [audioPlayed]);
+  }, [alertTriggered, triggerAlert, alert, isExpired]);
 
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleString('es-CO', {

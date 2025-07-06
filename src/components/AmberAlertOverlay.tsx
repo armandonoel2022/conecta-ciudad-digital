@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, Phone, MapPin, X, Clock, User } from 'lucide-react';
 import { AmberAlert } from '@/hooks/useAmberAlerts';
+import { useAlertSound } from '@/hooks/useAlertSound';
 
 interface AmberAlertOverlayProps {
   alert: AmberAlert;
@@ -13,22 +14,27 @@ interface AmberAlertOverlayProps {
 
 const AmberAlertOverlay = ({ alert, onResolve, onReport }: AmberAlertOverlayProps) => {
   const [isFlashing, setIsFlashing] = useState(true);
-  const [audioPlayed, setAudioPlayed] = useState(false);
+  const [alertTriggered, setAlertTriggered] = useState(false);
+  const { triggerAlert } = useAlertSound();
 
   useEffect(() => {
     const flashInterval = setInterval(() => {
       setIsFlashing(prev => !prev);
     }, 800);
 
-    // Play alert sound
-    if (!audioPlayed) {
-      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+L1v2oTBje+9+zfhz8J');
-      audio.play().catch(e => console.log('Audio play failed:', e));
-      setAudioPlayed(true);
+    // Trigger alert sound and notification
+    if (!alertTriggered) {
+      triggerAlert({
+        type: 'amber',
+        title: '¡ALERTA AMBER!',
+        message: `Menor desaparecido: ${alert.child_full_name}. Última vez visto en: ${alert.last_seen_location}`,
+        autoPlay: true
+      });
+      setAlertTriggered(true);
     }
 
     return () => clearInterval(flashInterval);
-  }, [audioPlayed]);
+  }, [alertTriggered, triggerAlert, alert]);
 
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleString('es-CO', {
@@ -86,7 +92,7 @@ const AmberAlertOverlay = ({ alert, onResolve, onReport }: AmberAlertOverlayProp
                     <img 
                       src={alert.child_photo_url} 
                       alt={alert.child_full_name}
-                      className="w-full h-48 object-cover rounded-lg border-2 border-white/30"
+                      className="w-full h-48 object-contain bg-white/10 rounded-lg border-2 border-white/30"
                     />
                   </div>
                 )}
