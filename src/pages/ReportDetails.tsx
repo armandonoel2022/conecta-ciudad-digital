@@ -51,6 +51,7 @@ const ReportDetails = () => {
   
   // Admin fields
   const [newStatus, setNewStatus] = useState<string>("");
+  const [newPriority, setNewPriority] = useState<string>("");
   const [resolutionNotes, setResolutionNotes] = useState<string>("");
 
   useEffect(() => {
@@ -74,6 +75,7 @@ const ReportDetails = () => {
 
       setReport(reportData);
       setNewStatus(reportData.status);
+      setNewPriority(reportData.priority || "media");
       setResolutionNotes(reportData.resolution_notes || "");
 
       // Fetch reporter profile
@@ -108,6 +110,7 @@ const ReportDetails = () => {
       
       const updateData: any = {
         status: newStatus,
+        priority: newPriority,
         resolution_notes: resolutionNotes,
         updated_at: new Date().toISOString()
       };
@@ -341,8 +344,8 @@ const ReportDetails = () => {
               </div>
             )}
 
-            {/* Admin Controls */}
-            {canEditReport && (
+            {/* Admin Controls - Only show in management context, not in user's own reports */}
+            {canEditReport && !isOwner && (
               <div className="border-t pt-6">
                 <h3 className="font-semibold text-gray-800 mb-4">Gestión Administrativa</h3>
                 <div className="space-y-4">
@@ -358,6 +361,20 @@ const ReportDetails = () => {
                           <SelectItem value="en_proceso">En Proceso</SelectItem>
                           <SelectItem value="resuelto">Resuelto</SelectItem>
                           <SelectItem value="rechazado">Rechazado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Prioridad</label>
+                      <Select value={newPriority} onValueChange={setNewPriority}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="baja">Baja</SelectItem>
+                          <SelectItem value="media">Media</SelectItem>
+                          <SelectItem value="alta">Alta</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

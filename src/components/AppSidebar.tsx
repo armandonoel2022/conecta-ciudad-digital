@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, Megaphone, Recycle, Trophy, Settings, LifeBuoy, Users, Briefcase, GitCompare, 
-  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LogOut, UserCog, BarChart3
+  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LogOut, UserCog, BarChart3, FileText, ClipboardList
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -95,7 +95,51 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
             </li>
           ))}
           
+          {/* Mis Reportes - Available for all authenticated users */}
+          {user && (
+            <li>
+              <Link
+                to="/mis-reportes"
+                onClick={handleLinkClick}
+                className={cn(
+                  'flex items-center p-3 rounded-xl transition-all duration-200 group',
+                  location.pathname === '/mis-reportes'
+                    ? 'bg-gradient-to-r from-primary to-blue-500 text-primary-foreground font-semibold shadow-lg' 
+                    : 'hover:bg-accent hover:text-accent-foreground'
+                )}
+              >
+                <FileText className={cn(
+                  "w-5 h-5 mr-3",
+                  location.pathname === '/mis-reportes' ? "text-primary-foreground" : "text-primary"
+                )} />
+                <span className="text-sm">Mis Reportes</span>
+              </Link>
+            </li>
+          )}
+          
           {/* Admin and Community Leader menu items */}
+          {(isAdmin || isCommunityLeader) && (
+            <li>
+              <Link
+                to="/gestion-reportes"
+                onClick={handleLinkClick}
+                className={cn(
+                  'flex items-center p-3 rounded-xl transition-all duration-200 group',
+                  location.pathname === '/gestion-reportes'
+                    ? 'bg-gradient-to-r from-primary to-blue-500 text-primary-foreground font-semibold shadow-lg' 
+                    : 'hover:bg-accent hover:text-accent-foreground'
+                )}
+              >
+                <ClipboardList className={cn(
+                  "w-5 h-5 mr-3",
+                  location.pathname === '/gestion-reportes' ? "text-primary-foreground" : "text-primary"
+                )} />
+                <span className="text-sm">Gestionar Reportes</span>
+              </Link>
+            </li>
+          )}
+          
+          {/* Reports Analytics */}
           {(isAdmin || isCommunityLeader) && (
             <li>
               <Link
@@ -112,7 +156,7 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
                   "w-5 h-5 mr-3",
                   location.pathname === '/reportes' ? "text-primary-foreground" : "text-primary"
                 )} />
-                <span className="text-sm">Reportes</span>
+                <span className="text-sm">Análisis de Reportes</span>
               </Link>
             </li>
           )}

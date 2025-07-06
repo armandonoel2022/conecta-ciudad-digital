@@ -312,7 +312,7 @@ const ReportsManagement = () => {
                             
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-500">
                               <div>
-                                <strong>Reportado por:</strong> {getUserDisplayName()}
+                                <strong>Reportado por:</strong> Usuario #{report.user_id.slice(-8)}
                               </div>
                               <div>
                                 <strong>Fecha:</strong> {format(new Date(report.created_at), 'dd/MM/yyyy HH:mm', { locale: es })}
