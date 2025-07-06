@@ -65,33 +65,27 @@ export const useUserRoles = () => {
     }
 
     try {
-      // Definir jerarquía de roles
-      const roleHierarchy = {
-        'community_user': 1,
-        'community_leader': 2,
-        'admin': 3
-      };
+      // Verificar si el usuario ya tiene este rol activo
+      const { data: existingRole } = await supabase
+        .from('user_roles')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('role', role)
+        .eq('is_active', true)
+        .single();
 
-      // Si se asigna un rol superior, desactivar roles inferiores
-      if (role === 'admin' || role === 'community_leader') {
-        const rolesToDeactivate = [];
-        
-        if (role === 'admin') {
-          rolesToDeactivate.push('community_user', 'community_leader');
-        } else if (role === 'community_leader') {
-          rolesToDeactivate.push('community_user');
-        }
-
-        // Desactivar roles inferiores
-        for (const roleToDeactivate of rolesToDeactivate) {
-          await supabase
-            .from('user_roles')
-            .update({ is_active: false })
-            .eq('user_id', userId)
-            .eq('role', roleToDeactivate)
-            .eq('is_active', true);
-        }
+      // Si ya tiene el rol activo, no hacer nada
+      if (existingRole) {
+        console.log(`El usuario ya tiene el rol ${role} activo`);
+        return true;
       }
+
+      // Desactivar TODOS los roles existentes del usuario
+      await supabase
+        .from('user_roles')
+        .update({ is_active: false })
+        .eq('user_id', userId)
+        .eq('is_active', true);
 
       // Asignar el nuevo rol
       const { error } = await supabase
