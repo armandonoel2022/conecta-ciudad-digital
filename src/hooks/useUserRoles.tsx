@@ -65,23 +65,28 @@ export const useUserRoles = () => {
     }
 
     try {
-      // Primero desactivar TODOS los roles existentes del usuario
+      // Primero asignar el nuevo rol (ON CONFLICT para evitar duplicados)
+      const { error: insertError } = await supabase
+        .from('user_roles')
+        .upsert({
+          user_id: userId,
+          role: role,
+          assigned_by: user.id,
+          is_active: true
+        }, {
+          onConflict: 'user_id,role',
+          ignoreDuplicates: false
+        });
+
+      if (insertError) throw insertError;
+
+      // Luego desactivar SOLO los otros roles (no el que acabamos de asignar)
       await supabase
         .from('user_roles')
         .update({ is_active: false })
         .eq('user_id', userId)
+        .neq('role', role)
         .eq('is_active', true);
-
-      // Ahora asignar el nuevo rol (siempre insertar, no verificar duplicados)
-      const { error } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: userId,
-          role: role,
-          assigned_by: user.id
-        });
-
-      if (error) throw error;
       
       console.log(`Rol ${role} asignado exitosamente al usuario ${userId}`);
       return true;
