@@ -161,6 +161,17 @@ const UserRoleManager = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex-1" />
+            <Button
+              variant="outline"
+              onClick={fetchUsersWithRoles}
+              disabled={loading}
+              className="ml-auto"
+            >
+              {loading ? 'Actualizando...' : 'Actualizar Lista'}
+            </Button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Select value={selectedUser} onValueChange={setSelectedUser}>
               <SelectTrigger>
