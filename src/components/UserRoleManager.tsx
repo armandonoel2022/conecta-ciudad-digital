@@ -43,6 +43,7 @@ const UserRoleManager = () => {
   const fetchUsersWithRoles = async () => {
     try {
       setLoading(true);
+      console.log('Iniciando carga de usuarios...');
       
       // Método simple y directo - obtener todos los perfiles
       const { data: allProfiles, error: profilesError } = await supabase
@@ -50,16 +51,35 @@ const UserRoleManager = () => {
         .select('id, full_name, first_name, last_name, created_at')
         .order('created_at', { ascending: false });
         
-      if (profilesError) throw profilesError;
+      console.log('Perfiles obtenidos:', allProfiles?.length, allProfiles);
+        
+      if (profilesError) {
+        console.error('Error obteniendo perfiles:', profilesError);
+        throw profilesError;
+      }
+      
+      if (!allProfiles || allProfiles.length === 0) {
+        console.log('No se encontraron perfiles');
+        setUsers([]);
+        return;
+      }
       
       // Para cada perfil, obtener sus roles
+      console.log('Obteniendo roles para cada perfil...');
       const usersWithRoles = await Promise.all(
-        (allProfiles || []).map(async (profile) => {
-          const { data: roles } = await supabase
+        allProfiles.map(async (profile, index) => {
+          console.log(`Obteniendo roles para usuario ${index + 1}:`, profile.full_name);
+          const { data: roles, error: rolesError } = await supabase
             .from('user_roles')
             .select('role')
             .eq('user_id', profile.id)
             .eq('is_active', true);
+          
+          if (rolesError) {
+            console.error(`Error obteniendo roles para ${profile.full_name}:`, rolesError);
+          } else {
+            console.log(`Roles para ${profile.full_name}:`, roles);
+          }
           
           return {
             ...profile,
@@ -68,11 +88,11 @@ const UserRoleManager = () => {
         })
       );
       
-      console.log('Usuarios cargados:', usersWithRoles.length);
+      console.log('Usuarios finales con roles:', usersWithRoles);
       setUsers(usersWithRoles);
 
     } catch (error) {
-      console.error('Error fetching users with roles:', error);
+      console.error('Error general en fetchUsersWithRoles:', error);
       toast({
         title: 'Error',
         description: 'No se pudieron cargar los usuarios y roles',
