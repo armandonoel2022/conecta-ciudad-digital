@@ -65,6 +65,35 @@ export const useUserRoles = () => {
     }
 
     try {
+      // Definir jerarquía de roles
+      const roleHierarchy = {
+        'community_user': 1,
+        'community_leader': 2,
+        'admin': 3
+      };
+
+      // Si se asigna un rol superior, desactivar roles inferiores
+      if (role === 'admin' || role === 'community_leader') {
+        const rolesToDeactivate = [];
+        
+        if (role === 'admin') {
+          rolesToDeactivate.push('community_user', 'community_leader');
+        } else if (role === 'community_leader') {
+          rolesToDeactivate.push('community_user');
+        }
+
+        // Desactivar roles inferiores
+        for (const roleToDeactivate of rolesToDeactivate) {
+          await supabase
+            .from('user_roles')
+            .update({ is_active: false })
+            .eq('user_id', userId)
+            .eq('role', roleToDeactivate)
+            .eq('is_active', true);
+        }
+      }
+
+      // Asignar el nuevo rol
       const { error } = await supabase
         .from('user_roles')
         .insert({
