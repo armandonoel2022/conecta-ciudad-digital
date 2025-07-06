@@ -17,7 +17,7 @@ interface PanicAlertOverlayProps {
 const PanicAlertOverlay: React.FC<PanicAlertOverlayProps> = ({ alert, onDismiss }) => {
   const [isFlashing, setIsFlashing] = useState(true);
   const [alertTriggered, setAlertTriggered] = useState(false);
-  const { triggerAlert } = useAlertSound();
+  const { triggerAlert, forceInitAudio } = useAlertSound();
   
   const timeLeft = new Date(alert.expires_at).getTime() - new Date().getTime();
   const isExpired = timeLeft <= 0;
@@ -29,12 +29,17 @@ const PanicAlertOverlay: React.FC<PanicAlertOverlayProps> = ({ alert, onDismiss 
 
     // Trigger alert sound and notification
     if (!alertTriggered && !isExpired) {
-      triggerAlert({
-        type: 'panic',
-        title: '¡ALERTA DE PÁNICO!',
-        message: `Emergencia activada por ${alert.user_full_name}. ${alert.address ? `Ubicación: ${alert.address}` : 'Ubicación no disponible'}`,
-        autoPlay: true
-      });
+      const triggerSound = async () => {
+        console.log('Triggering panic alert sound...');
+        await forceInitAudio();
+        await triggerAlert({
+          type: 'panic',
+          title: '¡ALERTA DE PÁNICO!',
+          message: `Emergencia activada por ${alert.user_full_name}. ${alert.address ? `Ubicación: ${alert.address}` : 'Ubicación no disponible'}`,
+          autoPlay: true
+        });
+      };
+      triggerSound();
       setAlertTriggered(true);
     }
 

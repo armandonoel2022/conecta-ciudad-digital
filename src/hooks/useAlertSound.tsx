@@ -10,6 +10,7 @@ interface AlertSoundOptions {
 export const useAlertSound = () => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [hasPermission, setHasPermission] = useState(false);
+  const [audioInitialized, setAudioInitialized] = useState(false);
 
   // Initialize audio context and check permissions
   useEffect(() => {
@@ -21,24 +22,32 @@ export const useAlertSound = () => {
           setHasPermission(permission === 'granted');
         }
 
-        // Initialize audio context on first user interaction
+        // Initialize audio context immediately
         const initAudioContext = () => {
           try {
             const context = new (window.AudioContext || (window as any).webkitAudioContext)();
             setAudioContext(context);
+            setAudioInitialized(true);
             console.log('Audio context initialized successfully');
             
             // Remove event listeners after initialization
             document.removeEventListener('click', initAudioContext);
             document.removeEventListener('touchstart', initAudioContext);
+            document.removeEventListener('keydown', initAudioContext);
           } catch (error) {
             console.error('Error initializing audio context:', error);
           }
         };
 
-        // Add event listeners for user interaction
-        document.addEventListener('click', initAudioContext, { once: true });
-        document.addEventListener('touchstart', initAudioContext, { once: true });
+        // Try to initialize immediately
+        initAudioContext();
+
+        // If it fails due to autoplay policy, add event listeners for user interaction
+        if (!audioInitialized) {
+          document.addEventListener('click', initAudioContext, { once: true });
+          document.addEventListener('touchstart', initAudioContext, { once: true });
+          document.addEventListener('keydown', initAudioContext, { once: true });
+        }
       } catch (error) {
         console.error('Error initializing audio:', error);
       }
@@ -124,10 +133,42 @@ export const useAlertSound = () => {
     return notification;
   }, [hasPermission]);
 
+  // Force initialize audio context
+  const forceInitAudio = useCallback(async () => {
+    if (audioContext && audioContext.state === 'suspended') {
+      try {
+        await audioContext.resume();
+        console.log('Audio context resumed successfully');
+        return true;
+      } catch (error) {
+        console.error('Error resuming audio context:', error);
+        return false;
+      }
+    }
+    
+    if (!audioContext) {
+      try {
+        const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+        setAudioContext(context);
+        setAudioInitialized(true);
+        console.log('Audio context force initialized successfully');
+        return true;
+      } catch (error) {
+        console.error('Error force initializing audio context:', error);
+        return false;
+      }
+    }
+    
+    return true;
+  }, [audioContext]);
+
   // Main alert function
-  const triggerAlert = useCallback((options: AlertSoundOptions) => {
+  const triggerAlert = useCallback(async (options: AlertSoundOptions) => {
+    // Force initialize audio before playing
+    const audioReady = await forceInitAudio();
+    
     // Play sound
-    if (options.autoPlay !== false) {
+    if (options.autoPlay !== false && audioReady) {
       playAlertSound(options.type);
     }
 
@@ -144,12 +185,13 @@ export const useAlertSound = () => {
         navigator.vibrate([200, 100, 200, 100, 200, 100, 800]);
       }
     }
-  }, [playAlertSound, showNotification]);
+  }, [playAlertSound, showNotification, forceInitAudio]);
 
   return {
     triggerAlert,
     playAlertSound,
+    forceInitAudio,
     hasPermission,
-    isAudioReady: !!audioContext
+    isAudioReady: !!audioContext && audioInitialized
   };
 };

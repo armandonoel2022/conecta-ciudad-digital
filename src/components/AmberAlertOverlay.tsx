@@ -15,7 +15,7 @@ interface AmberAlertOverlayProps {
 const AmberAlertOverlay = ({ alert, onResolve, onReport }: AmberAlertOverlayProps) => {
   const [isFlashing, setIsFlashing] = useState(true);
   const [alertTriggered, setAlertTriggered] = useState(false);
-  const { triggerAlert } = useAlertSound();
+  const { triggerAlert, forceInitAudio } = useAlertSound();
 
   useEffect(() => {
     const flashInterval = setInterval(() => {
@@ -24,12 +24,17 @@ const AmberAlertOverlay = ({ alert, onResolve, onReport }: AmberAlertOverlayProp
 
     // Trigger alert sound and notification
     if (!alertTriggered) {
-      triggerAlert({
-        type: 'amber',
-        title: '¡ALERTA AMBER!',
-        message: `Menor desaparecido: ${alert.child_full_name}. Última vez visto en: ${alert.last_seen_location}`,
-        autoPlay: true
-      });
+      const triggerSound = async () => {
+        console.log('Triggering amber alert sound...');
+        await forceInitAudio();
+        await triggerAlert({
+          type: 'amber',
+          title: '¡ALERTA AMBER!',
+          message: `Menor desaparecido: ${alert.child_full_name}. Última vez visto en: ${alert.last_seen_location}`,
+          autoPlay: true
+        });
+      };
+      triggerSound();
       setAlertTriggered(true);
     }
 
