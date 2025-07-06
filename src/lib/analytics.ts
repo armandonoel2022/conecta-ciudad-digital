@@ -3,14 +3,15 @@ import ReactGA from 'react-ga4';
 // Configuración de Google Analytics
 const getGAMeasurementId = () => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('ga_measurement_id') || 'G-XXXXXXXXXX';
+    const storedId = localStorage.getItem('ga_measurement_id');
+    return storedId && storedId !== 'G-XXXXXXXXXX' ? storedId : null;
   }
-  return 'G-XXXXXXXXXX';
+  return null;
 };
 
 export const initializeAnalytics = () => {
   const GA_MEASUREMENT_ID = getGAMeasurementId();
-  if (typeof window !== 'undefined' && GA_MEASUREMENT_ID !== 'G-XXXXXXXXXX') {
+  if (typeof window !== 'undefined' && GA_MEASUREMENT_ID) {
     ReactGA.initialize(GA_MEASUREMENT_ID);
     console.log('Google Analytics inicializado con ID:', GA_MEASUREMENT_ID);
   }
@@ -19,7 +20,7 @@ export const initializeAnalytics = () => {
 // Función para trackear páginas
 export const trackPageView = (path: string, title?: string) => {
   const GA_MEASUREMENT_ID = getGAMeasurementId();
-  if (typeof window !== 'undefined' && GA_MEASUREMENT_ID !== 'G-XXXXXXXXXX') {
+  if (typeof window !== 'undefined' && GA_MEASUREMENT_ID) {
     ReactGA.send({ 
       hitType: 'pageview', 
       page: path,
@@ -31,7 +32,7 @@ export const trackPageView = (path: string, title?: string) => {
 // Función para trackear eventos personalizados
 export const trackEvent = (action: string, category: string, label?: string, value?: number) => {
   const GA_MEASUREMENT_ID = getGAMeasurementId();
-  if (typeof window !== 'undefined' && GA_MEASUREMENT_ID !== 'G-XXXXXXXXXX') {
+  if (typeof window !== 'undefined' && GA_MEASUREMENT_ID) {
     ReactGA.event({
       action,
       category,
@@ -44,7 +45,7 @@ export const trackEvent = (action: string, category: string, label?: string, val
 // Función para trackear errores
 export const trackError = (error: string, fatal: boolean = false) => {
   const GA_MEASUREMENT_ID = getGAMeasurementId();
-  if (typeof window !== 'undefined' && GA_MEASUREMENT_ID !== 'G-XXXXXXXXXX') {
+  if (typeof window !== 'undefined' && GA_MEASUREMENT_ID) {
     ReactGA.event({
       action: 'exception',
       category: 'Error',
@@ -57,7 +58,7 @@ export const trackError = (error: string, fatal: boolean = false) => {
 // Función para trackear rendimiento
 export const trackPerformance = (name: string, duration: number) => {
   const GA_MEASUREMENT_ID = getGAMeasurementId();
-  if (typeof window !== 'undefined' && GA_MEASUREMENT_ID !== 'G-XXXXXXXXXX') {
+  if (typeof window !== 'undefined' && GA_MEASUREMENT_ID) {
     ReactGA.event({
       action: 'timing_complete',
       category: 'Performance',

@@ -8,11 +8,14 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { initializeAnalytics } from '@/lib/analytics';
 
 const Settings = () => {
   const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [locationServicesEnabled, setLocationServicesEnabled] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [gaId, setGaId] = useState('');
+  const [sentryDsn, setSentryDsn] = useState('');
   const { toast } = useToast();
 
   // Load settings from localStorage on component mount
@@ -21,9 +24,13 @@ const Settings = () => {
     const savedLocationServices = localStorage.getItem('locationServicesEnabled') === 'true';
     const savedTheme = localStorage.getItem('theme') || 'light';
     const systemDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const savedGaId = localStorage.getItem('ga_measurement_id') || '';
+    const savedSentryDsn = localStorage.getItem('sentry_dsn') || '';
     
     setBiometricEnabled(savedBiometric);
     setLocationServicesEnabled(savedLocationServices);
+    setGaId(savedGaId);
+    setSentryDsn(savedSentryDsn);
     
     // Determine if dark mode is active
     if (savedTheme === 'system') {
@@ -99,6 +106,38 @@ const Settings = () => {
       toast({
         title: "Servicios de ubicación desactivados",
         description: "El botón de pánico te pedirá permisos cuando sea necesario",
+      });
+    }
+  };
+
+  const handleGoogleAnalyticsChange = (value: string) => {
+    setGaId(value);
+    localStorage.setItem('ga_measurement_id', value);
+    
+    // Reinicializar Google Analytics inmediatamente si el ID es válido
+    if (value && value.startsWith('G-')) {
+      initializeAnalytics();
+      toast({
+        title: "Google Analytics configurado",
+        description: "ID configurado correctamente y listo para usar",
+      });
+    } else if (value) {
+      toast({
+        title: "ID de Google Analytics inválido",
+        description: "El ID debe comenzar con 'G-' seguido de letras y números",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSentryDsnChange = (value: string) => {
+    setSentryDsn(value);
+    localStorage.setItem('sentry_dsn', value);
+    
+    if (value) {
+      toast({
+        title: "Sentry DSN configurado",
+        description: "Recarga la página para aplicar los cambios de Sentry",
       });
     }
   };
@@ -275,7 +314,9 @@ const Settings = () => {
               <div className="p-3 rounded-lg bg-secondary">
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-medium text-sm">Google Analytics ID</p>
-                  <Badge variant="outline">No configurado</Badge>
+                  <Badge variant={gaId && gaId.startsWith('G-') ? "default" : "outline"}>
+                    {gaId && gaId.startsWith('G-') ? "Configurado" : "No configurado"}
+                  </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mb-2">
                   ID de medición de Google Analytics (G-XXXXXXXXXX)
@@ -283,21 +324,18 @@ const Settings = () => {
                 <input 
                   type="text" 
                   placeholder="G-XXXXXXXXXX" 
+                  value={gaId}
                   className="w-full p-2 text-sm border rounded-md bg-background"
-                  onChange={(e) => {
-                    localStorage.setItem('ga_measurement_id', e.target.value);
-                    toast({
-                      title: "Google Analytics configurado",
-                      description: "Recarga la página para aplicar los cambios",
-                    });
-                  }}
+                  onChange={(e) => handleGoogleAnalyticsChange(e.target.value)}
                 />
               </div>
               
               <div className="p-3 rounded-lg bg-secondary">
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-medium text-sm">Sentry DSN</p>
-                  <Badge variant="outline">No configurado</Badge>
+                  <Badge variant={sentryDsn ? "default" : "outline"}>
+                    {sentryDsn ? "Configurado" : "No configurado"}
+                  </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mb-2">
                   DSN de tu proyecto Sentry para APM
@@ -305,14 +343,9 @@ const Settings = () => {
                 <input 
                   type="text" 
                   placeholder="https://xxx@xxx.ingest.sentry.io/xxx" 
+                  value={sentryDsn}
                   className="w-full p-2 text-sm border rounded-md bg-background"
-                  onChange={(e) => {
-                    localStorage.setItem('sentry_dsn', e.target.value);
-                    toast({
-                      title: "Sentry DSN configurado",
-                      description: "Recarga la página para aplicar los cambios",
-                    });
-                  }}
+                  onChange={(e) => handleSentryDsnChange(e.target.value)}
                 />
               </div>
               
