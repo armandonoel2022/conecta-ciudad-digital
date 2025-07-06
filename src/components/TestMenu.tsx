@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Truck, TestTube, AlertTriangle } from 'lucide-react';
+import { Truck, TestTube, AlertTriangle, Volume2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useAlertSound } from '@/hooks/useAlertSound';
 
 interface TestMenuProps {
   onTriggerGarbageAlert: () => void;
@@ -17,6 +18,18 @@ interface TestMenuProps {
 }
 
 const TestMenu: React.FC<TestMenuProps> = ({ onTriggerGarbageAlert, onTriggerAmberAlert }) => {
+  const { playAlertSound, isAudioReady } = useAlertSound();
+
+  const handleTestAmberSound = () => {
+    console.log('Testing Amber alert sound...');
+    playAlertSound('amber');
+  };
+
+  const handleTestPanicSound = () => {
+    console.log('Testing Panic alert sound...');
+    playAlertSound('panic');
+  };
+
   return (
     <div className="fixed top-4 right-4 z-50">
       <DropdownMenu>
@@ -35,6 +48,15 @@ const TestMenu: React.FC<TestMenuProps> = ({ onTriggerGarbageAlert, onTriggerAmb
           <DropdownMenuItem onClick={onTriggerAmberAlert}>
             <AlertTriangle className="mr-2 h-4 w-4" />
             <span>Probar Alerta Amber</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleTestAmberSound} disabled={!isAudioReady}>
+            <Volume2 className="mr-2 h-4 w-4" />
+            <span>Probar Sonido Amber</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleTestPanicSound} disabled={!isAudioReady}>
+            <Volume2 className="mr-2 h-4 w-4" />
+            <span>Probar Sonido Pánico</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

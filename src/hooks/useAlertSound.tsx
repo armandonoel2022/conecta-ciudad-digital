@@ -21,9 +21,24 @@ export const useAlertSound = () => {
           setHasPermission(permission === 'granted');
         }
 
-        // Initialize audio context
-        const context = new (window.AudioContext || (window as any).webkitAudioContext)();
-        setAudioContext(context);
+        // Initialize audio context on first user interaction
+        const initAudioContext = () => {
+          try {
+            const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+            setAudioContext(context);
+            console.log('Audio context initialized successfully');
+            
+            // Remove event listeners after initialization
+            document.removeEventListener('click', initAudioContext);
+            document.removeEventListener('touchstart', initAudioContext);
+          } catch (error) {
+            console.error('Error initializing audio context:', error);
+          }
+        };
+
+        // Add event listeners for user interaction
+        document.addEventListener('click', initAudioContext, { once: true });
+        document.addEventListener('touchstart', initAudioContext, { once: true });
       } catch (error) {
         console.error('Error initializing audio:', error);
       }
@@ -55,14 +70,20 @@ export const useAlertSound = () => {
   }, [audioContext]);
 
   // Play alert sound sequence
-  const playAlertSound = useCallback((type: 'amber' | 'panic') => {
-    if (!audioContext) return;
+  const playAlertSound = useCallback(async (type: 'amber' | 'panic') => {
+    if (!audioContext) {
+      console.log('Audio context not available');
+      return;
+    }
 
     try {
       // Resume audio context if suspended
       if (audioContext.state === 'suspended') {
-        audioContext.resume();
+        console.log('Resuming suspended audio context');
+        await audioContext.resume();
       }
+
+      console.log(`Playing ${type} alert sound`);
 
       if (type === 'amber') {
         // Amber alert: alternating high-low tones
@@ -127,6 +148,7 @@ export const useAlertSound = () => {
 
   return {
     triggerAlert,
+    playAlertSound,
     hasPermission,
     isAudioReady: !!audioContext
   };
