@@ -107,13 +107,13 @@ export const useAmberAlerts = () => {
       const filePath = `amber-photos/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('amber-photos')
+        .from('amber-alert-photos')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('amber-photos')
+        .from('amber-alert-photos')
         .getPublicUrl(filePath);
 
       return publicUrl;
