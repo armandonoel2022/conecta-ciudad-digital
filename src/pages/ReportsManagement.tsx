@@ -29,12 +29,6 @@ interface Report {
   resolution_notes: string | null;
   image_url: string | null;
   user_id: string;
-  user_profile?: {
-    full_name: string | null;
-    first_name: string | null;
-    last_name: string | null;
-    phone: string | null;
-  };
 }
 
 const ReportsManagement = () => {
@@ -120,10 +114,8 @@ const ReportsManagement = () => {
     return categories[category as keyof typeof categories] || category;
   };
 
-  const getUserDisplayName = (userProfile: any) => {
-    return userProfile?.full_name || 
-      `${userProfile?.first_name || ''} ${userProfile?.last_name || ''}`.trim() || 
-      'Usuario desconocido';
+  const getUserDisplayName = () => {
+    return 'Usuario';
   };
 
   if (rolesLoading || loading) {
@@ -320,7 +312,7 @@ const ReportsManagement = () => {
                             
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-500">
                               <div>
-                                <strong>Reportado por:</strong> {getUserDisplayName(report.user_profile)}
+                                <strong>Reportado por:</strong> {getUserDisplayName()}
                               </div>
                               <div>
                                 <strong>Fecha:</strong> {format(new Date(report.created_at), 'dd/MM/yyyy HH:mm', { locale: es })}

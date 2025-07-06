@@ -104,8 +104,8 @@ const ReportAnalytics = ({ reports }: ReportAnalyticsProps) => {
                 <div className="space-y-2">
                   {frequentIssues.map((issue, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                      <span className="font-medium">{issue.name}</span>
-                      <Badge variant="secondary">{issue.value} reportes</Badge>
+                      <span className="font-medium">{String(issue.name)}</span>
+                      <Badge variant="secondary">{String(issue.value)} reportes</Badge>
                     </div>
                   ))}
                 </div>
@@ -124,8 +124,8 @@ const ReportAnalytics = ({ reports }: ReportAnalyticsProps) => {
                 <div className="space-y-2">
                   {problematicNeighborhoods.map((neighborhood, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                      <span className="font-medium">{neighborhood.name}</span>
-                      <Badge variant="destructive">{neighborhood.value} reportes</Badge>
+                      <span className="font-medium">{String(neighborhood.name)}</span>
+                      <Badge variant="destructive">{String(neighborhood.value)} reportes</Badge>
                     </div>
                   ))}
                 </div>
@@ -235,8 +235,8 @@ const ReportAnalytics = ({ reports }: ReportAnalyticsProps) => {
               <div className="bg-white/70 p-4 rounded-lg">
                 <h4 className="font-semibold text-blue-800 mb-2">Atención Prioritaria:</h4>
                 <p className="text-blue-700 text-sm">
-                  Se recomienda crear planes de acción específicos para {frequentIssues[0]?.name} 
-                  ({frequentIssues[0]?.value} reportes), ya que representa el problema más frecuente.
+                  Se recomienda crear planes de acción específicos para {String(frequentIssues[0]?.name)} 
+                  ({String(frequentIssues[0]?.value)} reportes), ya que representa el problema más frecuente.
                 </p>
               </div>
             )}
@@ -245,8 +245,8 @@ const ReportAnalytics = ({ reports }: ReportAnalyticsProps) => {
               <div className="bg-white/70 p-4 rounded-lg">
                 <h4 className="font-semibold text-blue-800 mb-2">Enfoque Territorial:</h4>
                 <p className="text-blue-700 text-sm">
-                  El barrio {problematicNeighborhoods[0]?.name} requiere atención especial con 
-                  {problematicNeighborhoods[0]?.value} reportes. Considerar inspecciones preventivas.
+                  El barrio {String(problematicNeighborhoods[0]?.name)} requiere atención especial con 
+                  {String(problematicNeighborhoods[0]?.value)} reportes. Considerar inspecciones preventivas.
                 </p>
               </div>
             )}
