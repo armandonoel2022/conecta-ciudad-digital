@@ -12,9 +12,26 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabaseClient = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+  );
+
   try {
+    // Retrieve authenticated user
+    const authHeader = req.headers.get("Authorization")!;
+    const token = authHeader.replace("Bearer ", "");
+    const { data } = await supabaseClient.auth.getUser(token);
+    const user = data.user;
+    if (!user?.email) throw new Error("User not authenticated or email not available");
+
+    // Parse request body to get session ID
     const { sessionId } = await req.json();
-    if (!sessionId) throw new Error("Session ID is required");
+    if (!sessionId) {
+      throw new Error("Session ID is required");
+    }
+
+    console.log(`Verifying payment for session: ${sessionId}`);
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -23,72 +40,135 @@ serve(async (req) => {
 
     // Retrieve the checkout session
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-    
-    if (!session) throw new Error("Session not found");
+    console.log(`Session status: ${session.payment_status}, mode: ${session.mode}`);
 
-    // Use service role to update payment status
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-      { auth: { persistSession: false } }
-    );
+    if (session.payment_status === 'paid') {
+      // Payment successful - update database
+      console.log(`Payment successful for user ${user.id}`);
 
-    const billId = session.metadata?.billId;
-    const userId = session.metadata?.userId;
+      // If it's a subscription, handle subscription logic
+      if (session.mode === 'subscription' && session.subscription) {
+        console.log(`Subscription created: ${session.subscription}`);
+        
+        // For now, we'll create a mock bill and mark it as paid
+        // This simulates the subscription creating a bill that gets immediately paid
+        const mockBill = {
+          user_id: user.id,
+          bill_number: `SUB-${Date.now()}`,
+          billing_period_start: new Date().toISOString().split('T')[0],
+          billing_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          amount_due: session.amount_total || 0,
+          due_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          status: 'paid'
+        };
 
-    if (!billId || !userId) throw new Error("Missing metadata in session");
+        const { data: createdBill, error: billError } = await supabaseClient
+          .from('garbage_bills')
+          .insert(mockBill)
+          .select()
+          .single();
 
-    // Update payment status
-    if (session.payment_status === "paid") {
-      // Update payment record
-      await supabase
-        .from("garbage_payments")
-        .update({
-          payment_status: "completed",
-          payment_date: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("stripe_session_id", sessionId);
+        if (billError) {
+          console.error('Error creating bill:', billError);
+        } else {
+          console.log('Mock bill created and marked as paid');
+          
+          // Create payment record
+          const { error: paymentError } = await supabaseClient
+            .from('garbage_payments')
+            .insert({
+              user_id: user.id,
+              bill_id: createdBill.id,
+              stripe_session_id: sessionId,
+              amount_paid: session.amount_total || 0,
+              payment_method: 'stripe',
+              payment_status: 'completed',
+              payment_date: new Date().toISOString()
+            });
 
-      // Update bill status
-      await supabase
-        .from("garbage_bills")
-        .update({
-          status: "paid",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", billId);
+          if (paymentError) {
+            console.error('Error creating payment record:', paymentError);
+          }
+        }
+      }
+
+      // If it's a one-time payment, handle bill payment
+      if (session.mode === 'payment') {
+        console.log(`One-time payment completed: ${session.payment_intent}`);
+        
+        // Find pending bills for this user and mark the oldest one as paid
+        const { data: pendingBills, error: billsError } = await supabaseClient
+          .from('garbage_bills')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('status', 'pending')
+          .order('created_at', { ascending: true })
+          .limit(1);
+
+        if (billsError) {
+          console.error('Error fetching bills:', billsError);
+        } else if (pendingBills && pendingBills.length > 0) {
+          const billToUpdate = pendingBills[0];
+          
+          // Update bill status to paid
+          const { error: updateError } = await supabaseClient
+            .from('garbage_bills')
+            .update({ status: 'paid' })
+            .eq('id', billToUpdate.id);
+
+          if (updateError) {
+            console.error('Error updating bill:', updateError);
+          } else {
+            console.log(`Bill ${billToUpdate.bill_number} marked as paid`);
+          }
+
+          // Create payment record
+          const { error: paymentError } = await supabaseClient
+            .from('garbage_payments')
+            .insert({
+              user_id: user.id,
+              bill_id: billToUpdate.id,
+              stripe_session_id: sessionId,
+              amount_paid: session.amount_total || 0,
+              payment_method: 'stripe',
+              payment_status: 'completed',
+              payment_date: new Date().toISOString()
+            });
+
+          if (paymentError) {
+            console.error('Error creating payment record:', paymentError);
+          } else {
+            console.log('Payment record created');
+          }
+        }
+      }
 
       return new Response(JSON.stringify({ 
         success: true, 
-        status: "paid",
-        message: "Payment completed successfully"
+        message: 'Payment verified successfully',
+        session_status: session.payment_status 
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
     } else {
-      // Update payment as failed
-      await supabase
-        .from("garbage_payments")
-        .update({
-          payment_status: "failed",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("stripe_session_id", sessionId);
-
+      console.log(`Payment not completed. Status: ${session.payment_status}`);
       return new Response(JSON.stringify({ 
         success: false, 
-        status: session.payment_status,
-        message: "Payment was not completed"
+        message: 'Payment not completed',
+        session_status: session.payment_status 
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
     }
+
   } catch (error) {
     console.error("Error verifying payment:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: error.message 
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

@@ -7,13 +7,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Pricing based on the image provided (in centavos DOP)
-const SUBSCRIPTION_PRICES = {
-  residential: 32500,    // $325 DOP
-  industrial: 108300,    // $1,083 DOP
-  commercial: 54100,     // $541 DOP
-};
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -32,18 +25,29 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
 
-    // Parse request body to get subscription type
-    const { subscriptionType } = await req.json();
-    if (!subscriptionType || !SUBSCRIPTION_PRICES[subscriptionType as keyof typeof SUBSCRIPTION_PRICES]) {
-      throw new Error("Invalid subscription type");
+    // Parse request body to get bill ID
+    const { billId } = await req.json();
+    if (!billId) {
+      throw new Error("Bill ID is required");
     }
 
-    const price = SUBSCRIPTION_PRICES[subscriptionType as keyof typeof SUBSCRIPTION_PRICES];
-    const displayNames = {
-      residential: "Residencial",
-      industrial: "Industrial", 
-      commercial: "Comercial"
-    };
+    console.log(`Creating payment for bill: ${billId}`);
+
+    // Get the bill details
+    const { data: bill, error: billError } = await supabaseClient
+      .from('garbage_bills')
+      .select('*')
+      .eq('id', billId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (billError || !bill) {
+      throw new Error("Bill not found or access denied");
+    }
+
+    if (bill.status !== 'pending') {
+      throw new Error("Bill is not pending payment");
+    }
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -57,7 +61,7 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    // Create subscription checkout session
+    // Create one-time payment session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -66,30 +70,32 @@ serve(async (req) => {
           price_data: {
             currency: "dop",
             product_data: { 
-              name: `Suscripción de Basura - ${displayNames[subscriptionType as keyof typeof displayNames]}`,
-              description: "Pago automático mensual del servicio de recolección de basura"
+              name: `Pago de Factura - ${bill.bill_number}`,
+              description: `Servicio de recolección de basura - Período: ${bill.billing_period_start} a ${bill.billing_period_end}`
             },
-            unit_amount: price,
-            recurring: { interval: "month" },
+            unit_amount: bill.amount_due,
           },
           quantity: 1,
         },
       ],
-      mode: "subscription",
-      success_url: `${req.headers.get("origin")}/pago-basura?subscription=success`,
-      cancel_url: `${req.headers.get("origin")}/pago-basura?subscription=cancelled`,
+      mode: "payment",
+      success_url: `${req.headers.get("origin")}/pago-basura?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get("origin")}/pago-basura?payment=cancelled`,
       metadata: {
         userId: user.id,
-        subscriptionType: subscriptionType,
+        billId: billId,
+        paymentType: "bill_payment",
       },
     });
+
+    console.log(`Payment session created: ${session.id}`);
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
-    console.error("Error creating subscription:", error);
+    console.error("Error creating bill payment:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,

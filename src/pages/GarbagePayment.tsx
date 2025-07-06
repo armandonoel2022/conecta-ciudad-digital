@@ -37,7 +37,7 @@ const GarbagePayment = () => {
 
     // Clean up URL parameters
     if (sessionId || paymentStatus || subscriptionStatus) {
-      window.history.replaceState({}, '', '/garbage-payment');
+      window.history.replaceState({}, '', '/pago-basura');
     }
   }, []);
 
@@ -79,6 +79,28 @@ const GarbagePayment = () => {
     }
   };
 
+  const handleCreateTestBill = async () => {
+    setGeneratingBills(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-test-bill');
+      
+      if (error) throw error;
+      
+      if (data?.success) {
+        toast.success('¡Factura de prueba creada exitosamente!');
+        // Refresh bills to show the new test bill
+        fetchBills();
+      } else {
+        toast.error('Error al crear la factura de prueba');
+      }
+    } catch (error) {
+      console.error('Error creating test bill:', error);
+      toast.error('Error al crear la factura de prueba');
+    } finally {
+      setGeneratingBills(false);
+    }
+  };
+
   const pendingBills = bills.filter(bill => bill.status === 'pending');
   const paidBills = bills.filter(bill => bill.status === 'paid');
 
@@ -109,18 +131,34 @@ const GarbagePayment = () => {
           </div>
         </div>
         
-        <Button 
-          onClick={handleGenerateBills}
-          disabled={generatingBills}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          {generatingBills ? (
-            <RefreshCw className="h-4 w-4 animate-spin mr-2" />
-          ) : (
-            <Plus className="h-4 w-4 mr-2" />
-          )}
-          Generar Facturas
-        </Button>
+        <div className="flex gap-4">
+          <Button 
+            onClick={handleGenerateBills}
+            disabled={generatingBills}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            {generatingBills ? (
+              <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <Plus className="h-4 w-4 mr-2" />
+            )}
+            Generar Facturas
+          </Button>
+          
+          <Button 
+            onClick={handleCreateTestBill}
+            disabled={generatingBills}
+            variant="outline"
+            className="bg-green-600 hover:bg-green-700 text-white border-green-600"
+          >
+            {generatingBills ? (
+              <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <Plus className="h-4 w-4 mr-2" />
+            )}
+            Crear Factura de Prueba (5 Jul)
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="bills" className="space-y-6">

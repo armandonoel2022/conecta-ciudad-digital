@@ -35,7 +35,7 @@ const BillCard = ({ bill, onPay }: BillCardProps) => {
   const handlePayment = async () => {
     setIsProcessing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-payment', {
+      const { data, error } = await supabase.functions.invoke('create-bill-payment', {
         body: { billId: bill.id }
       });
 
