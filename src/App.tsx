@@ -11,6 +11,7 @@ import GlobalPanicAlerts from "@/components/GlobalPanicAlerts";
 import GarbageAlert from "@/components/GarbageAlert";
 import TestMenu from "@/components/TestMenu";
 import { useGarbageAlerts } from "@/hooks/useGarbageAlerts";
+import { useAmberAlerts } from "@/hooks/useAmberAlerts";
 import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
 import { initializeAnalytics } from "@/lib/analytics";
 import { initializeSentry, SentryErrorBoundary } from "@/lib/sentry";
@@ -44,6 +45,7 @@ import ReportsManagement from "./pages/ReportsManagement";
 
 const AppContent = () => {
   const { showAlert, dismissAlert, triggerTestAlert } = useGarbageAlerts();
+  const { createAmberAlert } = useAmberAlerts();
   const { measureOperation } = usePerformanceMonitoring();
   const { isAdmin } = useUserRoles();
   const { activeNotification, triggerGlobalNotification, dismissNotification } = useGlobalTestNotifications();
@@ -64,6 +66,23 @@ const AppContent = () => {
     }
   };
 
+  const handleAmberAlertTest = async () => {
+    try {
+      await createAmberAlert({
+        child_full_name: "Mateo Ramírez Torres",
+        child_nickname: "Mateito",
+        last_seen_location: "Parque del Italia",
+        disappearance_time: new Date().toISOString(),
+        contact_number: "+573001234567",
+        medical_conditions: "Niño tranquilo, algo tímido con desconocidos. Puede mostrarse nervioso si se siente perdido.",
+        additional_details: "Edad: 8 años Sexo: Masculino Estatura: 1.25 metros Peso: 28 kg Color de piel: Morena clara Color de ojos: Marrón oscuro Color de cabello: Castaño claro, corto y lacio Señas particulares: • Cicatriz pequeña en la ceja izquierda • Lunar en el antebrazo derecho Ropa que vestía al momento de la desaparición: • Camiseta roja con estampado de dinosaurio • Pantalón de mezclilla azul • Tenis blancos con detalles verdes • Mochila azul con parches de superhéroes Comportamiento o estado emocional: • Niño tranquilo, algo tímido con desconocidos • Puede mostrarse nervioso si se siente perdido Posible acompañante o sospechoso: • Hombre adulto, aproximadamente 35 años • Vestía sudadera gris con capucha y jeans • Fue visto caminando con el menor hacia la salida del parque"
+      });
+      console.log('Alerta Amber de prueba creada exitosamente');
+    } catch (error) {
+      console.error('Error creando alerta Amber de prueba:', error);
+    }
+  };
+
   return (
     <>
       <GlobalAmberAlerts />
@@ -77,7 +96,7 @@ const AppContent = () => {
           }
         }} 
       />
-      {isAdmin && <TestMenu onTriggerGarbageAlert={handleGlobalTestAlert} />}
+      {isAdmin && <TestMenu onTriggerGarbageAlert={handleGlobalTestAlert} onTriggerAmberAlert={handleAmberAlertTest} />}
       <Routes>
         <Route path="/auth" element={<Auth />} />
         <Route path="/perfil-setup" element={

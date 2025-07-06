@@ -168,7 +168,7 @@ const AmberAlertOverlay = ({ alert, onResolve, onReport }: AmberAlertOverlayProp
               <Button 
                 onClick={() => onResolve(alert.id)}
                 variant="outline"
-                className="flex-1 border-white text-white hover:bg-white/20 font-bold py-3"
+                className="flex-1 border-white/80 text-white bg-white/10 hover:bg-white/30 hover:text-white font-bold py-3"
               >
                 <X className="h-5 w-5 mr-2" />
                 MARCAR RESUELTO

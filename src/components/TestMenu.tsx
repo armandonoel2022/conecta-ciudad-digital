@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Truck, TestTube } from 'lucide-react';
+import { Truck, TestTube, AlertTriangle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +13,10 @@ import {
 
 interface TestMenuProps {
   onTriggerGarbageAlert: () => void;
+  onTriggerAmberAlert: () => void;
 }
 
-const TestMenu: React.FC<TestMenuProps> = ({ onTriggerGarbageAlert }) => {
+const TestMenu: React.FC<TestMenuProps> = ({ onTriggerGarbageAlert, onTriggerAmberAlert }) => {
   return (
     <div className="fixed top-4 right-4 z-50">
       <DropdownMenu>
@@ -30,6 +31,10 @@ const TestMenu: React.FC<TestMenuProps> = ({ onTriggerGarbageAlert }) => {
           <DropdownMenuItem onClick={onTriggerGarbageAlert}>
             <Truck className="mr-2 h-4 w-4" />
             <span>Probar Alerta de Basura</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onTriggerAmberAlert}>
+            <AlertTriangle className="mr-2 h-4 w-4" />
+            <span>Probar Alerta Amber</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
