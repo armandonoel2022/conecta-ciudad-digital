@@ -12,29 +12,58 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-  );
-
   try {
-    // Retrieve authenticated user
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
+    console.log("=== CREATE BILL PAYMENT START ===");
 
-    // Parse request body to get bill ID
-    const { billId } = await req.json();
+    // Parse request body first
+    const body = await req.json();
+    console.log("Request body:", body);
+    
+    const { billId } = body;
     if (!billId) {
       throw new Error("Bill ID is required");
     }
 
-    console.log(`Creating payment for bill: ${billId}`);
+    // Initialize Stripe
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      throw new Error("STRIPE_SECRET_KEY not configured");
+    }
+    
+    const stripe = new Stripe(stripeKey, {
+      apiVersion: "2023-10-16",
+    });
+    console.log("Stripe initialized");
 
-    // Get the bill details
-    const { data: bill, error: billError } = await supabaseClient
+    // Initialize Supabase
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+    );
+
+    // Get user
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new Error("No authorization header");
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data, error: userError } = await supabaseClient.auth.getUser(token);
+    
+    if (userError || !data.user?.email) {
+      throw new Error("User not authenticated");
+    }
+
+    const user = data.user;
+    console.log("User authenticated:", user.email);
+
+    // Get the bill details using service role for reliable access
+    const serviceSupabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
+    const { data: bill, error: billError } = await serviceSupabase
       .from('garbage_bills')
       .select('*')
       .eq('id', billId)
@@ -42,26 +71,31 @@ serve(async (req) => {
       .single();
 
     if (billError || !bill) {
+      console.error("Bill fetch error:", billError);
       throw new Error("Bill not found or access denied");
     }
+
+    console.log("Bill found:", bill.bill_number, "Status:", bill.status);
 
     if (bill.status !== 'pending') {
       throw new Error("Bill is not pending payment");
     }
 
-    // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2023-10-16",
+    // Check if customer exists
+    const customers = await stripe.customers.list({ 
+      email: user.email, 
+      limit: 1 
     });
-
-    // Check if a Stripe customer record exists for this user
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+      console.log("Existing customer:", customerId);
+    } else {
+      console.log("New customer");
     }
 
-    // Create one-time payment session
+    // Create payment session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -70,8 +104,8 @@ serve(async (req) => {
           price_data: {
             currency: "dop",
             product_data: { 
-              name: `Pago de Factura - ${bill.bill_number}`,
-              description: `Servicio de recolección de basura - Período: ${bill.billing_period_start} a ${bill.billing_period_end}`
+              name: `Factura ${bill.bill_number}`,
+              description: `Recolección de basura - ${bill.billing_period_start} a ${bill.billing_period_end}`
             },
             unit_amount: bill.amount_due,
           },
@@ -88,15 +122,25 @@ serve(async (req) => {
       },
     });
 
-    console.log(`Payment session created: ${session.id}`);
+    console.log("Payment session created:", session.id);
+    console.log("=== CREATE BILL PAYMENT SUCCESS ===");
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    return new Response(JSON.stringify({ 
+      url: session.url,
+      sessionId: session.id
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
+
   } catch (error) {
-    console.error("Error creating bill payment:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error("=== CREATE BILL PAYMENT ERROR ===");
+    console.error("Error details:", error);
+    
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      details: error.toString()
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
