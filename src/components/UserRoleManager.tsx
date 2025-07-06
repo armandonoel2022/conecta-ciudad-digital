@@ -53,23 +53,30 @@ const UserRoleManager = () => {
       if (profilesError) throw profilesError;
 
       // Obtener todos los roles activos
-      const rolesData = await getAllUserRoles();
+      let rolesData: any[] = [];
+      try {
+        rolesData = await getAllUserRoles() || [];
+      } catch (error) {
+        console.log('No se pudieron obtener roles, continuando sin ellos');
+        rolesData = [];
+      }
       
       // Crear un mapa de roles por usuario para facilitar la búsqueda
       const userRolesMap = new Map<string, UserRole[]>();
-      rolesData?.forEach(roleData => {
+      rolesData.forEach(roleData => {
         if (!userRolesMap.has(roleData.user_id)) {
           userRolesMap.set(roleData.user_id, []);
         }
         userRolesMap.get(roleData.user_id)?.push(roleData.role);
       });
       
-      // Combinar usuarios con sus roles
+      // Combinar TODOS los usuarios con sus roles (o sin roles)
       const usersWithRoles = profiles?.map(profile => ({
         ...profile,
         roles: userRolesMap.get(profile.id) || []
       })) || [];
 
+      console.log('Usuarios cargados:', usersWithRoles.length);
       setUsers(usersWithRoles);
     } catch (error) {
       console.error('Error fetching users with roles:', error);
