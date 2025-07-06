@@ -333,7 +333,7 @@ const ReportsManagement = () => {
                           </div>
                           
                           <Button size="sm" variant="outline" asChild>
-                            <Link to={`/reporte-detalles/${report.id}`}>
+                            <Link to={`/reporte-detalles/${report.id}?from=management`}>
                               <Eye className="w-4 h-4 mr-1" />
                               Gestionar
                             </Link>

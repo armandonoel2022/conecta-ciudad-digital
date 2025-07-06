@@ -44,6 +44,10 @@ const ReportDetails = () => {
   const { isAdmin, isCommunityLeader } = useUserRoles();
   const { toast } = useToast();
   
+  // Detect if coming from management context
+  const searchParams = new URLSearchParams(window.location.search);
+  const isManagementContext = searchParams.get('from') === 'management';
+  
   const [report, setReport] = useState<Report | null>(null);
   const [reporterProfile, setReporterProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -344,8 +348,8 @@ const ReportDetails = () => {
               </div>
             )}
 
-            {/* Admin Controls - Only show in management context, not in user's own reports */}
-            {canEditReport && !isOwner && (
+            {/* Admin Controls - Show only in management context */}
+            {canEditReport && isManagementContext && (
               <div className="border-t pt-6">
                 <h3 className="font-semibold text-gray-800 mb-4">Gestión Administrativa</h3>
                 <div className="space-y-4">
