@@ -256,9 +256,11 @@ const MisReportes = () => {
                         )}
                       </div>
                       
-                      <Button size="sm" variant="outline">
-                        <Eye className="w-4 h-4 mr-1" />
-                        Ver Detalles
+                      <Button size="sm" variant="outline" asChild>
+                        <Link to={`/reporte-detalles/${report.id}`}>
+                          <Eye className="w-4 h-4 mr-1" />
+                          Ver Detalles
+                        </Link>
                       </Button>
                     </div>
                   </div>

@@ -39,6 +39,8 @@ import Reports from "./pages/Reports";
 import Tutorial from "./pages/Tutorial";
 import MisReportes from "./pages/MisReportes";
 import APMDashboard from "./pages/APMDashboard";
+import ReportDetails from "./pages/ReportDetails";
+import ReportsManagement from "./pages/ReportsManagement";
 
 const AppContent = () => {
   const { showAlert, dismissAlert, triggerTestAlert } = useGarbageAlerts();
@@ -106,6 +108,8 @@ const AppContent = () => {
           <Route path="/reportes" element={<Reports />} />
           <Route path="/tutorial" element={<Tutorial />} />
           <Route path="/mis-reportes" element={<MisReportes />} />
+          <Route path="/reporte-detalles/:id" element={<ReportDetails />} />
+          <Route path="/gestion-reportes" element={<ReportsManagement />} />
           <Route path="/apm-dashboard" element={<APMDashboard />} />
         </Route>
         <Route path="*" element={<NotFound />} />

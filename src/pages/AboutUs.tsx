@@ -34,34 +34,48 @@ const AboutUs = () => {
               </p>
             </div>
 
-            {/* Mission Section */}
+            {/* What is CiudadConecta Section */}
             <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-6">
               <div className="flex items-center justify-center mb-4">
                 <div className="bg-blue-100 p-3 rounded-full mr-4">
                   <Heart className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-800">Nuestra Misión</h3>
+                <h3 className="text-2xl font-semibold text-gray-800">¿Qué es CiudadConecta?</h3>
               </div>
               <p className="text-gray-700 text-center leading-relaxed">
-                Facilitar la comunicación directa entre ciudadanos y autoridades mediante tecnología 
-                innovadora que permite reportar incidencias, acceder a servicios públicos, y participar 
-                activamente en el desarrollo de comunidades más conectadas y transparentes.
+                CiudadConecta es una aplicación móvil y web que revoluciona la forma en que los ciudadanos 
+                interactúan con sus gobiernos locales. A través de nuestra plataforma, puedes reportar 
+                problemas urbanos, realizar pagos de servicios municipales, activar alertas de emergencia, 
+                y mantenerte informado sobre el progreso de tus solicitudes en tiempo real.
               </p>
             </div>
 
-            {/* Vision Section */}
+            {/* Key Features Section */}
             <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6">
               <div className="flex items-center justify-center mb-4">
                 <div className="bg-green-100 p-3 rounded-full mr-4">
                   <GraduationCap className="h-8 w-8 text-green-600" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-800">Nuestra Visión</h3>
+                <h3 className="text-2xl font-semibold text-gray-800">Características Principales</h3>
               </div>
-              <p className="text-gray-700 text-center leading-relaxed">
-                Ser la plataforma líder en participación ciudadana digital en República Dominicana, 
-                transformando la manera en que los ciudadanos interactúan con las instituciones públicas 
-                y contribuyendo a la construcción de una sociedad más democrática y eficiente.
-              </p>
+              <div className="grid md:grid-cols-2 gap-4 mt-4">
+                <div className="text-left">
+                  <h4 className="font-semibold text-gray-800 mb-2">🏢 Gobierno Digital</h4>
+                  <p className="text-sm text-gray-600">Modernización de procesos administrativos municipales</p>
+                </div>
+                <div className="text-left">
+                  <h4 className="font-semibold text-gray-800 mb-2">📱 Multiplataforma</h4>
+                  <p className="text-sm text-gray-600">Disponible en dispositivos móviles y computadoras</p>
+                </div>
+                <div className="text-left">
+                  <h4 className="font-semibold text-gray-800 mb-2">🔔 Alertas Inteligentes</h4>
+                  <p className="text-sm text-gray-600">Sistema de notificaciones para emergencias y servicios</p>
+                </div>
+                <div className="text-left">
+                  <h4 className="font-semibold text-gray-800 mb-2">📊 Análisis de Datos</h4>
+                  <p className="text-sm text-gray-600">Estadísticas para mejores decisiones gubernamentales</p>
+                </div>
+              </div>
             </div>
 
             {/* Benefits Section */}
