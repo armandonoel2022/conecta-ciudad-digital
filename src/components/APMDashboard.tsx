@@ -24,8 +24,18 @@ export const APMDashboard = () => {
   const [metrics, setMetrics] = useState<PerformanceMetric[]>([]);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
   const [pageViews, setPageViews] = useState(0);
+  const [gaId, setGaId] = useState('');
+  const [sentryDsn, setSentryDsn] = useState('');
 
   useEffect(() => {
+    // Cargar configuración desde localStorage
+    const loadConfiguration = () => {
+      const storedGaId = localStorage.getItem('ga_measurement_id') || '';
+      const storedSentryDsn = localStorage.getItem('sentry_dsn') || '';
+      setGaId(storedGaId);
+      setSentryDsn(storedSentryDsn);
+    };
+
     // Obtener métricas de performance
     const getPerformanceMetrics = () => {
       if ('performance' in window) {
@@ -94,6 +104,7 @@ export const APMDashboard = () => {
       setDeviceInfo(info);
     };
 
+    loadConfiguration();
     getPerformanceMetrics();
     getDeviceInfo();
 
@@ -256,11 +267,15 @@ export const APMDashboard = () => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span>Google Analytics</span>
-              <Badge variant="outline">Configurar ID</Badge>
+              <Badge variant={gaId && gaId.startsWith('G-') ? "default" : "outline"}>
+                {gaId && gaId.startsWith('G-') ? "✅ Configurado" : "Configurar ID"}
+              </Badge>
             </div>
             <div className="flex items-center justify-between">
               <span>Sentry APM</span>
-              <Badge variant="outline">Configurar DSN</Badge>
+              <Badge variant={sentryDsn && sentryDsn.includes('ingest') ? "default" : "outline"}>
+                {sentryDsn && sentryDsn.includes('ingest') ? "✅ Configurado" : "Configurar DSN"}
+              </Badge>
             </div>
           </div>
         </CardContent>
