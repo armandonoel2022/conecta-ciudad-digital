@@ -96,6 +96,54 @@ export type Database = {
         }
         Relationships: []
       }
+      community_messages: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          message: string
+          municipality: string
+          province: string
+          scheduled_at: string | null
+          sector: string | null
+          sent_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          message: string
+          municipality: string
+          province: string
+          scheduled_at?: string | null
+          sector?: string | null
+          sent_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          message?: string
+          municipality?: string
+          province?: string
+          scheduled_at?: string | null
+          sector?: string | null
+          sent_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       garbage_bills: {
         Row: {
           amount_due: number
@@ -389,6 +437,68 @@ export type Database = {
         }
         Relationships: []
       }
+      message_recipients: {
+        Row: {
+          created_at: string
+          delivered_at: string | null
+          id: string
+          message_id: string
+          read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          message_id: string
+          read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          message_id?: string
+          read_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_recipients_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "community_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_weekly_limits: {
+        Row: {
+          created_at: string
+          id: string
+          message_count: number
+          updated_at: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_count?: number
+          updated_at?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_count?: number
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
       panic_alerts: {
         Row: {
           address: string | null
@@ -651,6 +761,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_weekly_message_limit: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       deactivate_expired_panic_alerts: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -677,6 +791,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      increment_weekly_message_count: {
+        Args: { _user_id: string }
+        Returns: undefined
       }
       is_admin: {
         Args: { _user_id: string }

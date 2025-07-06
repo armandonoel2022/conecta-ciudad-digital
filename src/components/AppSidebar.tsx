@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, Megaphone, Recycle, Trophy, Settings, LifeBuoy, Users, Briefcase, GitCompare, 
-  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LogOut, UserCog, BarChart3, FileText, ClipboardList
+  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LogOut, UserCog, BarChart3, FileText, ClipboardList, MessageSquare
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -157,6 +157,28 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
                   location.pathname === '/reportes' ? "text-primary-foreground" : "text-primary"
                 )} />
                 <span className="text-sm">Análisis de Reportes</span>
+              </Link>
+            </li>
+          )}
+          
+          {/* Community Messages - Available for Community Leaders and Admins */}
+          {(isAdmin || isCommunityLeader) && (
+            <li>
+              <Link
+                to="/mensajes-comunitarios"
+                onClick={handleLinkClick}
+                className={cn(
+                  'flex items-center p-3 rounded-xl transition-all duration-200 group',
+                  location.pathname === '/mensajes-comunitarios'
+                    ? 'bg-gradient-to-r from-primary to-blue-500 text-primary-foreground font-semibold shadow-lg' 
+                    : 'hover:bg-accent hover:text-accent-foreground'
+                )}
+              >
+                <MessageSquare className={cn(
+                  "w-5 h-5 mr-3",
+                  location.pathname === '/mensajes-comunitarios' ? "text-primary-foreground" : "text-primary"
+                )} />
+                <span className="text-sm">Mensajes Comunitarios</span>
               </Link>
             </li>
           )}
