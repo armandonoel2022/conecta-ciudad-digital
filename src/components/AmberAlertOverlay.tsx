@@ -71,6 +71,18 @@ const AmberAlertOverlay = ({ alert, onResolve, onReport }: AmberAlertOverlayProp
       >
         <Card className="bg-transparent border-none text-white max-h-[90vh] overflow-y-auto">
           <CardHeader className="text-center pb-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex-1"></div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onResolve(alert.id)}
+                className="text-white/80 hover:text-white hover:bg-white/20"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            
             <div className="mx-auto bg-white/20 p-4 rounded-full w-fit mb-4">
               <AlertTriangle className="h-12 w-12 text-white animate-pulse" />
             </div>

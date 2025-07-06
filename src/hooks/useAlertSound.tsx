@@ -165,10 +165,11 @@ export const useAlertSound = () => {
   // Main alert function
   const triggerAlert = useCallback(async (options: AlertSoundOptions) => {
     // Force initialize audio before playing
-    const audioReady = await forceInitAudio();
+    await forceInitAudio();
     
-    // Play sound
-    if (options.autoPlay !== false && audioReady) {
+    // Play sound directly - don't check audioReady flag since forceInitAudio handles it
+    if (options.autoPlay !== false) {
+      console.log(`Calling playAlertSound for ${options.type} from triggerAlert`);
       playAlertSound(options.type);
     }
 
