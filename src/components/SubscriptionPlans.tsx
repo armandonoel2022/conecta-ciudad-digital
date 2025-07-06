@@ -95,7 +95,7 @@ const SubscriptionPlans = () => {
                     Procesando...
                   </>
                 ) : (
-                  'Suscribirse'
+                  'Pagar mi Factura'
                 )}
               </Button>
             </CardContent>
