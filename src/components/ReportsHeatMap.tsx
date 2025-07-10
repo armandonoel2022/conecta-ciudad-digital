@@ -20,9 +20,11 @@ interface HeatMapProps {
 const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const realMapContainer = useRef<HTMLDivElement>(null);
+  const heatMapContainer = useRef<HTMLDivElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [mapReady, setMapReady] = useState(false);
   const map = useRef<mapboxgl.Map | null>(null);
+  const heatMap = useRef<mapboxgl.Map | null>(null);
 
   // Filtrar reportes por categoría
   const filteredReports = selectedCategory === 'all' 
@@ -156,6 +158,111 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
     };
   }, [reportsWithCoords, selectedCategory]); // Agregar selectedCategory como dependencia
 
+  // Inicializar mapa de calor mejorado con fondo real
+  useEffect(() => {
+    if (!heatMapContainer.current) return;
+
+    // Configurar token de Mapbox
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtYW5kb25vZWwiLCJhIjoiY21jeGx1eDF5MDJ4YTJqbjdlamQ4aTRxNCJ9.6M0rLVxf5UTiE7EBw7qjTQ';
+
+    // Centro por defecto (Medellín, Colombia)
+    let center: [number, number] = [-75.5636, 6.2442];
+    let zoom = 10;
+
+    // Si hay reportes con coordenadas, calcular centro y zoom apropiado
+    if (reportsWithCoords.length > 0) {
+      const avgLat = reportsWithCoords.reduce((sum, report) => sum + report.latitude!, 0) / reportsWithCoords.length;
+      const avgLng = reportsWithCoords.reduce((sum, report) => sum + report.longitude!, 0) / reportsWithCoords.length;
+      center = [avgLng, avgLat];
+      zoom = reportsWithCoords.length === 1 ? 13 : 11;
+    }
+
+    // Inicializar mapa de calor
+    heatMap.current = new mapboxgl.Map({
+      container: heatMapContainer.current,
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: center,
+      zoom: zoom,
+      interactive: false, // Deshabilitar interacción para que sea solo visual
+      attributionControl: false, // Ocultar controles
+    });
+
+    // Esperar a que el mapa se cargue
+    heatMap.current.on('load', () => {
+      // Agregar puntos de calor como marcadores personalizados
+      heatmapData.forEach((point: any) => {
+        const intensity = point.count / maxCount;
+        let size = 20; // tamaño base
+        let color = '#22c55e'; // verde por defecto
+
+        // Determinar tamaño y color basado en intensidad
+        if (intensity > 0.8) {
+          size = 40;
+          color = '#ef4444'; // rojo
+        } else if (intensity > 0.6) {
+          size = 32;
+          color = '#f97316'; // naranja
+        } else if (intensity > 0.4) {
+          size = 26;
+          color = '#eab308'; // amarillo
+        } else if (intensity > 0.2) {
+          size = 22;
+          color = '#3b82f6'; // azul
+        }
+
+        // Crear elemento HTML para el marcador de calor
+        const heatElement = document.createElement('div');
+        heatElement.className = 'heat-marker';
+        heatElement.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          background-color: ${color};
+          border-radius: 50%;
+          opacity: 0.7;
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-weight: bold;
+          font-size: ${size > 30 ? '12px' : '10px'};
+        `;
+        heatElement.textContent = point.count.toString();
+
+        // Agregar marcador de calor
+        new mapboxgl.Marker(heatElement)
+          .setLngLat([point.lng, point.lat])
+          .setPopup(
+            new mapboxgl.Popup({ offset: 15 })
+              .setHTML(`
+                <div class="p-2">
+                  <h4 class="font-semibold text-sm">${point.count} Reportes</h4>
+                  <p class="text-xs text-gray-600">Área de alta densidad</p>
+                  <p class="text-xs text-gray-500">Click para ver detalles</p>
+                </div>
+              `)
+          )
+          .addTo(heatMap.current!);
+      });
+
+      // Si hay múltiples puntos, ajustar vista para mostrar todos
+      if (heatmapData.length > 1) {
+        const bounds = new mapboxgl.LngLatBounds();
+        heatmapData.forEach(point => {
+          bounds.extend([point.lng, point.lat]);
+        });
+        heatMap.current!.fitBounds(bounds, { padding: 50 });
+      }
+    });
+
+    // Cleanup
+    return () => {
+      heatMap.current?.remove();
+    };
+  }, [heatmapData, reportsWithCoords]);
+
   const getMarkerColor = (category: string) => {
     const colors = {
       basura: '#22c55e',      // green
@@ -248,33 +355,14 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
           <div className="space-y-6">
             {/* Layout principal: Mapa de calor y Zonas calientes */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Mapa de calor simulado */}
+              {/* Mapa de calor real con fondo geográfico */}
               <div className="lg:col-span-2">
                 <div 
-                  ref={mapContainer} 
-                  className="relative w-full h-96 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden"
+                  ref={heatMapContainer} 
+                  className="w-full h-96 rounded-lg border shadow-lg"
+                  style={{ minHeight: '400px' }}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <p className="text-gray-600 font-medium">Visualización de Densidad</p>
-                      <p className="text-sm text-gray-500">
-                        {reportsWithCoords.length} reportes con ubicación
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Puntos de calor simulados */}
-                  {heatmapData.map((point: any, index) => (
-                    <div
-                      key={index}
-                      className={`absolute rounded-full opacity-70 ${getIntensityColor(point.count)} ${getIntensitySize(point.count)}`}
-                      style={{
-                        left: `${20 + (index % 5) * 15}%`,
-                        top: `${20 + Math.floor(index / 5) * 15}%`,
-                      }}
-                      title={`${point.count} reporte(s) en esta área`}
-                    />
-                  ))}
+                  {/* El mapa real se carga aquí */}
                 </div>
 
                 {/* Leyenda */}
