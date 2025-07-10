@@ -40,6 +40,7 @@ import {
   Line
 } from 'recharts';
 import ReportsHeatMap from '@/components/ReportsHeatMap';
+import DataMiningDashboard from '@/components/DataMiningDashboard';
 import { Link } from 'react-router-dom';
 
 // Colores para gráficos
@@ -206,11 +207,12 @@ const Reports = () => {
 
         {/* Tabs para diferentes vistas */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-white/95 backdrop-blur-sm">
+          <TabsList className="grid w-full grid-cols-5 bg-white/95 backdrop-blur-sm">
             <TabsTrigger value="overview">Resumen</TabsTrigger>
             <TabsTrigger value="analytics">Análisis</TabsTrigger>
             <TabsTrigger value="heatmap">Mapa de Calor</TabsTrigger>
             <TabsTrigger value="demographics">Demografía</TabsTrigger>
+            <TabsTrigger value="datamining">Data Mining</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -415,6 +417,10 @@ const Reports = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="datamining" className="space-y-6">
+            <DataMiningDashboard />
           </TabsContent>
         </Tabs>
       </div>
