@@ -40,19 +40,27 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
   const getHeatmapData = () => {
     if (reportsWithCoords.length === 0) return [];
 
-    // Agrupar reportes por proximidad (simplificado)
+    // Agrupar reportes por proximidad geográfica (grid más pequeño para más precisión)
     const grouped = reportsWithCoords.reduce((acc, report) => {
-      const key = `${Math.round(report.latitude! * 100)}-${Math.round(report.longitude! * 100)}`;
+      const key = `${Math.round(report.latitude! * 1000)}-${Math.round(report.longitude! * 1000)}`;
       if (!acc[key]) {
         acc[key] = {
           lat: report.latitude!,
           lng: report.longitude!,
           count: 0,
-          reports: []
+          reports: [],
+          categories: {} as Record<string, number>
         };
       }
       acc[key].count++;
       acc[key].reports.push(report);
+      
+      // Contar por categorías
+      if (!acc[key].categories[report.category]) {
+        acc[key].categories[report.category] = 0;
+      }
+      acc[key].categories[report.category]++;
+      
       return acc;
     }, {} as Record<string, any>);
 
@@ -183,7 +191,7 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
       style: 'mapbox://styles/mapbox/light-v11',
       center: center,
       zoom: zoom,
-      interactive: false, // Deshabilitar interacción para que sea solo visual
+      interactive: true, // Habilitar interacción para explorar
       attributionControl: false, // Ocultar controles
     });
 
@@ -231,16 +239,37 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
         `;
         heatElement.textContent = point.count.toString();
 
+        // Crear popup detallado con información por categorías
+        const categoriesInfo = Object.entries(point.categories)
+          .sort(([,a], [,b]) => (b as number) - (a as number))
+          .map(([cat, count]) => `${getCategoryLabel(cat)}: ${count}`)
+          .join('<br>');
+
         // Agregar marcador de calor
         new mapboxgl.Marker(heatElement)
           .setLngLat([point.lng, point.lat])
           .setPopup(
-            new mapboxgl.Popup({ offset: 15 })
+            new mapboxgl.Popup({ 
+              offset: 15,
+              closeButton: true,
+              closeOnClick: false
+            })
               .setHTML(`
-                <div class="p-2">
-                  <h4 class="font-semibold text-sm">${point.count} Reportes</h4>
-                  <p class="text-xs text-gray-600">Área de alta densidad</p>
-                  <p class="text-xs text-gray-500">Click para ver detalles</p>
+                <div class="p-3 min-w-48">
+                  <h4 class="font-semibold text-sm mb-2 text-gray-800">
+                    📍 Zona de Alta Densidad
+                  </h4>
+                  <div class="mb-2">
+                    <span class="text-lg font-bold text-red-600">${point.count}</span>
+                    <span class="text-sm text-gray-600 ml-1">reportes totales</span>
+                  </div>
+                  <div class="text-xs text-gray-700 mb-2">
+                    <strong>Desglose por categoría:</strong><br>
+                    ${categoriesInfo}
+                  </div>
+                  <div class="text-xs text-gray-500 border-t pt-2">
+                    💡 Esta área requiere atención prioritaria
+                  </div>
                 </div>
               `)
           )
@@ -255,6 +284,93 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
         });
         heatMap.current!.fitBounds(bounds, { padding: 50 });
       }
+
+      // Agregar funcionalidad de click en cualquier zona del mapa
+      heatMap.current.on('click', (e) => {
+        const clickedLng = e.lngLat.lng;
+        const clickedLat = e.lngLat.lat;
+        
+        // Buscar reportes cercanos al punto clickeado (radio de ~100 metros)
+        const nearbyReports = reportsWithCoords.filter(report => {
+          const distance = Math.sqrt(
+            Math.pow((report.latitude! - clickedLat) * 111000, 2) + 
+            Math.pow((report.longitude! - clickedLng) * 111000 * Math.cos(clickedLat * Math.PI / 180), 2)
+          );
+          return distance <= 500; // 500 metros de radio
+        });
+
+        if (nearbyReports.length > 0) {
+          // Agrupar por categorías
+          const categoriesInArea = nearbyReports.reduce((acc, report) => {
+            if (!acc[report.category]) {
+              acc[report.category] = 0;
+            }
+            acc[report.category]++;
+            return acc;
+          }, {} as Record<string, number>);
+
+          const categoriesInfo = Object.entries(categoriesInArea)
+            .sort(([,a], [,b]) => b - a)
+            .map(([cat, count]) => `${getCategoryLabel(cat)}: ${count}`)
+            .join('<br>');
+
+          // Crear popup para la zona clickeada
+          new mapboxgl.Popup({ 
+            closeButton: true,
+            closeOnClick: true
+          })
+            .setLngLat([clickedLng, clickedLat])
+            .setHTML(`
+              <div class="p-3 min-w-48">
+                <h4 class="font-semibold text-sm mb-2 text-gray-800">
+                  🔍 Análisis de Zona
+                </h4>
+                <div class="mb-2">
+                  <span class="text-lg font-bold text-blue-600">${nearbyReports.length}</span>
+                  <span class="text-sm text-gray-600 ml-1">reportes en 500m</span>
+                </div>
+                <div class="text-xs text-gray-700 mb-2">
+                  <strong>Distribución por tipo:</strong><br>
+                  ${categoriesInfo}
+                </div>
+                <div class="text-xs text-gray-500 border-t pt-2">
+                  💡 Radio de análisis: 500 metros
+                </div>
+              </div>
+            `)
+            .addTo(heatMap.current!);
+        } else {
+          // Mostrar mensaje cuando no hay reportes cerca
+          new mapboxgl.Popup({ 
+            closeButton: true,
+            closeOnClick: true
+          })
+            .setLngLat([clickedLng, clickedLat])
+            .setHTML(`
+              <div class="p-3">
+                <h4 class="font-semibold text-sm mb-2 text-gray-800">
+                  📍 Zona Analizada
+                </h4>
+                <p class="text-sm text-gray-600">
+                  No hay reportes en un radio de 500 metros
+                </p>
+                <div class="text-xs text-gray-500 mt-2">
+                  ✅ Esta zona está libre de incidencias
+                </div>
+              </div>
+            `)
+            .addTo(heatMap.current!);
+        }
+      });
+
+      // Cambiar cursor al pasar sobre el mapa
+      heatMap.current.on('mouseenter', () => {
+        heatMap.current!.getCanvas().style.cursor = 'crosshair';
+      });
+
+      heatMap.current.on('mouseleave', () => {
+        heatMap.current!.getCanvas().style.cursor = '';
+      });
     });
 
     // Cleanup
