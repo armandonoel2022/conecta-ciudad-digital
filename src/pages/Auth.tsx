@@ -228,14 +228,10 @@ const Auth = () => {
 
     setIsLoading(true);
     try {
-      // Use the production/preview URL instead of localhost
-      const redirectUrl = "https://3aae6aac-723c-4f19-8bc0-e936a90c7a7a.lovableproject.com/confirmacion-registro";
-      
       const { data, error } = await supabase.auth.signUp({
         email: signupData.email,
         password: signupData.password,
         options: {
-          emailRedirectTo: redirectUrl,
           data: {
             full_name: signupData.fullName,
             phone: signupData.phone
@@ -260,10 +256,12 @@ const Auth = () => {
       if (data.user) {
         toast({
           title: "¡Cuenta creada!",
-          description: "Tu cuenta ha sido creada correctamente. Revisa tu email para confirmar tu cuenta.",
+          description: "Tu cuenta ha sido creada correctamente. Ya puedes iniciar sesión.",
         });
-        // Reset form
+        // Reset form and switch to login tab
         setSignupData({ email: '', password: '', fullName: '', phone: '' });
+        setAcceptedPrivacy(false);
+        setAcceptedTerms(false);
       }
     } catch (error) {
       console.error('Signup error:', error);
@@ -465,7 +463,7 @@ const Auth = () => {
                       >
                         He leído y acepto las{" "}
                         <Link 
-                          to="/politica-privacidad" 
+                          to="/terminos-condiciones" 
                           className="text-primary font-semibold underline hover:text-primary/80"
                         >
                           Bases y Políticas de Privacidad
@@ -487,7 +485,7 @@ const Auth = () => {
                       >
                         Acepto los{" "}
                         <Link 
-                          to="/politica-privacidad" 
+                          to="/terminos-condiciones" 
                           className="text-primary font-semibold underline hover:text-primary/80"
                         >
                           Términos y Condiciones

@@ -45,6 +45,7 @@ import ReportDetails from "./pages/ReportDetails";
 import ReportsManagement from "./pages/ReportsManagement";
 import CommunityMessages from "./pages/CommunityMessages";
 import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
+import TerminosCondiciones from "./pages/TerminosCondiciones";
 import ConfirmacionRegistro from "./pages/ConfirmacionRegistro";
 
 const AppContent = () => {
@@ -117,12 +118,9 @@ const AppContent = () => {
       {isAdmin && <TestMenu onTriggerGarbageAlert={handleGlobalTestAlert} onTriggerAmberAlert={handleAmberAlertTest} onTriggerPanicAlert={handlePanicAlertTest} />}
       <Routes>
         <Route path="/auth" element={<Auth />} />
-        <Route path="/politica-privacidad" element={
-          <PoliticaPrivacidad />
-        } />
-        <Route path="/confirmacion-registro" element={
-          <ConfirmacionRegistro />
-        } />
+        <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
+        <Route path="/terminos-condiciones" element={<TerminosCondiciones />} />
+        <Route path="/confirmacion-registro" element={<ConfirmacionRegistro />} />
         <Route path="/perfil-setup" element={
           <ProtectedRoute>
             <ProfileSetup />
