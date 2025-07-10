@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,6 +23,11 @@ const Auth = () => {
   });
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockTimeLeft, setBlockTimeLeft] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -34,6 +40,43 @@ const Auth = () => {
       }
     };
     checkAuth();
+
+    // Check for blocked status
+    const blockedUntil = localStorage.getItem('blockedUntil');
+    if (blockedUntil && new Date(blockedUntil) > new Date()) {
+      setIsBlocked(true);
+      const timeLeft = Math.ceil((new Date(blockedUntil).getTime() - new Date().getTime()) / 1000);
+      setBlockTimeLeft(timeLeft);
+      
+      const timer = setInterval(() => {
+        const newTimeLeft = Math.ceil((new Date(blockedUntil).getTime() - new Date().getTime()) / 1000);
+        if (newTimeLeft <= 0) {
+          setIsBlocked(false);
+          setFailedAttempts(0);
+          localStorage.removeItem('blockedUntil');
+          localStorage.removeItem('failedAttempts');
+          clearInterval(timer);
+        } else {
+          setBlockTimeLeft(newTimeLeft);
+        }
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+
+    const attempts = localStorage.getItem('failedAttempts');
+    if (attempts) {
+      setFailedAttempts(parseInt(attempts));
+    }
+
+    // Handle password reset from email
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('type') === 'recovery') {
+      toast({
+        title: "Recuperación de contraseña",
+        description: "Ahora puedes cambiar tu contraseña",
+      });
+    }
   }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -55,9 +98,28 @@ const Auth = () => {
       });
 
       if (error) {
+        // Handle failed login attempts
+        const newFailedAttempts = failedAttempts + 1;
+        setFailedAttempts(newFailedAttempts);
+        localStorage.setItem('failedAttempts', newFailedAttempts.toString());
+        
+        if (newFailedAttempts >= 5) {
+          const blockUntil = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+          localStorage.setItem('blockedUntil', blockUntil.toISOString());
+          setIsBlocked(true);
+          setBlockTimeLeft(15 * 60);
+          
+          toast({
+            title: "Cuenta bloqueada",
+            description: "Demasiados intentos fallidos. Tu cuenta ha sido bloqueada por 15 minutos.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
         let errorMessage = "Error al iniciar sesión";
         if (error.message.includes("Invalid login credentials")) {
-          errorMessage = "Credenciales inválidas. Verifica tu email y contraseña.";
+          errorMessage = `Credenciales inválidas. Verifica tu email y contraseña. Intentos restantes: ${5 - newFailedAttempts}`;
         } else if (error.message.includes("Email not confirmed")) {
           errorMessage = "Por favor, confirma tu email antes de iniciar sesión.";
         }
@@ -79,6 +141,52 @@ const Auth = () => {
       }
     } catch (error) {
       console.error('Login error:', error);
+      toast({
+        title: "Error",
+        description: "Ocurrió un error inesperado",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail) {
+      toast({
+        title: "Error",
+        description: "Por favor, ingresa tu email",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const redirectUrl = "https://3aae6aac-723c-4f19-8bc0-e936a90c7a7a.lovableproject.com/auth";
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Error al enviar email de recuperación",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Email enviado",
+        description: "Revisa tu email para restablecer tu contraseña",
+      });
+      setShowForgotPassword(false);
+      setResetEmail('');
+    } catch (error) {
+      console.error('Password reset error:', error);
       toast({
         title: "Error",
         description: "Ocurrió un error inesperado",
@@ -120,7 +228,8 @@ const Auth = () => {
 
     setIsLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/confirmacion-registro`;
+      // Use the production/preview URL instead of localhost
+      const redirectUrl = "https://3aae6aac-723c-4f19-8bc0-e936a90c7a7a.lovableproject.com/confirmacion-registro";
       
       const { data, error } = await supabase.auth.signUp({
         email: signupData.email,
@@ -235,13 +344,35 @@ const Auth = () => {
                     </div>
                   </div>
 
+                  {/* Block notification */}
+                  {isBlocked && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                      <p className="text-red-800 font-semibold">Cuenta bloqueada temporalmente</p>
+                      <p className="text-red-600 text-sm">
+                        Tiempo restante: {Math.floor(blockTimeLeft / 60)}:{(blockTimeLeft % 60).toString().padStart(2, '0')}
+                      </p>
+                    </div>
+                  )}
+
                   <Button
                     type="submit"
                     className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 rounded-xl py-6 font-bold text-lg"
-                    disabled={isLoading}
+                    disabled={isLoading || isBlocked}
                   >
-                    {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+                    {isLoading ? "Iniciando sesión..." : isBlocked ? "Cuenta Bloqueada" : "Iniciar Sesión"}
                   </Button>
+
+                  {/* Forgot password link */}
+                  <div className="text-center mt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowForgotPassword(true)}
+                      className="text-primary hover:text-primary/80 text-sm font-semibold underline"
+                      disabled={isLoading}
+                    >
+                      ¿Olvidaste tu contraseña?
+                    </button>
+                  </div>
                 </form>
               </TabsContent>
 
@@ -379,6 +510,55 @@ const Auth = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Forgot Password Dialog */}
+      <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Recuperar Contraseña</DialogTitle>
+            <DialogDescription>
+              Ingresa tu email para recibir instrucciones de recuperación
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="reset-email" className="text-gray-800 font-semibold">
+                Email
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Input
+                  id="reset-email"
+                  type="email"
+                  placeholder="tu@email.com"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  className="pl-10 rounded-xl border-2 border-gray-200 focus:border-primary"
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowForgotPassword(false)}
+                className="flex-1"
+                disabled={isLoading}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 bg-gradient-to-r from-primary to-blue-600"
+                disabled={isLoading}
+              >
+                {isLoading ? "Enviando..." : "Enviar"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
