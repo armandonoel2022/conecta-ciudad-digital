@@ -25,6 +25,10 @@ const Auth = () => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
+  const [tempPassword, setTempPassword] = useState('');
+  const [showTempPassword, setShowTempPassword] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [newPasswordData, setNewPasswordData] = useState({ password: '', confirmPassword: '' });
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockTimeLeft, setBlockTimeLeft] = useState(0);
@@ -133,10 +137,36 @@ const Auth = () => {
       }
 
       if (data.user) {
+        // Check if user needs to change password
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('must_change_password')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profile?.must_change_password) {
+          // Reset failed attempts on successful login
+          setFailedAttempts(0);
+          localStorage.removeItem('failedAttempts');
+          
+          toast({
+            title: "Cambio de contraseña requerido",
+            description: "Debes cambiar tu contraseña temporal por una nueva",
+            variant: "destructive",
+          });
+          setShowChangePassword(true);
+          return;
+        }
+
         toast({
           title: "¡Bienvenido!",
           description: "Has iniciado sesión correctamente",
         });
+        
+        // Reset failed attempts on successful login
+        setFailedAttempts(0);
+        localStorage.removeItem('failedAttempts');
+        
         navigate('/');
       }
     } catch (error) {
@@ -164,29 +194,114 @@ const Auth = () => {
 
     setIsLoading(true);
     try {
-      const redirectUrl = "https://3aae6aac-723c-4f19-8bc0-e936a90c7a7a.lovableproject.com/auth";
-      
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: redirectUrl,
+      const response = await fetch(`https://xgsxivotekaxeustofls.supabase.co/functions/v1/reset-password-temp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhnc3hpdm90ZWtheGV1c3RvZmxzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTEzNDUsImV4cCI6MjA2NTUyNzM0NX0.Rm15tslHv8k8uuSQpmBtKH90oB3h9ZVWbCq3-VDe1Ew`
+        },
+        body: JSON.stringify({ email: resetEmail })
       });
 
-      if (error) {
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
         toast({
           title: "Error",
-          description: "Error al enviar email de recuperación",
+          description: data.error || "Error al generar contraseña temporal",
           variant: "destructive",
         });
         return;
       }
 
-      toast({
-        title: "Email enviado",
-        description: "Revisa tu email para restablecer tu contraseña",
-      });
+      // Show temporary password to user
+      setTempPassword(data.tempPassword);
+      setShowTempPassword(true);
       setShowForgotPassword(false);
       setResetEmail('');
+
+      toast({
+        title: "Contraseña temporal generada",
+        description: "Usa esta contraseña para iniciar sesión. Deberás cambiarla después.",
+      });
+
     } catch (error) {
       console.error('Password reset error:', error);
+      toast({
+        title: "Error",
+        description: "Ocurrió un error inesperado",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newPasswordData.password || !newPasswordData.confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Por favor, completa todos los campos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPasswordData.password !== newPasswordData.confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Las contraseñas no coinciden",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPasswordData.password.length < 6) {
+      toast({
+        title: "Error",
+        description: "La contraseña debe tener al menos 6 caracteres",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPasswordData.password
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Error al cambiar la contraseña",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Mark password as changed in profile
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from('profiles')
+          .update({ must_change_password: false })
+          .eq('id', user.id);
+      }
+
+      toast({
+        title: "Contraseña actualizada",
+        description: "Tu contraseña ha sido cambiada exitosamente",
+      });
+
+      setShowChangePassword(false);
+      setNewPasswordData({ password: '', confirmPassword: '' });
+      navigate('/');
+
+    } catch (error) {
+      console.error('Change password error:', error);
       toast({
         title: "Error",
         description: "Ocurrió un error inesperado",
@@ -513,9 +628,9 @@ const Auth = () => {
       <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Recuperar Contraseña</DialogTitle>
+            <DialogTitle>Generar Contraseña Temporal</DialogTitle>
             <DialogDescription>
-              Ingresa tu email para recibir instrucciones de recuperación
+              Se generará una contraseña temporal única que deberás usar para iniciar sesión. No se enviará ningún email.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleForgotPassword} className="space-y-4">
@@ -554,6 +669,139 @@ const Auth = () => {
                 {isLoading ? "Enviando..." : "Enviar"}
               </Button>
             </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Temporary Password Dialog */}
+      <Dialog open={showTempPassword} onOpenChange={setShowTempPassword}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-green-600">¡Contraseña Temporal Generada!</DialogTitle>
+            <DialogDescription>
+              Usa esta contraseña para iniciar sesión. Deberás cambiarla después del login.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <Label className="text-sm font-semibold text-green-800 mb-2 block">
+                Tu contraseña temporal:
+              </Label>
+              <div className="flex items-center gap-2 bg-white p-3 rounded border">
+                <code className="flex-1 text-lg font-mono font-bold text-green-700 break-all">
+                  {tempPassword}
+                </code>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(tempPassword);
+                    toast({
+                      title: "Copiado",
+                      description: "Contraseña copiada al portapapeles",
+                    });
+                  }}
+                >
+                  Copiar
+                </Button>
+              </div>
+            </div>
+            
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <p className="text-sm text-yellow-800">
+                <strong>Importante:</strong> Esta contraseña es temporal. Al iniciar sesión, se te pedirá que cambies tu contraseña por una nueva.
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setShowTempPassword(false);
+                  setTempPassword('');
+                }}
+                className="flex-1"
+              >
+                Cerrar
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  setShowTempPassword(false);
+                  setTempPassword('');
+                  // Auto-fill the login form with the temporary password
+                  setLoginData(prev => ({ ...prev, password: tempPassword }));
+                }}
+                className="flex-1 bg-gradient-to-r from-primary to-blue-600"
+              >
+                Usar Ahora
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Change Password Dialog */}
+      <Dialog open={showChangePassword} onOpenChange={setShowChangePassword}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-orange-600">Cambio de Contraseña Requerido</DialogTitle>
+            <DialogDescription>
+              Debes cambiar tu contraseña temporal por una nueva para continuar.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleChangePassword} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-password" className="text-gray-800 font-semibold">
+                Nueva Contraseña *
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Input
+                  id="new-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={newPasswordData.password}
+                  onChange={(e) => setNewPasswordData({ ...newPasswordData, password: e.target.value })}
+                  className="pl-10 rounded-xl border-2 border-gray-200 focus:border-primary"
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password" className="text-gray-800 font-semibold">
+                Confirmar Contraseña *
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={newPasswordData.confirmPassword}
+                  onChange={(e) => setNewPasswordData({ ...newPasswordData, confirmPassword: e.target.value })}
+                  className="pl-10 rounded-xl border-2 border-gray-200 focus:border-primary"
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-blue-800">
+                Tu nueva contraseña debe tener al menos 6 caracteres.
+              </p>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 rounded-xl py-6 font-bold text-lg"
+              disabled={isLoading}
+            >
+              {isLoading ? "Actualizando..." : "Cambiar Contraseña"}
+            </Button>
           </form>
         </DialogContent>
       </Dialog>

@@ -553,6 +553,7 @@ export type Database = {
           gender: string | null
           id: string
           last_name: string | null
+          must_change_password: boolean | null
           neighborhood: string | null
           phone: string | null
           updated_at: string | null
@@ -569,6 +570,7 @@ export type Database = {
           gender?: string | null
           id: string
           last_name?: string | null
+          must_change_password?: boolean | null
           neighborhood?: string | null
           phone?: string | null
           updated_at?: string | null
@@ -585,6 +587,7 @@ export type Database = {
           gender?: string | null
           id?: string
           last_name?: string | null
+          must_change_password?: boolean | null
           neighborhood?: string | null
           phone?: string | null
           updated_at?: string | null
@@ -808,6 +811,10 @@ export type Database = {
       is_admin: {
         Args: { _user_id: string }
         Returns: boolean
+      }
+      reset_user_password_with_temp: {
+        Args: { user_email: string; temp_password: string }
+        Returns: Json
       }
     }
     Enums: {
