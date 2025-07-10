@@ -407,9 +407,18 @@ const Reports = () => {
                         fill="#8884d8"
                         dataKey="value"
                       >
-                        {demographics && Object.entries(demographics.byGender).map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
+                        {demographics && Object.entries(demographics.byGender).map(([name], index) => {
+                          // Asignar colores específicos por género
+                          const getGenderColor = (genderName: string) => {
+                            if (genderName.toLowerCase() === 'femenino') return '#ec4899'; // Rosa
+                            if (genderName.toLowerCase() === 'masculino') return 'hsl(var(--primary))'; // Azul del tema
+                            return COLORS[index % COLORS.length]; // Otros géneros usan el esquema existente
+                          };
+                          
+                          return (
+                            <Cell key={`cell-${index}`} fill={getGenderColor(name)} />
+                          );
+                        })}
                       </Pie>
                       <Tooltip />
                     </PieChart>
