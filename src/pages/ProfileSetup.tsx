@@ -104,7 +104,19 @@ const ProfileSetup = () => {
 
       if (error) {
         console.error('Error updating profile:', error);
-        toast.error('Error al guardar el perfil. Intenta nuevamente.');
+        
+        // Manejar errores específicos de duplicados
+        if (error.code === '23505') {
+          if (error.message.includes('profiles_phone_unique')) {
+            toast.error('Este número de teléfono ya está registrado. Usa un número diferente.');
+          } else if (error.message.includes('profiles_document_number_unique')) {
+            toast.error('Este número de documento ya está registrado. Verifica tu información.');
+          } else {
+            toast.error('Ya existe un registro con esta información. Verifica tus datos.');
+          }
+        } else {
+          toast.error('Error al guardar el perfil. Intenta nuevamente.');
+        }
         return;
       }
 
