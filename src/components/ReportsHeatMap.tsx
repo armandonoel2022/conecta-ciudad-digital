@@ -90,50 +90,70 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
 
   // Inicializar mapa de Mapbox
   useEffect(() => {
-    if (!realMapContainer.current || reportsWithCoords.length === 0) return;
+    if (!realMapContainer.current) return;
 
     // Configurar token de Mapbox
     mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtYW5kb25vZWwiLCJhIjoiY21jeGx1eDF5MDJ4YTJqbjdlamQ4aTRxNCJ9.6M0rLVxf5UTiE7EBw7qjTQ';
 
-    // Calcular el centro del mapa basado en los reportes
-    const avgLat = reportsWithCoords.reduce((sum, report) => sum + report.latitude!, 0) / reportsWithCoords.length;
-    const avgLng = reportsWithCoords.reduce((sum, report) => sum + report.longitude!, 0) / reportsWithCoords.length;
+    // Centro por defecto (Medellín, Colombia)
+    let center: [number, number] = [-75.5636, 6.2442];
+    let zoom = 11;
+
+    // Si hay reportes con coordenadas, calcular centro
+    if (reportsWithCoords.length > 0) {
+      const avgLat = reportsWithCoords.reduce((sum, report) => sum + report.latitude!, 0) / reportsWithCoords.length;
+      const avgLng = reportsWithCoords.reduce((sum, report) => sum + report.longitude!, 0) / reportsWithCoords.length;
+      center = [avgLng, avgLat];
+      zoom = 12;
+    }
 
     // Inicializar mapa
     map.current = new mapboxgl.Map({
       container: realMapContainer.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: [avgLng, avgLat],
-      zoom: 12,
+      center: center,
+      zoom: zoom,
     });
 
     // Agregar controles de navegación
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-    // Agregar marcadores para cada reporte
-    reportsWithCoords.forEach((report) => {
-      const marker = new mapboxgl.Marker({
-        color: getMarkerColor(report.category)
-      })
-        .setLngLat([report.longitude!, report.latitude!])
-        .setPopup(
-          new mapboxgl.Popup({ offset: 25 })
-            .setHTML(`
-              <div class="p-2">
-                <h3 class="font-semibold text-sm">${getCategoryLabel(report.category)}</h3>
-                <p class="text-xs text-gray-600">${report.address || 'Ubicación no especificada'}</p>
-                <p class="text-xs text-gray-500 mt-1">${new Date(report.created_at).toLocaleDateString()}</p>
-              </div>
-            `)
-        )
-        .addTo(map.current!);
+    // Esperar a que el mapa se cargue antes de agregar marcadores
+    map.current.on('load', () => {
+      // Agregar marcadores para cada reporte con coordenadas
+      reportsWithCoords.forEach((report) => {
+        const marker = new mapboxgl.Marker({
+          color: getMarkerColor(report.category)
+        })
+          .setLngLat([report.longitude!, report.latitude!])
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25 })
+              .setHTML(`
+                <div class="p-3">
+                  <h3 class="font-semibold text-sm mb-1">${getCategoryLabel(report.category)}</h3>
+                  <p class="text-xs text-gray-600 mb-1">${report.address || 'Ubicación no especificada'}</p>
+                  <p class="text-xs text-gray-500">${new Date(report.created_at).toLocaleDateString()}</p>
+                </div>
+              `)
+          )
+          .addTo(map.current!);
+      });
+
+      // Si hay reportes, ajustar el mapa para mostrar todos los puntos
+      if (reportsWithCoords.length > 1) {
+        const bounds = new mapboxgl.LngLatBounds();
+        reportsWithCoords.forEach(report => {
+          bounds.extend([report.longitude!, report.latitude!]);
+        });
+        map.current!.fitBounds(bounds, { padding: 50 });
+      }
     });
 
     // Cleanup
     return () => {
       map.current?.remove();
     };
-  }, [reportsWithCoords]);
+  }, [reportsWithCoords, selectedCategory]); // Agregar selectedCategory como dependencia
 
   const getMarkerColor = (category: string) => {
     const colors = {
