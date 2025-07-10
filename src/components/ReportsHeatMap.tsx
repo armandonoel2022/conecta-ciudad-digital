@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { MapPin, Thermometer } from 'lucide-react';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface HeatMapProps {
   reports: Array<{
@@ -16,8 +18,10 @@ interface HeatMapProps {
 
 const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
+  const realMapContainer = useRef<HTMLDivElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [mapReady, setMapReady] = useState(false);
+  const map = useRef<mapboxgl.Map | null>(null);
 
   // Filtrar reportes por categoría
   const filteredReports = selectedCategory === 'all' 
@@ -82,6 +86,64 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
     if (intensity > 0.4) return 'w-5 h-5';
     if (intensity > 0.2) return 'w-4 h-4';
     return 'w-3 h-3';
+  };
+
+  // Inicializar mapa de Mapbox
+  useEffect(() => {
+    if (!realMapContainer.current || reportsWithCoords.length === 0) return;
+
+    // Configurar token de Mapbox
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtYW5kb25vZWwiLCJhIjoiY21jeGx1eDF5MDJ4YTJqbjdlamQ4aTRxNCJ9.6M0rLVxf5UTiE7EBw7qjTQ';
+
+    // Calcular el centro del mapa basado en los reportes
+    const avgLat = reportsWithCoords.reduce((sum, report) => sum + report.latitude!, 0) / reportsWithCoords.length;
+    const avgLng = reportsWithCoords.reduce((sum, report) => sum + report.longitude!, 0) / reportsWithCoords.length;
+
+    // Inicializar mapa
+    map.current = new mapboxgl.Map({
+      container: realMapContainer.current,
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [avgLng, avgLat],
+      zoom: 12,
+    });
+
+    // Agregar controles de navegación
+    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    // Agregar marcadores para cada reporte
+    reportsWithCoords.forEach((report) => {
+      const marker = new mapboxgl.Marker({
+        color: getMarkerColor(report.category)
+      })
+        .setLngLat([report.longitude!, report.latitude!])
+        .setPopup(
+          new mapboxgl.Popup({ offset: 25 })
+            .setHTML(`
+              <div class="p-2">
+                <h3 class="font-semibold text-sm">${getCategoryLabel(report.category)}</h3>
+                <p class="text-xs text-gray-600">${report.address || 'Ubicación no especificada'}</p>
+                <p class="text-xs text-gray-500 mt-1">${new Date(report.created_at).toLocaleDateString()}</p>
+              </div>
+            `)
+        )
+        .addTo(map.current!);
+    });
+
+    // Cleanup
+    return () => {
+      map.current?.remove();
+    };
+  }, [reportsWithCoords]);
+
+  const getMarkerColor = (category: string) => {
+    const colors = {
+      basura: '#22c55e',      // green
+      iluminacion: '#eab308', // yellow
+      baches: '#f97316',      // orange
+      seguridad: '#ef4444',   // red
+      otros: '#6366f1'        // indigo
+    };
+    return colors[category as keyof typeof colors] || '#6b7280';
   };
 
   return (
@@ -165,6 +227,44 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
                 <div className="flex items-center gap-1">
                   <div className="w-6 h-6 bg-red-500 rounded-full"></div>
                   <span className="text-xs text-gray-600">Muy Alto</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Mapa Real de Mapbox */}
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-primary" />
+                Ubicaciones Geográficas
+              </h3>
+              <div 
+                ref={realMapContainer} 
+                className="w-full h-96 rounded-lg border shadow-lg"
+                style={{ minHeight: '400px' }}
+              />
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg mt-2">
+                <div className="text-sm font-medium text-gray-700">Categorías:</div>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-xs text-gray-600">Basura</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <span className="text-xs text-gray-600">Iluminación</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                    <span className="text-xs text-gray-600">Baches</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <span className="text-xs text-gray-600">Seguridad</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-indigo-500 rounded-full"></div>
+                    <span className="text-xs text-gray-600">Otros</span>
+                  </div>
                 </div>
               </div>
             </div>
