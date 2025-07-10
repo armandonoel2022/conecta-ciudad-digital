@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { MapPin, Thermometer } from 'lucide-react';
+import { MapPin, Thermometer, TrendingUp, AlertCircle } from 'lucide-react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -12,6 +12,7 @@ interface HeatMapProps {
     longitude: number | null;
     category: string;
     address: string | null;
+    neighborhood: string | null;
     created_at: string;
   }>;
 }
@@ -166,6 +167,51 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
     return colors[category as keyof typeof colors] || '#6b7280';
   };
 
+  // Obtener zonas calientes por barrios
+  const getHotZonesByNeighborhood = () => {
+    if (filteredReports.length === 0) return [];
+
+    // Agrupar reportes por barrio
+    const grouped = filteredReports.reduce((acc, report) => {
+      const neighborhood = report.neighborhood || 'Sin especificar';
+      if (!acc[neighborhood]) {
+        acc[neighborhood] = {
+          name: neighborhood,
+          count: 0,
+          categories: {} as Record<string, number>,
+          reports: []
+        };
+      }
+      acc[neighborhood].count++;
+      acc[neighborhood].reports.push(report);
+      
+      // Contar por categorías
+      if (!acc[neighborhood].categories[report.category]) {
+        acc[neighborhood].categories[report.category] = 0;
+      }
+      acc[neighborhood].categories[report.category]++;
+      
+      return acc;
+    }, {} as Record<string, any>);
+
+    // Convertir a array y ordenar por cantidad de reportes
+    return Object.values(grouped)
+      .sort((a: any, b: any) => b.count - a.count)
+      .slice(0, 10); // Top 10 barrios
+  };
+
+  const hotZones = getHotZonesByNeighborhood();
+
+  const getZoneRiskLevel = (count: number, maxZoneCount: number) => {
+    const intensity = count / maxZoneCount;
+    if (intensity > 0.7) return { level: 'Muy Alto', color: 'bg-red-500', textColor: 'text-red-700', bgColor: 'bg-red-50' };
+    if (intensity > 0.5) return { level: 'Alto', color: 'bg-orange-500', textColor: 'text-orange-700', bgColor: 'bg-orange-50' };
+    if (intensity > 0.3) return { level: 'Medio', color: 'bg-yellow-500', textColor: 'text-yellow-700', bgColor: 'bg-yellow-50' };
+    return { level: 'Bajo', color: 'bg-green-500', textColor: 'text-green-700', bgColor: 'bg-green-50' };
+  };
+
+  const maxZoneCount = hotZones.length > 0 ? hotZones[0].count : 1;
+
   return (
     <Card className="bg-white/95 backdrop-blur-sm">
       <CardHeader>
@@ -199,60 +245,128 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {/* Mapa simulado */}
-            <div 
-              ref={mapContainer} 
-              className="relative w-full h-96 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden"
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <p className="text-gray-600 font-medium">Visualización de Densidad</p>
-                  <p className="text-sm text-gray-500">
-                    {reportsWithCoords.length} reportes con ubicación
-                  </p>
+          <div className="space-y-6">
+            {/* Layout principal: Mapa de calor y Zonas calientes */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Mapa de calor simulado */}
+              <div className="lg:col-span-2">
+                <div 
+                  ref={mapContainer} 
+                  className="relative w-full h-96 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden"
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-gray-600 font-medium">Visualización de Densidad</p>
+                      <p className="text-sm text-gray-500">
+                        {reportsWithCoords.length} reportes con ubicación
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Puntos de calor simulados */}
+                  {heatmapData.map((point: any, index) => (
+                    <div
+                      key={index}
+                      className={`absolute rounded-full opacity-70 ${getIntensityColor(point.count)} ${getIntensitySize(point.count)}`}
+                      style={{
+                        left: `${20 + (index % 5) * 15}%`,
+                        top: `${20 + Math.floor(index / 5) * 15}%`,
+                      }}
+                      title={`${point.count} reporte(s) en esta área`}
+                    />
+                  ))}
+                </div>
+
+                {/* Leyenda */}
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg mt-4">
+                  <div className="text-sm font-medium text-gray-700">Intensidad:</div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="text-xs text-gray-600">Bajo</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+                      <span className="text-xs text-gray-600">Medio</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-5 h-5 bg-orange-500 rounded-full"></div>
+                      <span className="text-xs text-gray-600">Alto</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-6 h-6 bg-red-500 rounded-full"></div>
+                      <span className="text-xs text-gray-600">Muy Alto</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              
-              {/* Puntos de calor simulados */}
-              {heatmapData.map((point: any, index) => (
-                <div
-                  key={index}
-                  className={`absolute rounded-full opacity-70 ${getIntensityColor(point.count)} ${getIntensitySize(point.count)}`}
-                  style={{
-                    left: `${20 + (index % 5) * 15}%`,
-                    top: `${20 + Math.floor(index / 5) * 15}%`,
-                  }}
-                  title={`${point.count} reporte(s) en esta área`}
-                />
-              ))}
-            </div>
 
-            {/* Leyenda */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div className="text-sm font-medium text-gray-700">Intensidad:</div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-xs text-gray-600">Bajo</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-                  <span className="text-xs text-gray-600">Medio</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-5 h-5 bg-orange-500 rounded-full"></div>
-                  <span className="text-xs text-gray-600">Alto</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-6 h-6 bg-red-500 rounded-full"></div>
-                  <span className="text-xs text-gray-600">Muy Alto</span>
+              {/* Zonas Calientes */}
+              <div className="lg:col-span-1">
+                <div className="bg-white border rounded-lg p-4 h-fit">
+                  <div className="flex items-center gap-2 mb-4">
+                    <TrendingUp className="h-5 w-5 text-red-500" />
+                    <h3 className="text-lg font-semibold text-gray-800">Zonas Calientes</h3>
+                  </div>
+                  
+                  {hotZones.length === 0 ? (
+                    <div className="text-center py-8">
+                      <AlertCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-sm text-gray-500">Sin datos de barrios</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {hotZones.map((zone: any, index) => {
+                        const riskLevel = getZoneRiskLevel(zone.count, maxZoneCount);
+                        const topCategory = Object.entries(zone.categories)
+                          .sort(([,a], [,b]) => (b as number) - (a as number))[0];
+                        
+                        return (
+                          <div 
+                            key={index} 
+                            className={`p-3 rounded-lg border-l-4 ${riskLevel.bgColor} border-l-${riskLevel.color.replace('bg-', '')}`}
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-medium text-sm text-gray-800 truncate">
+                                {zone.name}
+                              </h4>
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2 h-2 rounded-full ${riskLevel.color}`}></div>
+                                <span className={`text-xs font-medium ${riskLevel.textColor}`}>
+                                  {riskLevel.level}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <span className="text-lg font-bold text-gray-900">
+                                {zone.count}
+                              </span>
+                              <span className="text-xs text-gray-600">
+                                reportes
+                              </span>
+                            </div>
+                            
+                            {topCategory && (
+                              <div className="mt-2 pt-2 border-t border-gray-200">
+                                <p className="text-xs text-gray-600">
+                                  Principal: <span className="font-medium">
+                                    {getCategoryLabel(String(topCategory[0]))} ({String(topCategory[1])})
+                                  </span>
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Mapa Real de Mapbox */}
-            <div className="mt-6">
+            <div>
               <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-primary" />
                 Ubicaciones Geográficas
