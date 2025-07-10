@@ -11,6 +11,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { TwoFactorVerification } from "@/components/TwoFactorVerification";
+import { use2FA } from "@/hooks/use2FA";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -32,8 +34,90 @@ const Auth = () => {
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockTimeLeft, setBlockTimeLeft] = useState(0);
+  const [show2FAVerification, setShow2FAVerification] = useState(false);
+  const [pendingUser, setPendingUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { verifyLogin2FA } = use2FA();
+
+  // Función para completar el login después de la verificación exitosa
+  const completeLogin = () => {
+    toast({
+      title: "¡Bienvenido!",
+      description: "Has iniciado sesión correctamente",
+    });
+    
+    // Reset failed attempts on successful login
+    setFailedAttempts(0);
+    localStorage.removeItem('failedAttempts');
+    
+    navigate('/');
+  };
+
+  // Función para manejar la verificación 2FA
+  const handle2FAVerification = async (code: string): Promise<boolean> => {
+    if (!pendingUser) return false;
+
+    try {
+      // Obtener la configuración 2FA del usuario
+      const { data: config, error } = await supabase
+        .from('user_2fa')
+        .select('*')
+        .eq('user_id', pendingUser.id)
+        .single();
+
+      if (error || !config) {
+        console.error('Error loading 2FA config:', error);
+        return false;
+      }
+
+      // Verificar código TOTP manualmente
+      const { TOTP } = await import('otpauth');
+      const totp = new TOTP({
+        issuer: 'CiudadConecta',
+        label: pendingUser.email || pendingUser.id,
+        algorithm: 'SHA1',
+        digits: 6,
+        period: 30,
+        secret: config.secret
+      });
+
+      // Verificar TOTP
+      const isValidTOTP = totp.validate({ token: code, window: 1 }) !== null;
+      
+      // Verificar código de respaldo
+      const isValidBackup = config.backup_codes.includes(code.toUpperCase());
+
+      if (isValidTOTP || isValidBackup) {
+        // Actualizar última vez usado
+        await supabase
+          .from('user_2fa')
+          .update({ last_used_at: new Date().toISOString() })
+          .eq('user_id', pendingUser.id);
+
+        // Si se usó un código de respaldo, removerlo
+        if (isValidBackup) {
+          const updatedBackupCodes = config.backup_codes.filter(
+            bc => bc !== code.toUpperCase()
+          );
+          await supabase
+            .from('user_2fa')
+            .update({ backup_codes: updatedBackupCodes })
+            .eq('user_id', pendingUser.id);
+        }
+
+        setShow2FAVerification(false);
+        setPendingUser(null);
+        completeLogin();
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('2FA verification error:', error);
+      return false;
+    }
+  };
 
   useEffect(() => {
     // Check if user is already logged in
@@ -158,16 +242,23 @@ const Auth = () => {
           return;
         }
 
-        toast({
-          title: "¡Bienvenido!",
-          description: "Has iniciado sesión correctamente",
-        });
-        
-        // Reset failed attempts on successful login
-        setFailedAttempts(0);
-        localStorage.removeItem('failedAttempts');
-        
-        navigate('/');
+        // Check if user has 2FA enabled
+        const { data: twoFactorConfig } = await supabase
+          .from('user_2fa')
+          .select('enabled')
+          .eq('user_id', data.user.id)
+          .single();
+
+        if (twoFactorConfig?.enabled) {
+          // Store user temporarily and show 2FA verification
+          setPendingUser(data.user);
+          setShow2FAVerification(true);
+          setIsLoading(false);
+          return;
+        }
+
+        // Complete login if no 2FA
+        completeLogin();
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -805,6 +896,13 @@ const Auth = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* 2FA Verification Dialog */}
+      <TwoFactorVerification
+        open={show2FAVerification}
+        onVerify={handle2FAVerification}
+        loading={isLoading}
+      />
     </div>
   );
 };

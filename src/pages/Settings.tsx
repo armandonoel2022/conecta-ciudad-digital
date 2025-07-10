@@ -3,12 +3,14 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Fingerprint, LocateFixed, Moon, Sun, Activity } from "lucide-react";
+import { ArrowLeft, Fingerprint, LocateFixed, Moon, Sun, Activity, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { initializeAnalytics } from '@/lib/analytics';
+import { TwoFactorSetup } from "@/components/TwoFactorSetup";
+import { use2FA } from "@/hooks/use2FA";
 
 const Settings = () => {
   const [biometricEnabled, setBiometricEnabled] = useState(false);
