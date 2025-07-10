@@ -44,6 +44,8 @@ import APMDashboard from "./pages/APMDashboard";
 import ReportDetails from "./pages/ReportDetails";
 import ReportsManagement from "./pages/ReportsManagement";
 import CommunityMessages from "./pages/CommunityMessages";
+import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
+import ConfirmacionRegistro from "./pages/ConfirmacionRegistro";
 
 const AppContent = () => {
   const { showAlert, dismissAlert, triggerTestAlert } = useGarbageAlerts();
@@ -115,6 +117,12 @@ const AppContent = () => {
       {isAdmin && <TestMenu onTriggerGarbageAlert={handleGlobalTestAlert} onTriggerAmberAlert={handleAmberAlertTest} onTriggerPanicAlert={handlePanicAlertTest} />}
       <Routes>
         <Route path="/auth" element={<Auth />} />
+        <Route path="/politica-privacidad" element={
+          <PoliticaPrivacidad />
+        } />
+        <Route path="/confirmacion-registro" element={
+          <ConfirmacionRegistro />
+        } />
         <Route path="/perfil-setup" element={
           <ProtectedRoute>
             <ProfileSetup />

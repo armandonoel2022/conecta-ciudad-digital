@@ -9,6 +9,7 @@ import { ArrowLeft, Mail, Lock, User, Phone } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +20,8 @@ const Auth = () => {
     fullName: '', 
     phone: '' 
   });
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -97,6 +100,15 @@ const Auth = () => {
       return;
     }
 
+    if (!acceptedPrivacy || !acceptedTerms) {
+      toast({
+        title: "Error",
+        description: "Debes aceptar las Políticas de Privacidad y los Términos y Condiciones",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (signupData.password.length < 6) {
       toast({
         title: "Error",
@@ -108,7 +120,7 @@ const Auth = () => {
 
     setIsLoading(true);
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/confirmacion-registro`;
       
       const { data, error } = await supabase.auth.signUp({
         email: signupData.email,
@@ -307,10 +319,57 @@ const Auth = () => {
                     </div>
                   </div>
 
+                  {/* Privacy Policy and Terms Checkboxes */}
+                  <div className="space-y-4 pt-4">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        id="privacy-policy"
+                        checked={acceptedPrivacy}
+                        onCheckedChange={(checked) => setAcceptedPrivacy(checked === true)}
+                        className="mt-1"
+                      />
+                      <Label 
+                        htmlFor="privacy-policy" 
+                        className="text-sm text-gray-700 leading-relaxed cursor-pointer"
+                      >
+                        He leído y acepto las{" "}
+                        <Link 
+                          to="/politica-privacidad" 
+                          className="text-primary font-semibold underline hover:text-primary/80"
+                        >
+                          Bases y Políticas de Privacidad
+                        </Link>
+                        {" "}*
+                      </Label>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        id="terms-conditions"
+                        checked={acceptedTerms}
+                        onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
+                        className="mt-1"
+                      />
+                      <Label 
+                        htmlFor="terms-conditions" 
+                        className="text-sm text-gray-700 leading-relaxed cursor-pointer"
+                      >
+                        Acepto los{" "}
+                        <Link 
+                          to="/politica-privacidad" 
+                          className="text-primary font-semibold underline hover:text-primary/80"
+                        >
+                          Términos y Condiciones
+                        </Link>
+                        {" "}*
+                      </Label>
+                    </div>
+                  </div>
+
                   <Button
                     type="submit"
                     className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 rounded-xl py-6 font-bold text-lg"
-                    disabled={isLoading}
+                    disabled={isLoading || !acceptedPrivacy || !acceptedTerms}
                   >
                     {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
                   </Button>
