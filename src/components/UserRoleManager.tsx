@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { useUserRoles, UserRole } from '@/hooks/useUserRoles';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Users, Shield, Crown } from 'lucide-react';
+import { Users, Shield, Crown, Trash2 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 interface UserProfile {
   id: string;
@@ -27,7 +28,7 @@ const roleConfig = {
 };
 
 const UserRoleManager = () => {
-  const { isAdmin, assignRole, removeRole, getAllUserRoles } = useUserRoles();
+  const { isAdmin, assignRole, removeRole, deleteUser, getAllUserRoles } = useUserRoles();
   const { toast } = useToast();
   const [users, setUsers] = useState<UserWithRoles[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>('');
@@ -135,6 +136,23 @@ const UserRoleManager = () => {
     }
   };
 
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    try {
+      await deleteUser(userId);
+      toast({
+        title: 'Usuario eliminado',
+        description: `${userName} ha sido eliminado completamente del sistema`,
+      });
+      fetchUsersWithRoles();
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'No se pudo eliminar el usuario',
+        variant: 'destructive'
+      });
+    }
+  };
+
   const getUserDisplayName = (user: UserProfile) => {
     return user.full_name || `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Usuario sin nombre';
   };
@@ -237,17 +255,52 @@ const UserRoleManager = () => {
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    {user.roles.map(role => (
-                      <Button
-                        key={role}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleRemoveRole(user.id, role)}
-                      >
-                        Remover {roleConfig[role].label}
-                      </Button>
-                    ))}
+                  <div className="flex gap-2 items-center">
+                    <div className="flex gap-2">
+                      {user.roles.map(role => (
+                        <Button
+                          key={role}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRemoveRole(user.id, role)}
+                        >
+                          Remover {roleConfig[role].label}
+                        </Button>
+                      ))}
+                    </div>
+                    
+                    {/* Delete User Button with Confirmation */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="ml-2"
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Eliminar Usuario
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción eliminará permanentemente al usuario "{getUserDisplayName(user)}" 
+                            y todos sus datos asociados (reportes, mensajes, pagos, etc.). 
+                            Esta acción no se puede deshacer.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteUser(user.id, getUserDisplayName(user))}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Sí, eliminar usuario
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               ))}

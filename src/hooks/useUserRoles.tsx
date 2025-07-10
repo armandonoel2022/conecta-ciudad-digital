@@ -132,6 +132,21 @@ export const useUserRoles = () => {
     }
   };
 
+  const deleteUser = async (userId: string) => {
+    if (!isAdmin) {
+      throw new Error('Solo los administradores pueden eliminar usuarios');
+    }
+
+    const { error } = await supabase.rpc('delete_user_completely', {
+      user_id_to_delete: userId
+    });
+
+    if (error) {
+      console.error('Error deleting user:', error);
+      throw error;
+    }
+  };
+
   const getAllUserRoles = async () => {
     if (!user || !isAdmin) {
       throw new Error('Solo los administradores pueden ver todos los roles');
@@ -159,6 +174,7 @@ export const useUserRoles = () => {
     isCommunityLeader,
     assignRole,
     removeRole,
+    deleteUser,
     getAllUserRoles,
     refreshRoles: fetchUserRoles
   };

@@ -778,6 +778,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      delete_user_completely: {
+        Args: { user_id_to_delete: string }
+        Returns: boolean
+      }
       generate_bill_number: {
         Args: Record<PropertyKey, never>
         Returns: string
