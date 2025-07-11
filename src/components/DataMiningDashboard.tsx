@@ -406,12 +406,48 @@ const DataMiningDashboard: React.FC<DataMiningDashboardProps> = ({ dateRange }) 
                               
                               <div className="mt-6 p-4 bg-muted/50 rounded-lg">
                                 <h4 className="font-medium mb-2">Análisis Detallado</h4>
-                                <p className="text-sm text-muted-foreground">
-                                  Esta anomalía fue detectada mediante algoritmos de machine learning que analizan 
-                                  patrones históricos de reportes. Un score de {selectedAnomaly.score.toFixed(2)} indica 
-                                  un comportamiento {selectedAnomaly.score > 0.7 ? 'altamente inusual' : 'moderadamente atípico'} 
-                                  que requiere investigación.
-                                </p>
+                                <div className="space-y-3 text-sm text-muted-foreground">
+                                  <div>
+                                    <strong>Tipo de Anomalía:</strong> {selectedAnomaly.anomalyType === 'timing' ? 'Temporal' : selectedAnomaly.anomalyType === 'location' ? 'Geográfica' : selectedAnomaly.anomalyType === 'frequency' ? 'Frecuencia' : 'Categoría'}
+                                  </div>
+                                  
+                                  <div>
+                                    <strong>Score de Anomalía:</strong> {selectedAnomaly.score.toFixed(2)}/100
+                                    <div className="text-xs mt-1">
+                                      {selectedAnomaly.score > 50 
+                                        ? '🔴 Anomalía significativa - Requiere investigación inmediata' 
+                                        : selectedAnomaly.score > 20 
+                                        ? '🟡 Anomalía moderada - Monitoreo recomendado'
+                                        : '🟢 Anomalía leve - Para revisión rutinaria'
+                                      }
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <strong>Explicación del Score:</strong>
+                                    <div className="text-xs mt-1">
+                                      {selectedAnomaly.anomalyType === 'timing' && 
+                                        'Este reporte fue creado en una hora del día cuando típicamente hay muy pocos reportes. El score representa cuántas veces más reportes hay en esta hora comparado con el promedio.'
+                                      }
+                                      {selectedAnomaly.anomalyType === 'location' && 
+                                        'Este reporte proviene de un área que históricamente tiene muy pocos reportes. El score indica qué tan inusual es la actividad en esta zona.'
+                                      }
+                                      {selectedAnomaly.anomalyType === 'frequency' && 
+                                        'Se detectó un patrón inusual en la frecuencia de reportes para esta categoría o área.'
+                                      }
+                                      {selectedAnomaly.anomalyType === 'category' && 
+                                        'Esta combinación de categoría y ubicación es estadísticamente inusual según los patrones históricos.'
+                                      }
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <strong>¿Por qué es importante?</strong>
+                                    <div className="text-xs mt-1">
+                                      Las anomalías pueden indicar: eventos emergentes que requieren atención, posibles errores en el reporte, cambios en los patrones de la comunidad, o nuevos problemas que están surgiendo en áreas específicas.
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                               
                               <div className="bg-blue-50 p-4 rounded-lg">

@@ -41,11 +41,17 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
       const lat = report.latitude;
       const lng = report.longitude;
       
-      // Rangos aproximados para Santo Domingo, República Dominicana
+      // Rangos más amplios y precisos para Santo Domingo y alrededores
+      // Incluye sectores como Gazcue, Ensanche Ozama, etc.
       const isInSantoDomingo = 
-        lat >= 18.2 && lat <= 18.8 &&  // Latitud (Norte)
-        lng >= -70.2 && lng <= -69.6;  // Longitud (Oeste)
+        lat >= 18.35 && lat <= 18.65 &&  // Latitud (Norte) - rango ampliado
+        lng >= -70.05 && lng <= -69.75;  // Longitud (Oeste) - rango ampliado
         
+      // Coordenadas de verificación para sectores conocidos:
+      // Gazcue: ~18.468, -69.911
+      // Ensanche Ozama: ~18.486, -69.856
+      // Centro: ~18.472, -69.895
+      
       return isInSantoDomingo;
     }
   );
