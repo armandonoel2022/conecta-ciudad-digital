@@ -149,6 +149,51 @@ export type Database = {
         }
         Relationships: []
       }
+      garbage_alert_configs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          days_of_week: number[]
+          end_hour: number
+          frequency_hours: number
+          id: string
+          is_active: boolean
+          municipality: string
+          province: string
+          sector: string
+          start_hour: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          days_of_week?: number[]
+          end_hour?: number
+          frequency_hours?: number
+          id?: string
+          is_active?: boolean
+          municipality?: string
+          province?: string
+          sector: string
+          start_hour?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          days_of_week?: number[]
+          end_hour?: number
+          frequency_hours?: number
+          id?: string
+          is_active?: boolean
+          municipality?: string
+          province?: string
+          sector?: string
+          start_hour?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       garbage_bills: {
         Row: {
           amount_due: number

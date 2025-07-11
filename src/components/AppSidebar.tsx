@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, Megaphone, Recycle, Trophy, Settings, LifeBuoy, Users, Briefcase, GitCompare, 
-  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LogOut, UserCog, BarChart3, FileText, ClipboardList, MessageSquare
+  BookOpen, Gem, AlarmClockOff, Siren, Trash2, LogOut, UserCog, BarChart3, FileText, ClipboardList, MessageSquare, Bell
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -179,6 +179,28 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
                   location.pathname === '/mensajes-comunitarios' ? "text-primary-foreground" : "text-primary"
                 )} />
                 <span className="text-sm">Mensajes Comunitarios</span>
+              </Link>
+            </li>
+          )}
+          
+          {/* Garbage Alert Management - Admin only */}
+          {isAdmin && (
+            <li>
+              <Link
+                to="/gestion-alertas-basura"
+                onClick={handleLinkClick}
+                className={cn(
+                  'flex items-center p-3 rounded-xl transition-all duration-200 group',
+                  location.pathname === '/gestion-alertas-basura'
+                    ? 'bg-gradient-to-r from-primary to-blue-500 text-primary-foreground font-semibold shadow-lg' 
+                    : 'hover:bg-accent hover:text-accent-foreground'
+                )}
+              >
+                <Bell className={cn(
+                  "w-5 h-5 mr-3",
+                  location.pathname === '/gestion-alertas-basura' ? "text-primary-foreground" : "text-primary"
+                )} />
+                <span className="text-sm">Alertas de Basura</span>
               </Link>
             </li>
           )}

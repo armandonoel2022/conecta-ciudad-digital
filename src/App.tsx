@@ -44,6 +44,7 @@ import APMDashboard from "./pages/APMDashboard";
 import ReportDetails from "./pages/ReportDetails";
 import ReportsManagement from "./pages/ReportsManagement";
 import CommunityMessages from "./pages/CommunityMessages";
+import GarbageAlertManagement from "./pages/GarbageAlertManagement";
 import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
 import TerminosCondiciones from "./pages/TerminosCondiciones";
 import ConfirmacionRegistro from "./pages/ConfirmacionRegistro";
@@ -152,6 +153,7 @@ const AppContent = () => {
           <Route path="/reporte-detalles/:id" element={<ReportDetails />} />
           <Route path="/gestion-reportes" element={<ReportsManagement />} />
           <Route path="/mensajes-comunitarios" element={<CommunityMessages />} />
+          <Route path="/gestion-alertas-basura" element={<GarbageAlertManagement />} />
           <Route path="/apm-dashboard" element={<APMDashboard />} />
         </Route>
         <Route path="*" element={<NotFound />} />
