@@ -76,103 +76,113 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
-    // Generar usuarios sintéticos
-    console.log('Generando usuarios sintéticos...');
-    const users: any[] = [];
+    // Obtener usuarios existentes de auth
+    console.log('Obteniendo usuarios existentes...');
+    const { data: existingUsers, error: usersError } = await supabase.auth.admin.listUsers();
+    
+    if (usersError || !existingUsers?.users || existingUsers.users.length === 0) {
+      throw new Error('No hay usuarios existentes en el sistema. Necesitas tener al menos algunos usuarios registrados.');
+    }
+
+    console.log(`Encontrados ${existingUsers.users.length} usuarios existentes`);
+
+    // Generar perfiles para usuarios existentes que no tengan perfil
+    console.log('Generando perfiles para usuarios existentes...');
     const profiles: any[] = [];
 
-    for (let i = 0; i < 100; i++) {
-      const userId = crypto.randomUUID();
-      const firstName = getRandomFirstName();
-      const lastName = getRandomLastName();
-      const sector = SANTO_DOMINGO_SECTORS[Math.floor(Math.random() * SANTO_DOMINGO_SECTORS.length)];
-      
-      // Crear usuario en auth.users
-      const user = {
-        id: userId,
-        email: `usuario${i + 1}@ciudadconecta.do`,
-        encrypted_password: '$2a$10$dummy.encrypted.password.hash',
-        email_confirmed_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        raw_user_meta_data: {
-          full_name: `${firstName} ${lastName}`,
+    for (const user of existingUsers.users) {
+      // Verificar si ya tiene perfil
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      if (!existingProfile) {
+        const firstName = user.user_metadata?.first_name || getRandomFirstName();
+        const lastName = user.user_metadata?.last_name || getRandomLastName();
+        const sector = SANTO_DOMINGO_SECTORS[Math.floor(Math.random() * SANTO_DOMINGO_SECTORS.length)];
+        
+        const profile = {
+          id: user.id,
+          full_name: user.user_metadata?.full_name || `${firstName} ${lastName}`,
           first_name: firstName,
-          last_name: lastName
-        },
-        aud: 'authenticated',
-        role: 'authenticated'
-      };
+          last_name: lastName,
+          phone: `809${Math.floor(Math.random() * 9000000) + 1000000}`,
+          address: `Calle ${Math.floor(Math.random() * 50) + 1}, ${sector}`,
+          neighborhood: sector,
+          city: 'Santo Domingo',
+          gender: Math.random() > 0.5 ? 'masculino' : 'femenino',
+          birth_date: getRandomBirthDate(),
+          document_type: 'cedula',
+          document_number: `${Math.floor(Math.random() * 90000000) + 10000000}`,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
 
-      // Crear perfil
-      const profile = {
-        id: userId,
-        full_name: `${firstName} ${lastName}`,
-        first_name: firstName,
-        last_name: lastName,
-        phone: `809${Math.floor(Math.random() * 9000000) + 1000000}`,
-        address: `Calle ${Math.floor(Math.random() * 50) + 1}, ${sector}`,
-        neighborhood: sector,
-        city: 'Santo Domingo',
-        gender: Math.random() > 0.5 ? 'masculino' : 'femenino',
-        birth_date: getRandomBirthDate(),
-        document_type: 'cedula',
-        document_number: `${Math.floor(Math.random() * 90000000) + 10000000}`,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-
-      users.push(user);
-      profiles.push(profile);
+        profiles.push(profile);
+      }
     }
 
-    // Insertar usuarios usando SQL directo (porque auth.users no es accesible vía API)
-    // Solo insertamos profiles ya que los usuarios auth se manejan por separado
-    const { error: profilesError } = await supabase
-      .from('profiles')
-      .insert(profiles);
+    // Insertar perfiles
+    let profilesInserted = 0;
+    if (profiles.length > 0) {
+      const { error: profilesError } = await supabase
+        .from('profiles')
+        .insert(profiles);
 
-    if (profilesError) {
-      console.error('Error insertando profiles:', profilesError);
-      throw profilesError;
+      if (profilesError) {
+        console.error('Error insertando profiles:', profilesError);
+        throw profilesError;
+      }
+      profilesInserted = profiles.length;
     }
 
-    // Asignar roles a algunos usuarios
+    // Asignar roles a algunos usuarios existentes
     const userRoles = [];
-    // 2 administradores
-    for (let i = 0; i < 2; i++) {
+    const usersList = existingUsers.users;
+    
+    if (usersList.length >= 1) {
+      // Hacer al primer usuario admin
       userRoles.push({
-        user_id: users[i].id,
+        user_id: usersList[0].id,
         role: 'admin',
-        assigned_by: users[0].id,
+        assigned_by: usersList[0].id,
         is_active: true
       });
     }
-    // 8 líderes comunitarios
-    for (let i = 2; i < 10; i++) {
+    
+    if (usersList.length >= 2) {
+      // Hacer al segundo usuario admin también
       userRoles.push({
-        user_id: users[i].id,
-        role: 'community_leader',
-        assigned_by: users[0].id,
+        user_id: usersList[1].id,
+        role: 'admin',
+        assigned_by: usersList[0].id,
         is_active: true
       });
     }
-    // El resto son usuarios comunitarios
-    for (let i = 10; i < 100; i++) {
+    
+    // Los usuarios restantes como community_user
+    for (let i = 2; i < usersList.length; i++) {
       userRoles.push({
-        user_id: users[i].id,
+        user_id: usersList[i].id,
         role: 'community_user',
-        assigned_by: users[0].id,
+        assigned_by: usersList[0].id,
         is_active: true
       });
     }
 
-    const { error: rolesError } = await supabase
-      .from('user_roles')
-      .insert(userRoles);
+    let rolesInserted = 0;
+    if (userRoles.length > 0) {
+      const { error: rolesError } = await supabase
+        .from('user_roles')
+        .insert(userRoles);
 
-    if (rolesError) {
-      console.error('Error insertando roles:', rolesError);
+      if (rolesError) {
+        console.error('Error insertando roles:', rolesError);
+      } else {
+        rolesInserted = userRoles.length;
+      }
     }
 
     // Generar reportes sintéticos
@@ -183,7 +193,7 @@ serve(async (req) => {
     for (let i = 0; i < reportCount; i++) {
       const category = REPORT_CATEGORIES[Math.floor(Math.random() * REPORT_CATEGORIES.length)];
       const sector = SANTO_DOMINGO_SECTORS[Math.floor(Math.random() * SANTO_DOMINGO_SECTORS.length)];
-      const user = users[Math.floor(Math.random() * users.length)];
+      const user = usersList[Math.floor(Math.random() * usersList.length)];
       
       // Generar coordenadas realistas dentro de Santo Domingo
       const coordinates = generateSantoDomingoCoordinates();
@@ -230,14 +240,14 @@ serve(async (req) => {
     console.log('Generando alertas de pánico...');
     const panicAlerts = [];
     for (let i = 0; i < 25; i++) {
-      const user = users[Math.floor(Math.random() * users.length)];
+      const user = usersList[Math.floor(Math.random() * usersList.length)];
       const coordinates = generateSantoDomingoCoordinates();
       const createdAt = new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString();
       
       panicAlerts.push({
         id: crypto.randomUUID(),
         user_id: user.id,
-        user_full_name: user.raw_user_meta_data.full_name,
+        user_full_name: user.user_metadata?.full_name || `${getRandomFirstName()} ${getRandomLastName()}`,
         latitude: coordinates.latitude,
         longitude: coordinates.longitude,
         address: `${SANTO_DOMINGO_SECTORS[Math.floor(Math.random() * SANTO_DOMINGO_SECTORS.length)]}, Santo Domingo`,
@@ -259,13 +269,13 @@ serve(async (req) => {
     console.log('Generando alertas Amber...');
     const amberAlerts = [];
     for (let i = 0; i < 15; i++) {
-      const user = users[Math.floor(Math.random() * users.length)];
+      const user = usersList[Math.floor(Math.random() * usersList.length)];
       const createdAt = new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000).toISOString();
       
       amberAlerts.push({
         id: crypto.randomUUID(),
         user_id: user.id,
-        child_full_name: `${getRandomFirstName()} ${user.raw_user_meta_data.last_name}`,
+        child_full_name: `${getRandomFirstName()} ${getRandomLastName()}`,
         child_nickname: Math.random() > 0.5 ? getRandomNickname() : null,
         last_seen_location: `${SANTO_DOMINGO_SECTORS[Math.floor(Math.random() * SANTO_DOMINGO_SECTORS.length)]}, Santo Domingo`,
         contact_number: `809${Math.floor(Math.random() * 9000000) + 1000000}`,
@@ -292,8 +302,9 @@ serve(async (req) => {
       success: true,
       message: 'Datos sintéticos generados exitosamente para Santo Domingo',
       data: {
-        profiles_created: profiles.length,
-        user_roles_created: userRoles.length,
+        existing_users: usersList.length,
+        profiles_created: profilesInserted,
+        user_roles_created: rolesInserted,
         reports_created: reports.length,
         panic_alerts_created: panicAlerts.length,
         amber_alerts_created: amberAlerts.length,
