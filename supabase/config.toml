@@ -1,1 +1,4 @@
 project_id = "xgsxivotekaxeustofls"
+
+[functions.generate-synthetic-data]
+verify_jwt = false
