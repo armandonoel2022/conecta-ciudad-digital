@@ -32,46 +32,59 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
     : reports.filter(report => report.category === selectedCategory);
 
   // Obtener reportes con coordenadas válidas para Santo Domingo
-  // Santo Domingo está aproximadamente entre 18.3°-18.7° N y 69.7°-70.1° W
+  // Rango expandido para incluir todos los barrios actualizados
   const reportsWithCoords = filteredReports.filter(
     report => {
       if (!report.latitude || !report.longitude) return false;
       
-      // Filtrar coordenadas que estén dentro del área de Santo Domingo
+      // Filtrar coordenadas que estén dentro del área de Santo Domingo ampliada
       const lat = report.latitude;
       const lng = report.longitude;
       
-      // Rangos más amplios y precisos para Santo Domingo y alrededores
-      // Incluye sectores como Gazcue, Ensanche Ozama, etc.
+      // Rangos expandidos para incluir todos los barrios conocidos:
+      // Villa Duarte: 18.467, -69.867
+      // Los Cacicazgos: 18.500, -69.983  
+      // Cristo Rey: 18.470, -69.950
+      // Los Mina: 18.485, -69.856
       const isInSantoDomingo = 
-        lat >= 18.35 && lat <= 18.65 &&  // Latitud (Norte) - rango ampliado
-        lng >= -70.05 && lng <= -69.75;  // Longitud (Oeste) - rango ampliado
+        lat >= 18.40 && lat <= 18.55 &&  // Latitud (Norte) - rango más amplio
+        lng >= -70.00 && lng <= -69.80;  // Longitud (Oeste) - rango más amplio
         
-      // Coordenadas de verificación para sectores conocidos:
-      // Gazcue: ~18.468, -69.911
-      // Ensanche Ozama: ~18.486, -69.856
-      // Centro: ~18.472, -69.895
-      
       return isInSantoDomingo;
     }
   );
 
-  // Simular un mapa de calor básico con CSS mientras no tengamos Mapbox
+  // Algoritmo mejorado de agrupación por proximidad real (no por grid)
   const getHeatmapData = () => {
     if (reportsWithCoords.length === 0) return [];
 
-    // Agrupar reportes por proximidad geográfica (grid más pequeño para más precisión)
+    // Agrupar reportes por barrio cuando existe, sino por proximidad geográfica
     const grouped = reportsWithCoords.reduce((acc, report) => {
-      const key = `${Math.round(report.latitude! * 1000)}-${Math.round(report.longitude! * 1000)}`;
+      let key: string;
+      
+      if (report.neighborhood && report.neighborhood.trim() !== '') {
+        // Usar el barrio como clave principal
+        key = report.neighborhood.toLowerCase().trim();
+      } else {
+        // Fallback: agrupar por proximidad geográfica menos agresiva (grid más amplio)
+        key = `${Math.round(report.latitude! * 100)}-${Math.round(report.longitude! * 100)}`;
+      }
+      
       if (!acc[key]) {
         acc[key] = {
           lat: report.latitude!,
           lng: report.longitude!,
           count: 0,
           reports: [],
-          categories: {} as Record<string, number>
+          categories: {} as Record<string, number>,
+          neighborhood: report.neighborhood || 'Sin especificar'
         };
       }
+      
+      // Promediar coordenadas para centrar mejor el punto
+      acc[key].lat = (acc[key].lat * acc[key].count + report.latitude!) / (acc[key].count + 1);
+      acc[key].lng = (acc[key].lng * acc[key].count + report.longitude!) / (acc[key].count + 1);
+      
       acc[key].count++;
       acc[key].reports.push(report);
       
