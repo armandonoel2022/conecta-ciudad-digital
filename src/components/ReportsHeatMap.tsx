@@ -31,9 +31,23 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
     ? reports 
     : reports.filter(report => report.category === selectedCategory);
 
-  // Obtener reportes con coordenadas válidas
+  // Obtener reportes con coordenadas válidas para Santo Domingo
+  // Santo Domingo está aproximadamente entre 18.3°-18.7° N y 69.7°-70.1° W
   const reportsWithCoords = filteredReports.filter(
-    report => report.latitude && report.longitude
+    report => {
+      if (!report.latitude || !report.longitude) return false;
+      
+      // Filtrar coordenadas que estén dentro del área de Santo Domingo
+      const lat = report.latitude;
+      const lng = report.longitude;
+      
+      // Rangos aproximados para Santo Domingo, República Dominicana
+      const isInSantoDomingo = 
+        lat >= 18.2 && lat <= 18.8 &&  // Latitud (Norte)
+        lng >= -70.2 && lng <= -69.6;  // Longitud (Oeste)
+        
+      return isInSantoDomingo;
+    }
   );
 
   // Simular un mapa de calor básico con CSS mientras no tengamos Mapbox
@@ -106,8 +120,8 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
     // Configurar token de Mapbox
     mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtYW5kb25vZWwiLCJhIjoiY21jeGx1eDF5MDJ4YTJqbjdlamQ4aTRxNCJ9.6M0rLVxf5UTiE7EBw7qjTQ';
 
-    // Centro por defecto (Medellín, Colombia)
-    let center: [number, number] = [-75.5636, 6.2442];
+    // Centro por defecto (Santo Domingo, República Dominicana)
+    let center: [number, number] = [-69.9, 18.5];
     let zoom = 11;
 
     // Si hay reportes con coordenadas, calcular centro
@@ -173,8 +187,8 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
     // Configurar token de Mapbox
     mapboxgl.accessToken = 'pk.eyJ1IjoiYXJtYW5kb25vZWwiLCJhIjoiY21jeGx1eDF5MDJ4YTJqbjdlamQ4aTRxNCJ9.6M0rLVxf5UTiE7EBw7qjTQ';
 
-    // Centro por defecto (Medellín, Colombia)
-    let center: [number, number] = [-75.5636, 6.2442];
+    // Centro por defecto (Santo Domingo, República Dominicana)
+    let center: [number, number] = [-69.9, 18.5];
     let zoom = 10;
 
     // Si hay reportes con coordenadas, calcular centro y zoom apropiado
@@ -542,24 +556,46 @@ const ReportsHeatMap: React.FC<HeatMapProps> = ({ reports }) => {
                               </div>
                             </div>
                             
-                            <div className="flex items-center justify-between">
-                              <span className="text-lg font-bold text-gray-900">
-                                {zone.count}
-                              </span>
-                              <span className="text-xs text-gray-600">
-                                reportes
-                              </span>
-                            </div>
-                            
-                            {topCategory && (
-                              <div className="mt-2 pt-2 border-t border-gray-200">
-                                <p className="text-xs text-gray-600">
-                                  Principal: <span className="font-medium">
-                                    {getCategoryLabel(String(topCategory[0]))} ({String(topCategory[1])})
-                                  </span>
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-lg font-bold text-gray-900">
+                                  {zone.count}
+                                </span>
+                                <span className="text-xs text-gray-600">
+                                  reportes totales
+                                </span>
+                              </div>
+                              
+                              {topCategory && (
+                                <div className="space-y-1">
+                                  <div className="text-xs text-gray-600">
+                                    <span className="font-medium">Principal: </span>
+                                    {getCategoryLabel(String(topCategory[0]))} 
+                                    <span className="font-bold text-primary ml-1">
+                                      ({String(topCategory[1])} reportes)
+                                    </span>
+                                  </div>
+                                  
+                                  {Object.entries(zone.categories).length > 1 && (
+                                    <div className="text-xs text-gray-500">
+                                      <span className="font-medium">Otras: </span>
+                                      {Object.entries(zone.categories)
+                                        .sort(([,a], [,b]) => (b as number) - (a as number))
+                                        .slice(1, 3)
+                                        .map(([cat, count]) => `${getCategoryLabel(cat)} (${count})`)
+                                        .join(', ')}
+                                      {Object.entries(zone.categories).length > 3 && '...'}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              
+                              <div className="pt-1 border-t border-gray-200">
+                                <p className="text-xs text-gray-500">
+                                  💡 Zona de alta concentración - requiere atención
                                 </p>
                               </div>
-                            )}
+                            </div>
                           </div>
                         );
                       })}

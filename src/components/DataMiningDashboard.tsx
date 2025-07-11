@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   Brain, 
   TrendingUp, 
@@ -31,6 +32,7 @@ const DataMiningDashboard: React.FC<DataMiningDashboardProps> = ({ dateRange }) 
   const { data: advancedData, isLoading: isLoadingAdvanced } = useAdvancedAnalytics(dateRange);
   const { data: clusters, isLoading: isLoadingClusters } = useClusterAnalysis();
   const { data: predictions, isLoading: isLoadingPredictions } = usePredictiveAnalysis();
+  const [selectedAnomaly, setSelectedAnomaly] = useState<any>(null);
 
   if (isLoadingAdvanced || isLoadingClusters || isLoadingPredictions) {
     return (
@@ -362,17 +364,69 @@ const DataMiningDashboard: React.FC<DataMiningDashboardProps> = ({ dateRange }) 
                         </div>
                       </div>
                       <p className="text-sm">{anomaly.description}</p>
-                      <Button 
-                        variant="link" 
-                        size="sm" 
-                        className="p-0 h-auto text-xs"
-                        onClick={() => {
-                          // Navigate to report details
-                          window.open(`/reportes/${anomaly.reportId}`, '_blank');
-                        }}
-                      >
-                        Ver reporte →
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="link" 
+                            size="sm" 
+                            className="p-0 h-auto text-xs"
+                            onClick={() => setSelectedAnomaly(anomaly)}
+                          >
+                            Ver detalles →
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle>Detalles de Anomalía</DialogTitle>
+                          </DialogHeader>
+                          {selectedAnomaly && (
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className="text-sm font-medium text-muted-foreground">Tipo de Anomalía</label>
+                                  <p className="text-sm">{selectedAnomaly.anomalyType}</p>
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium text-muted-foreground">Score</label>
+                                  <p className="text-sm font-bold">{selectedAnomaly.score.toFixed(2)}</p>
+                                </div>
+                              </div>
+                              
+                              <div>
+                                <label className="text-sm font-medium text-muted-foreground">Descripción</label>
+                                <p className="text-sm mt-1">{selectedAnomaly.description}</p>
+                              </div>
+                              
+                              <div>
+                                <label className="text-sm font-medium text-muted-foreground">Fecha de Detección</label>
+                                <p className="text-sm mt-1">
+                                  {format(new Date(selectedAnomaly.created_at), 'dd/MM/yyyy HH:mm')}
+                                </p>
+                              </div>
+                              
+                              <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+                                <h4 className="font-medium mb-2">Análisis Detallado</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  Esta anomalía fue detectada mediante algoritmos de machine learning que analizan 
+                                  patrones históricos de reportes. Un score de {selectedAnomaly.score.toFixed(2)} indica 
+                                  un comportamiento {selectedAnomaly.score > 0.7 ? 'altamente inusual' : 'moderadamente atípico'} 
+                                  que requiere investigación.
+                                </p>
+                              </div>
+                              
+                              <div className="bg-blue-50 p-4 rounded-lg">
+                                <h4 className="font-medium mb-2 text-blue-800">Recomendaciones</h4>
+                                <ul className="text-sm text-blue-700 space-y-1">
+                                  <li>• Verificar la validez del reporte original</li>
+                                  <li>• Investigar posibles causas subyacentes</li>
+                                  <li>• Monitorear patrones similares en la zona</li>
+                                  <li>• Considerar ajustes en los protocolos de respuesta</li>
+                                </ul>
+                              </div>
+                            </div>
+                          )}
+                        </DialogContent>
+                      </Dialog>
                     </CardContent>
                   </Card>
                 ))}
