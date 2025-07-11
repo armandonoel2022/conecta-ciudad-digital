@@ -87,12 +87,12 @@ const DataMiningDashboard: React.FC<DataMiningDashboardProps> = ({ dateRange }) 
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="p-3 bg-primary/10 rounded-xl">
-          <Brain className="h-6 w-6 text-primary" />
+        <div className="p-3 bg-white/20 rounded-xl">
+          <Brain className="h-6 w-6 text-white" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold">Data Mining & Analytics Avanzado</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl font-bold text-white">Data Mining & Analytics Avanzado</h2>
+          <p className="text-white/90">
             Análisis inteligente de patrones, predicciones y anomalías
           </p>
         </div>
