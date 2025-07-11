@@ -24,6 +24,7 @@ export interface ReportStats {
   byMonth: Record<string, number>;
   byNeighborhood: Record<string, number>;
   recentReports: ReportData[];
+  allReports: ReportData[]; // 👈 Agregar todos los reportes
   averageResolutionTime: number;
   pendingReports: number;
 }
@@ -130,6 +131,7 @@ export const useReportsAnalytics = (dateRange: [Date, Date] | null = null) => {
         byMonth,
         byNeighborhood,
         recentReports,
+        allReports: reportsData, // 👈 Todos los reportes para el mapa de calor
         averageResolutionTime,
         pendingReports
       };

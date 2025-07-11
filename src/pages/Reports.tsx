@@ -366,7 +366,7 @@ const Reports = () => {
           </TabsContent>
 
           <TabsContent value="heatmap" className="space-y-6">
-            <ReportsHeatMap reports={reportsStats?.recentReports || []} />
+            <ReportsHeatMap reports={reportsStats?.allReports || []} />
           </TabsContent>
 
           <TabsContent value="demographics" className="space-y-6">
