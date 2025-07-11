@@ -29,8 +29,8 @@ export const useGarbageAlerts = () => {
     // Check immediately
     checkGarbageDay();
 
-    // Set interval to check every hour
-    const interval = setInterval(checkGarbageDay, 60 * 60 * 1000);
+    // Set interval to check every 3 hours (as specified)
+    const interval = setInterval(checkGarbageDay, 3 * 60 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);
