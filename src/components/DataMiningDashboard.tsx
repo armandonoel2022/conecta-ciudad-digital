@@ -21,7 +21,7 @@ import {
   ArrowDown,
   Minus
 } from "lucide-react";
-import { useAdvancedAnalytics, useClusterAnalysis, usePredictiveAnalysis } from "@/hooks/useAdvancedAnalytics";
+import { useAdvancedAnalytics, useClusterAnalysis, usePredictiveAnalysis } from "@/hooks/useAdvancedAnalyticsOptimized";
 import { format } from 'date-fns';
 
 interface DataMiningDashboardProps {
@@ -92,12 +92,30 @@ const DataMiningDashboard: React.FC<DataMiningDashboardProps> = ({ dateRange }) 
         <div className="p-3 bg-white/20 rounded-xl">
           <Brain className="h-6 w-6 text-white" />
         </div>
-        <div>
+        <div className="flex-1">
           <h2 className="text-2xl font-bold text-white">Data Mining & Analytics Avanzado</h2>
           <p className="text-white/90">
             Análisis inteligente de patrones, predicciones y anomalías
           </p>
         </div>
+        {/* Indicador de procesamiento */}
+        {advancedData && (
+          <div className="bg-white/10 px-3 py-2 rounded-lg">
+            <div className="flex items-center gap-2 text-white">
+              {advancedData.processingLocation === 'server' ? (
+                <>
+                  <Zap className="h-4 w-4 text-green-400" />
+                  <span className="text-sm font-medium">Servidor</span>
+                </>
+              ) : (
+                <>
+                  <Activity className="h-4 w-4 text-yellow-400" />
+                  <span className="text-sm font-medium">Cliente</span>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <Tabs defaultValue="clusters" className="space-y-6">
@@ -587,9 +605,12 @@ const DataMiningDashboard: React.FC<DataMiningDashboardProps> = ({ dateRange }) 
             </div>
           </div>
           
-          {advancedData?.analysisDate && (
+          {advancedData?.processedAt && (
             <div className="mt-4 pt-4 border-t text-center text-xs text-muted-foreground">
-              Última actualización: {format(new Date(advancedData.analysisDate), 'dd/MM/yyyy HH:mm:ss')}
+              Última actualización: {format(new Date(advancedData.processedAt), 'dd/MM/yyyy HH:mm:ss')} 
+              <span className="ml-2 text-green-600">
+                {advancedData.processingLocation === 'server' ? '⚡ Servidor' : '🔄 Cliente'}
+              </span>
             </div>
           )}
         </CardContent>
