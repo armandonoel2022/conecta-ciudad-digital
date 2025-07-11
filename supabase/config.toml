@@ -2,3 +2,6 @@ project_id = "xgsxivotekaxeustofls"
 
 [functions.generate-synthetic-data]
 verify_jwt = false
+
+[functions.close-all-alerts]
+verify_jwt = false
