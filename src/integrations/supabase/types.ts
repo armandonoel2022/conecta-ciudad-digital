@@ -847,6 +847,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auto_generate_monthly_bills: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       check_weekly_message_limit: {
         Args: { _user_id: string }
         Returns: boolean
@@ -889,6 +893,10 @@ export type Database = {
       is_admin: {
         Args: { _user_id: string }
         Returns: boolean
+      }
+      mark_overdue_bills: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       reset_user_password_with_temp: {
         Args: { user_email: string; temp_password: string }

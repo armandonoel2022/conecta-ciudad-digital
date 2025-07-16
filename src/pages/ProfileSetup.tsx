@@ -68,13 +68,17 @@ const ProfileSetup = () => {
 
   const handleCedulaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatCedula(e.target.value);
-    setValue('document_number', formatted);
+    setValue('document_number', formatted, { shouldValidate: true });
+    // Force re-render to show the formatted value
+    e.target.value = formatted;
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Only allow digits and limit to 7
     const numbers = e.target.value.replace(/\D/g, '').slice(0, 7);
-    setValue('phone', numbers);
+    setValue('phone', numbers, { shouldValidate: true });
+    // Force re-render to show the formatted value
+    e.target.value = numbers;
   };
 
   const onSubmit = async (data: ProfileFormData) => {
@@ -211,6 +215,7 @@ const ProfileSetup = () => {
                   placeholder="000-0000000-0"
                   className="bg-white"
                   maxLength={13}
+                  value={watch('document_number') || ''}
                 />
                 {errors.document_number && (
                   <p className="text-sm text-red-600">{errors.document_number.message}</p>
@@ -241,6 +246,7 @@ const ProfileSetup = () => {
                   placeholder="0000000"
                   className="bg-white flex-1"
                   maxLength={7}
+                  value={watch('phone') || ''}
                 />
               </div>
               {watchedPrefix && watchedPhone && (

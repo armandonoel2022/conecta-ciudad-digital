@@ -26,14 +26,21 @@ serve(async (req) => {
 
     console.log(`Creating test bill for user: ${user.id}`);
 
-    // Create a test bill with due date of July 5th, 2025
+    // Create a test bill with current month period
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const monthStart = new Date(currentYear, currentMonth, 1);
+    const monthEnd = new Date(currentYear, currentMonth + 1, 0);
+    const dueDate = new Date(currentYear, currentMonth + 1, 15); // 15 days after month end
+    
     const testBill = {
       user_id: user.id,
       bill_number: `TEST-${Date.now()}`,
-      billing_period_start: '2025-06-01',
-      billing_period_end: '2025-06-30',
-      amount_due: 32500, // $325 DOP in centavos
-      due_date: '2025-07-05',
+      billing_period_start: monthStart.toISOString().split('T')[0],
+      billing_period_end: monthEnd.toISOString().split('T')[0],
+      amount_due: 32500 + Math.floor(Math.random() * 10000), // $325-$425 DOP in centavos
+      due_date: dueDate.toISOString().split('T')[0],
       status: 'pending'
     };
 

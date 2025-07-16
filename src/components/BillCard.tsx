@@ -127,7 +127,7 @@ const BillCard = ({ bill, onPay }: BillCardProps) => {
             </span>
           </div>
           
-          {bill.status === 'pending' && (
+          {(bill.status === 'pending' || bill.status === 'overdue') && (
             <Button 
               onClick={handlePayment}
               disabled={isProcessing}

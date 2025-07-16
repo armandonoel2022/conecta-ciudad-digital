@@ -11,10 +11,12 @@ import BillCard from '@/components/BillCard';
 import PaymentHistory from '@/components/PaymentHistory';
 import SubscriptionPlans from '@/components/SubscriptionPlans';
 import { Link } from 'react-router-dom';
+import { useAutoBilling } from '@/hooks/useAutoBilling';
 
 const GarbagePayment = () => {
   const { bills, payments, loading, generateBills, fetchBills, fetchPayments } = useGarbageBills();
   const [generatingBills, setGeneratingBills] = useState(false);
+  const { isProcessing: isAutoProcessing } = useAutoBilling();
 
   // Check for payment success/failure on page load
   useEffect(() => {
@@ -103,6 +105,7 @@ const GarbagePayment = () => {
 
   const pendingBills = bills.filter(bill => bill.status === 'pending');
   const paidBills = bills.filter(bill => bill.status === 'paid');
+  const overdueBills = bills.filter(bill => bill.status === 'overdue' || (bill.status === 'pending' && new Date(bill.due_date) < new Date()));
 
   if (loading) {
     return (
@@ -134,10 +137,10 @@ const GarbagePayment = () => {
         <div className="flex gap-4">
           <Button 
             onClick={handleGenerateBills}
-            disabled={generatingBills}
+            disabled={generatingBills || isAutoProcessing}
             className="bg-blue-600 hover:bg-blue-700"
           >
-            {generatingBills ? (
+            {generatingBills || isAutoProcessing ? (
               <RefreshCw className="h-4 w-4 animate-spin mr-2" />
             ) : (
               <Plus className="h-4 w-4 mr-2" />
@@ -147,33 +150,37 @@ const GarbagePayment = () => {
           
           <Button 
             onClick={handleCreateTestBill}
-            disabled={generatingBills}
+            disabled={generatingBills || isAutoProcessing}
             variant="outline"
             className="bg-green-600 hover:bg-green-700 text-white border-green-600"
           >
-            {generatingBills ? (
+            {generatingBills || isAutoProcessing ? (
               <RefreshCw className="h-4 w-4 animate-spin mr-2" />
             ) : (
               <Plus className="h-4 w-4 mr-2" />
             )}
-            Crear Factura de Prueba (5 Jul)
+            Crear Factura de Prueba
           </Button>
         </div>
       </div>
 
       <Tabs defaultValue="bills" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="bills" className="flex items-center gap-2">
             <CreditCard className="h-4 w-4" />
-            Facturas Pendientes
+            Pendientes ({pendingBills.length})
+          </TabsTrigger>
+          <TabsTrigger value="overdue" className="flex items-center gap-2">
+            <XCircle className="h-4 w-4" />
+            Vencidas ({overdueBills.length})
           </TabsTrigger>
           <TabsTrigger value="paid" className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4" />
-            Facturas Pagadas
+            <CheckCircle className="h-4 w-4" />
+            Pagadas ({paidBills.length})
           </TabsTrigger>
           <TabsTrigger value="history" className="flex items-center gap-2">
             <History className="h-4 w-4" />
-            Historial de Pagos
+            Historial
           </TabsTrigger>
         </TabsList>
 
@@ -209,6 +216,31 @@ const GarbagePayment = () => {
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {pendingBills.map((bill) => (
+                <BillCard 
+                  key={bill.id} 
+                  bill={bill} 
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="overdue" className="space-y-6">
+          {overdueBills.length === 0 ? (
+            <Card>
+              <CardHeader className="text-center">
+                <div className="mx-auto bg-green-100 p-3 rounded-full w-fit mb-4">
+                  <CheckCircle className="h-10 w-10 text-green-600" />
+                </div>
+                <CardTitle>No tienes facturas vencidas</CardTitle>
+                <CardDescription>
+                  ¡Excelente! No tienes facturas vencidas.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {overdueBills.map((bill) => (
                 <BillCard 
                   key={bill.id} 
                   bill={bill} 

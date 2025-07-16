@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAutoBilling } from "@/hooks/useAutoBilling";
 
 const features = [
   {
@@ -54,6 +55,9 @@ const Index = () => {
     isNewUser: boolean;
   }>({ reportsCount: 0, pendingBills: 0, isNewUser: true });
   const [activityLoading, setActivityLoading] = useState(true);
+  
+  // Auto-billing hook to ensure bills are generated and marked as overdue
+  useAutoBilling();
 
   useEffect(() => {
     const fetchUserData = async () => {

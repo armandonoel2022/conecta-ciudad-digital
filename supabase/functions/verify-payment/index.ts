@@ -96,24 +96,48 @@ serve(async (req) => {
       if (session.mode === 'payment') {
         console.log(`One-time payment completed: ${session.payment_intent}`);
         
-        // Find pending bills for this user and mark the oldest one as paid
-        const { data: pendingBills, error: billsError } = await supabaseClient
-          .from('garbage_bills')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('status', 'pending')
-          .order('created_at', { ascending: true })
-          .limit(1);
-
-        if (billsError) {
-          console.error('Error fetching bills:', billsError);
-        } else if (pendingBills && pendingBills.length > 0) {
-          const billToUpdate = pendingBills[0];
+        // Find the specific bill from the session metadata first
+        let billToUpdate = null;
+        
+        if (session.metadata?.billId) {
+          const { data: specificBill, error: specificBillError } = await supabaseClient
+            .from('garbage_bills')
+            .select('*')
+            .eq('id', session.metadata.billId)
+            .eq('user_id', user.id)
+            .eq('status', 'pending')
+            .single();
           
+          if (!specificBillError && specificBill) {
+            billToUpdate = specificBill;
+          }
+        }
+        
+        // If no specific bill found, get the oldest pending bill
+        if (!billToUpdate) {
+          const { data: pendingBills, error: billsError } = await supabaseClient
+            .from('garbage_bills')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('status', 'pending')
+            .order('created_at', { ascending: true })
+            .limit(1);
+
+          if (billsError) {
+            console.error('Error fetching bills:', billsError);
+          } else if (pendingBills && pendingBills.length > 0) {
+            billToUpdate = pendingBills[0];
+          }
+        }
+
+        if (billToUpdate) {
           // Update bill status to paid
           const { error: updateError } = await supabaseClient
             .from('garbage_bills')
-            .update({ status: 'paid' })
+            .update({ 
+              status: 'paid',
+              updated_at: new Date().toISOString()
+            })
             .eq('id', billToUpdate.id);
 
           if (updateError) {
@@ -140,6 +164,8 @@ serve(async (req) => {
           } else {
             console.log('Payment record created');
           }
+        } else {
+          console.warn('No pending bills found for payment');
         }
       }
 

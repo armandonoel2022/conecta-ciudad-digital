@@ -44,10 +44,17 @@ export const useGarbageBills = () => {
       if (error) throw error;
       
       // Type assertion to ensure the status field matches our interface
-      const typedBills: GarbageBill[] = (data || []).map(bill => ({
-        ...bill,
-        status: bill.status as 'pending' | 'paid' | 'overdue' | 'cancelled'
-      }));
+      const typedBills: GarbageBill[] = (data || []).map(bill => {
+        // Auto-detect overdue status if not already marked
+        let status = bill.status as 'pending' | 'paid' | 'overdue' | 'cancelled';
+        if (status === 'pending' && new Date(bill.due_date) < new Date()) {
+          status = 'overdue';
+        }
+        return {
+          ...bill,
+          status
+        };
+      });
       
       setBills(typedBills);
     } catch (error) {
