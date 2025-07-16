@@ -11,9 +11,9 @@ export const useAutoBilling = () => {
     const runAutoBilling = async () => {
       if (!user) return;
 
-      // Only run once per session and only if last run was more than 1 hour ago
+      // Only run if user exists and last run was more than 5 minutes ago
       const now = new Date();
-      if (lastRun && now.getTime() - lastRun.getTime() < 60 * 60 * 1000) {
+      if (lastRun && now.getTime() - lastRun.getTime() < 5 * 60 * 1000) {
         return;
       }
 
@@ -37,9 +37,9 @@ export const useAutoBilling = () => {
       }
     };
 
-    // Run on mount and then every 30 minutes
+    // Run on mount and then every 5 minutes
     runAutoBilling();
-    const interval = setInterval(runAutoBilling, 30 * 60 * 1000);
+    const interval = setInterval(runAutoBilling, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, [user, lastRun]);

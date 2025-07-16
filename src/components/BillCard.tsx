@@ -89,7 +89,7 @@ const BillCard = ({ bill, onPay }: BillCardProps) => {
     }
   };
 
-  const isOverdue = new Date(bill.due_date) < new Date() && bill.status === 'pending';
+  const isOverdue = new Date(bill.due_date) < new Date() && (bill.status === 'pending' || bill.status === 'overdue');
 
   return (
     <Card className="w-full">

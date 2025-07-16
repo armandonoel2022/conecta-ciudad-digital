@@ -53,9 +53,14 @@ const GarbagePayment = () => {
 
       if (data?.success) {
         toast.success('¡Pago completado exitosamente!');
-        // Refresh bills and payments
-        fetchBills();
-        fetchPayments();
+        // Refresh bills and payments immediately
+        await fetchBills();
+        await fetchPayments();
+        // Also refresh after a short delay to ensure backend processing is complete
+        setTimeout(async () => {
+          await fetchBills();
+          await fetchPayments();
+        }, 2000);
       } else {
         toast.error('El pago no se pudo completar');
       }
@@ -103,7 +108,7 @@ const GarbagePayment = () => {
     }
   };
 
-  const pendingBills = bills.filter(bill => bill.status === 'pending');
+  const pendingBills = bills.filter(bill => bill.status === 'pending' && new Date(bill.due_date) >= new Date());
   const paidBills = bills.filter(bill => bill.status === 'paid');
   const overdueBills = bills.filter(bill => bill.status === 'overdue' || (bill.status === 'pending' && new Date(bill.due_date) < new Date()));
 

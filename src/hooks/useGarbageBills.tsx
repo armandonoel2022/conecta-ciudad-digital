@@ -120,6 +120,17 @@ export const useGarbageBills = () => {
     loadData();
   }, [user]);
 
+  // Refresh data every 30 seconds to catch status updates
+  useEffect(() => {
+    if (!user) return;
+    
+    const interval = setInterval(async () => {
+      await Promise.all([fetchBills(), fetchPayments()]);
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [user]);
+
   return {
     bills,
     payments,
