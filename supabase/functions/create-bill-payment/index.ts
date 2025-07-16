@@ -77,8 +77,8 @@ serve(async (req) => {
 
     console.log("Bill found:", bill.bill_number, "Status:", bill.status);
 
-    if (bill.status !== 'pending') {
-      throw new Error("Bill is not pending payment");
+    if (bill.status !== 'pending' && bill.status !== 'overdue') {
+      throw new Error("Bill is not available for payment");
     }
 
     // Check if customer exists
