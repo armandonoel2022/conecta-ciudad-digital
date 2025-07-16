@@ -105,7 +105,7 @@ serve(async (req) => {
             .select('*')
             .eq('id', session.metadata.billId)
             .eq('user_id', user.id)
-            .eq('status', 'pending')
+            .in('status', ['pending', 'overdue'])
             .single();
           
           if (!specificBillError && specificBill) {
@@ -113,13 +113,13 @@ serve(async (req) => {
           }
         }
         
-        // If no specific bill found, get the oldest pending bill
+        // If no specific bill found, get the oldest pending or overdue bill
         if (!billToUpdate) {
           const { data: pendingBills, error: billsError } = await supabaseClient
             .from('garbage_bills')
             .select('*')
             .eq('user_id', user.id)
-            .eq('status', 'pending')
+            .in('status', ['pending', 'overdue'])
             .order('created_at', { ascending: true })
             .limit(1);
 
