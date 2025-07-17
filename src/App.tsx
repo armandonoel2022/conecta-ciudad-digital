@@ -10,6 +10,7 @@ import GlobalAmberAlerts from "@/components/GlobalAmberAlerts";
 import GlobalPanicAlerts from "@/components/GlobalPanicAlerts";
 import GarbageAlert from "@/components/GarbageAlert";
 import TestMenu from "@/components/TestMenu";
+import SplashScreen from "@/components/SplashScreen";
 import { useGarbageAlerts } from "@/hooks/useGarbageAlerts";
 import { useAmberAlerts } from "@/hooks/useAmberAlerts";
 import { usePanicAlerts } from "@/hooks/usePanicAlerts";
@@ -164,6 +165,7 @@ const AppContent = () => {
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
+  const [showSplash, setShowSplash] = useState(true);
 
   // Inicializar servicios de monitoreo
   useEffect(() => {
@@ -211,6 +213,7 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
           <AuthProvider>
             <BrowserRouter>
               <AppContent />

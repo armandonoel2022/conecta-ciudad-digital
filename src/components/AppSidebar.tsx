@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRoles } from '@/hooks/useUserRoles';
 import { Button } from '@/components/ui/button';
+import logoCiudadConecta from '@/assets/logo-ciudadconecta-v2-simple.png';
 
 const menuItems = [
   { href: '/', label: 'Inicio', icon: Home },
@@ -47,8 +48,12 @@ const AppSidebar = ({ closeSidebar }: { closeSidebar: () => void }) => {
   return (
     <div className="flex flex-col h-full text-foreground bg-background/95 backdrop-blur-sm border-r border-border">
       <div className="p-6 flex items-center justify-center border-b border-border">
-        <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center mr-3">
-          <div className="w-5 h-5 bg-background rounded-md"></div>
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center mr-3">
+          <img 
+            src={logoCiudadConecta} 
+            alt="CiudadConecta" 
+            className="w-full h-full object-contain"
+          />
         </div>
         <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">CiudadConecta</h1>
       </div>

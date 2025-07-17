@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import AppSidebar from '@/components/AppSidebar';
 import { Menu, X } from 'lucide-react';
 import { Button } from './ui/button';
+import logoCiudadConecta from '@/assets/logo-ciudadconecta-v2-simple.png';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -21,8 +22,12 @@ const Layout = () => {
             onClick={() => setSidebarOpen(!sidebarOpen)} 
             className="flex items-center space-x-3 text-white hover:bg-white/20 px-3 py-2 rounded-xl transition-all duration-300 hover:scale-105"
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-500 rounded-lg flex items-center justify-center transition-transform duration-300 hover:rotate-180">
-              <div className="w-4 h-4 bg-white rounded-sm"></div>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center transition-transform duration-300 hover:rotate-12">
+              <img 
+                src={logoCiudadConecta} 
+                alt="CiudadConecta" 
+                className="w-full h-full object-contain drop-shadow-lg"
+              />
             </div>
             <h1 className="text-xl font-bold">CiudadConecta</h1>
           </Button>
