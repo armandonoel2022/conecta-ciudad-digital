@@ -26,7 +26,7 @@ const SplashScreen = ({ onFinish }: SplashScreenProps) => {
       <div className="text-center">
         {/* Logo con animación */}
         <div className="relative mb-8">
-          <div className="w-32 h-32 mx-auto animate-scale-in">
+          <div className="w-40 h-40 mx-auto animate-scale-in">
             <img 
               src={logoCiudadConecta} 
               alt="CiudadConecta Logo" 
@@ -36,10 +36,10 @@ const SplashScreen = ({ onFinish }: SplashScreenProps) => {
           
           {/* Círculos animados alrededor del logo */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-40 h-40 border-2 border-white/30 rounded-full animate-spin"></div>
+            <div className="w-48 h-48 border-2 border-white/30 rounded-full animate-spin"></div>
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-48 h-48 border border-white/20 rounded-full animate-ping"></div>
+            <div className="w-56 h-56 border border-white/20 rounded-full animate-ping"></div>
           </div>
         </div>
 
