@@ -42,11 +42,11 @@ const BillCard = ({ bill, onPay }: BillCardProps) => {
       if (error) throw error;
       
       if (data?.url) {
-        // Open Stripe checkout in a new tab
-        window.open(data.url, '_blank');
+        // Redirect to Stripe checkout in the same window
+        window.location.href = data.url;
         toast({
           title: "Redirigiendo a Stripe",
-          description: "Se ha abierto una nueva pestaña para completar el pago",
+          description: "Redirigiendo al checkout de pago...",
         });
       }
     } catch (error) {

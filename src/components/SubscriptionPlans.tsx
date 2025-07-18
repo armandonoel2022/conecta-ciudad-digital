@@ -47,10 +47,10 @@ const SubscriptionPlans = () => {
       if (error) throw error;
       
       if (data?.url) {
-        window.open(data.url, '_blank');
+        window.location.href = data.url;
         toast({
           title: "Redirigiendo a Stripe",
-          description: "Se ha abierto una nueva pestaña para configurar tu suscripción",
+          description: "Redirigiendo al checkout de pago...",
         });
       }
     } catch (error) {
