@@ -7,14 +7,31 @@ import { Button } from './ui/button';
 import logoCiudadConecta from '@/assets/logo-ciudadconecta-v2-simple.png';
 
 const Layout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700">
-      <div className={`fixed inset-y-0 left-0 z-30 w-64 bg-white/95 backdrop-blur-sm shadow-xl transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out md:relative md:flex md:flex-shrink-0 ${sidebarOpen ? 'md:translate-x-0' : 'md:-translate-x-full'}`}>
+      {/* Sidebar - solo ocupa espacio cuando está abierto */}
+      {sidebarOpen && (
+        <div className="w-64 bg-white/95 backdrop-blur-sm shadow-xl flex-shrink-0 relative">
+          <AppSidebar closeSidebar={() => setSidebarOpen(false)} />
+        </div>
+      )}
+
+      {/* Overlay para móvil cuando el sidebar está abierto */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-20 md:hidden" 
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar flotante en móvil */}
+      <div className={`fixed inset-y-0 left-0 z-30 w-64 bg-white/95 backdrop-blur-sm shadow-xl transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out md:hidden`}>
         <AppSidebar closeSidebar={() => setSidebarOpen(false)} />
       </div>
 
+      {/* Contenido principal - se expande cuando el sidebar está oculto */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="flex items-center justify-between p-4 bg-white/10 backdrop-blur-sm border-b border-white/20">
           <Button 
