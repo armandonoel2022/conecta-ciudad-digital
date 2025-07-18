@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Briefcase, ArrowLeft, Plus, FileText } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Briefcase, ArrowLeft, Plus, FileText, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 import JobApplicationForm from "@/components/JobApplicationForm";
 import { useJobApplications } from "@/hooks/useJobApplications";
@@ -10,6 +11,7 @@ import { useJobApplications } from "@/hooks/useJobApplications";
 const Opportunities = () => {
   const [showForm, setShowForm] = useState(false);
   const { applications, isLoading } = useJobApplications();
+  const hasApplications = applications && applications.length > 0;
 
   const handleFormSuccess = () => {
     setShowForm(false);
@@ -19,14 +21,24 @@ const Opportunities = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-4 text-white mb-4">
-          <Link to="/" className="p-2 hover:bg-white/20 rounded-xl transition-colors">
-            <ArrowLeft className="h-6 w-6" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold">OPORTUNIDADES</h1>
-            <p className="text-white/80">Encuentra y aplica a oportunidades de empleo</p>
+        <div className="flex items-center justify-between text-white mb-4">
+          <div className="flex items-center gap-4">
+            <Link to="/" className="p-2 hover:bg-white/20 rounded-xl transition-colors">
+              <ArrowLeft className="h-6 w-6" />
+            </Link>
+            <div>
+              <h1 className="text-2xl font-bold">OPORTUNIDADES</h1>
+              <p className="text-white/80">Encuentra y aplica a oportunidades de empleo</p>
+            </div>
           </div>
+          {hasApplications && (
+            <Link to="/gestion-solicitudes">
+              <Button variant="secondary" size="sm">
+                <Settings className="h-4 w-4 mr-2" />
+                Gestionar Solicitudes
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Content Card */}
@@ -66,12 +78,15 @@ const Opportunities = () => {
                             <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                               application.status === 'pending' 
                                 ? 'bg-yellow-100 text-yellow-800' 
-                                : application.status === 'approved'
+                                : application.status === 'in_process'
+                                ? 'bg-blue-100 text-blue-800'
+                                : application.status === 'accepted'
                                 ? 'bg-green-100 text-green-800'
                                 : 'bg-red-100 text-red-800'
                             }`}>
                               {application.status === 'pending' ? 'Pendiente' : 
-                               application.status === 'approved' ? 'Aprobada' : 'Rechazada'}
+                               application.status === 'in_process' ? 'En proceso' :
+                               application.status === 'accepted' ? 'Solicitud aceptada' : 'Solicitud declinada'}
                             </span>
                           </div>
                           <CardDescription>
@@ -88,10 +103,21 @@ const Opportunities = () => {
                           <p className="text-sm text-gray-600">
                             Aplicación enviada el {new Date(application.created_at!).toLocaleDateString('es-DO')}
                           </p>
+                          {application.admin_response && (
+                            <div className="mt-2 bg-blue-50 p-3 rounded">
+                              <p className="text-sm"><strong>Respuesta:</strong></p>
+                              <p className="text-sm text-gray-700">{application.admin_response}</p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                Respondido el: {new Date(application.responded_at!).toLocaleDateString('es-DO')}
+                              </p>
+                            </div>
+                          )}
                           {application.notes && (
-                            <p className="text-sm text-gray-700 mt-2 bg-gray-50 p-2 rounded">
-                              <strong>Notas:</strong> {application.notes}
-                            </p>
+                            <div className="mt-2 bg-gray-50 p-2 rounded">
+                              <p className="text-sm text-gray-700">
+                                <strong>Notas:</strong> {application.notes}
+                              </p>
+                            </div>
                           )}
                         </CardContent>
                       </Card>

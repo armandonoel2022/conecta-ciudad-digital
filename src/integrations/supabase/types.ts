@@ -410,6 +410,7 @@ export type Database = {
         Row: {
           additional_courses: string | null
           address: string | null
+          admin_response: string | null
           availability: string | null
           birth_date: string | null
           career_field: string | null
@@ -427,6 +428,8 @@ export type Database = {
           institution_name: string | null
           notes: string | null
           phone: string
+          responded_at: string | null
+          responded_by: string | null
           skills: string | null
           status: string
           updated_at: string
@@ -436,6 +439,7 @@ export type Database = {
         Insert: {
           additional_courses?: string | null
           address?: string | null
+          admin_response?: string | null
           availability?: string | null
           birth_date?: string | null
           career_field?: string | null
@@ -453,6 +457,8 @@ export type Database = {
           institution_name?: string | null
           notes?: string | null
           phone: string
+          responded_at?: string | null
+          responded_by?: string | null
           skills?: string | null
           status?: string
           updated_at?: string
@@ -462,6 +468,7 @@ export type Database = {
         Update: {
           additional_courses?: string | null
           address?: string | null
+          admin_response?: string | null
           availability?: string | null
           birth_date?: string | null
           career_field?: string | null
@@ -479,6 +486,8 @@ export type Database = {
           institution_name?: string | null
           notes?: string | null
           phone?: string
+          responded_at?: string | null
+          responded_by?: string | null
           skills?: string | null
           status?: string
           updated_at?: string

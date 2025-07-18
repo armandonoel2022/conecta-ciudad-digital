@@ -28,6 +28,9 @@ export interface JobApplication {
   cv_file_name?: string;
   status?: string;
   notes?: string;
+  admin_response?: string;
+  responded_at?: string;
+  responded_by?: string;
   created_at?: string;
   updated_at?: string;
 }

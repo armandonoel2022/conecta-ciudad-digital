@@ -28,6 +28,7 @@ import RecyclingGuide from "./pages/RecyclingGuide";
 import Achievements from "./pages/Achievements";
 import AboutUs from "./pages/AboutUs";
 import Opportunities from "./pages/Opportunities";
+import JobApplicationsManager from "./pages/JobApplicationsManager";
 import BeforeAfter from "./pages/BeforeAfter";
 import CommunicationGuide from "./pages/CommunicationGuide";
 import MissionVisionValues from "./pages/MissionVisionValues";
@@ -139,6 +140,7 @@ const AppContent = () => {
           <Route path="/logros" element={<Achievements />} />
           <Route path="/quienes-somos" element={<AboutUs />} />
           <Route path="/oportunidades" element={<Opportunities />} />
+          <Route path="/gestion-solicitudes" element={<JobApplicationsManager />} />
           <Route path="/antes-y-despues" element={<BeforeAfter />} />
           <Route path="/guia-comunicacion" element={<CommunicationGuide />} />
           <Route path="/mision-vision-valores" element={<MissionVisionValues />} />
