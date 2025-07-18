@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import logoCiudadConecta from '@/assets/logo-ciudadconecta-v3.png';
+import logoCiudadConecta from '/lovable-uploads/7dc2051e-ec5d-4c6c-b656-53c955e34ff3.png';
 
 interface SplashScreenProps {
   onFinish: () => void;
@@ -84,11 +84,11 @@ const SplashScreen = ({ onFinish }: SplashScreenProps) => {
         {/* Logo circular con animación */}
         <div className="relative mb-8">
           <div className="w-40 h-40 mx-auto animate-scale-in">
-            <div className="w-full h-full rounded-full overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center shadow-2xl">
+            <div className="w-full h-full rounded-full overflow-hidden bg-white/5 backdrop-blur-sm border-2 border-white/20 flex items-center justify-center shadow-2xl">
               <img 
                 src={logoCiudadConecta} 
                 alt="CiudadConecta Logo" 
-                className="w-32 h-32 object-contain animate-pulse"
+                className="w-full h-full object-cover animate-pulse rounded-full"
                 style={{ animationDuration: '1.5s' }}
               />
             </div>
