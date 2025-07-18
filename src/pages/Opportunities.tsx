@@ -31,14 +31,12 @@ const Opportunities = () => {
               <p className="text-white/80">Encuentra y aplica a oportunidades de empleo</p>
             </div>
           </div>
-          {hasApplications && (
-            <Link to="/gestion-solicitudes">
-              <Button variant="secondary" size="sm">
-                <Settings className="h-4 w-4 mr-2" />
-                Gestionar Solicitudes
-              </Button>
-            </Link>
-          )}
+          <Link to="/gestion-solicitudes">
+            <Button variant="secondary" size="sm">
+              <Settings className="h-4 w-4 mr-2" />
+              Gestionar Solicitudes
+            </Button>
+          </Link>
         </div>
 
         {/* Content Card */}
