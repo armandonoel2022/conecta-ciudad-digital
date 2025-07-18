@@ -1,8 +1,20 @@
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { APMDashboard as Dashboard } from "@/components/APMDashboard";
+import { useUserRoles } from "@/hooks/useUserRoles";
+import { Navigate } from "react-router-dom";
 
 const APMDashboard = () => {
+  const { isAdmin, loading } = useUserRoles();
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-indigo-700 p-4 animate-fade-in">
       <div className="max-w-6xl mx-auto space-y-6">

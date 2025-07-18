@@ -9,7 +9,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import GlobalAmberAlerts from "@/components/GlobalAmberAlerts";
 import GlobalPanicAlerts from "@/components/GlobalPanicAlerts";
 import GarbageAlert from "@/components/GarbageAlert";
-import TestMenu from "@/components/TestMenu";
+
 import SplashScreen from "@/components/SplashScreen";
 import { useGarbageAlerts } from "@/hooks/useGarbageAlerts";
 import { useAmberAlerts } from "@/hooks/useAmberAlerts";
@@ -117,7 +117,7 @@ const AppContent = () => {
           }
         }} 
       />
-      {isAdmin && <TestMenu onTriggerGarbageAlert={handleGlobalTestAlert} onTriggerAmberAlert={handleAmberAlertTest} onTriggerPanicAlert={handlePanicAlertTest} />}
+      
       <Routes>
         <Route path="/auth" element={<Auth />} />
         <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
