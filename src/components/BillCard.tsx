@@ -42,12 +42,14 @@ const BillCard = ({ bill, onPay }: BillCardProps) => {
       if (error) throw error;
       
       if (data?.url) {
-        // Redirect to Stripe checkout in the same window
-        window.location.href = data.url;
         toast({
           title: "Redirigiendo a Stripe",
           description: "Redirigiendo al checkout de pago...",
         });
+        // Small delay to show the toast before redirecting
+        setTimeout(() => {
+          window.location.href = data.url;
+        }, 1000);
       }
     } catch (error) {
       console.error('Error creating payment:', error);
