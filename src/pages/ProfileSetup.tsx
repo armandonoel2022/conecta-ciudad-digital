@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -48,9 +48,35 @@ const ProfileSetup = () => {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      phone_prefix: '809'
+      phone_prefix: '809',
+      first_name: user?.user_metadata?.first_name || '',
+      last_name: user?.user_metadata?.last_name || ''
     }
   });
+
+  // Pre-poblar los campos con datos del usuario si están disponibles
+  useEffect(() => {
+    if (user?.user_metadata) {
+      const metadata = user.user_metadata;
+      if (metadata.first_name) {
+        setValue('first_name', metadata.first_name);
+      }
+      if (metadata.last_name) {
+        setValue('last_name', metadata.last_name);
+      }
+      // Si hay teléfono en los metadatos, parsearlo
+      if (metadata.phone) {
+        const phone = metadata.phone.replace(/\D/g, ''); // Solo números
+        if (phone.length >= 10) {
+          // Asumiendo formato +1829XXXXXXX o similar
+          const prefix = phone.slice(-10, -7); // Los 3 dígitos del prefijo
+          const number = phone.slice(-7); // Los últimos 7 dígitos
+          setValue('phone_prefix', prefix || '809');
+          setValue('phone', number);
+        }
+      }
+    }
+  }, [user, setValue]);
 
   const formatCedula = (value: string) => {
     // Remove all non-digits

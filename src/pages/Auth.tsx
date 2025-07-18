@@ -17,11 +17,12 @@ import { use2FA } from "@/hooks/use2FA";
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginData, setLoginData] = useState({ email: '', password: '' });
-  const [signupData, setSignupData] = useState({ 
-    email: '', 
-    password: '', 
-    fullName: '', 
-    phone: '' 
+  const [signupData, setSignupData] = useState({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    phone: ''
   });
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -405,7 +406,7 @@ const Auth = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signupData.email || !signupData.password || !signupData.fullName) {
+    if (!signupData.email || !signupData.password || !signupData.firstName || !signupData.lastName) {
       toast({
         title: "Error",
         description: "Por favor, completa todos los campos obligatorios",
@@ -439,7 +440,9 @@ const Auth = () => {
         password: signupData.password,
         options: {
           data: {
-            full_name: signupData.fullName,
+            first_name: signupData.firstName,
+            last_name: signupData.lastName,
+            full_name: `${signupData.firstName} ${signupData.lastName}`,
             phone: signupData.phone
           }
         }
@@ -465,7 +468,7 @@ const Auth = () => {
           description: "Tu cuenta ha sido creada correctamente. Ya puedes iniciar sesión.",
         });
         // Reset form and switch to login tab
-        setSignupData({ email: '', password: '', fullName: '', phone: '' });
+        setSignupData({ email: '', password: '', firstName: '', lastName: '', phone: '' });
         setAcceptedPrivacy(false);
         setAcceptedTerms(false);
       }
@@ -582,21 +585,41 @@ const Auth = () => {
 
               <TabsContent value="signup">
                 <form onSubmit={handleSignup} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name" className="text-gray-800 font-semibold">
-                      Nombre Completo *
-                    </Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                      <Input
-                        id="signup-name"
-                        type="text"
-                        placeholder="Juan Pérez"
-                        value={signupData.fullName}
-                        onChange={(e) => setSignupData({ ...signupData, fullName: e.target.value })}
-                        className="pl-10 rounded-xl border-2 border-gray-200 focus:border-primary"
-                        disabled={isLoading}
-                      />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-firstname" className="text-gray-800 font-semibold">
+                        Nombres *
+                      </Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                        <Input
+                          id="signup-firstname"
+                          type="text"
+                          placeholder="Juan"
+                          value={signupData.firstName}
+                          onChange={(e) => setSignupData({ ...signupData, firstName: e.target.value })}
+                          className="pl-10 rounded-xl border-2 border-gray-200 focus:border-primary"
+                          disabled={isLoading}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-lastname" className="text-gray-800 font-semibold">
+                        Apellidos *
+                      </Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                        <Input
+                          id="signup-lastname"
+                          type="text"
+                          placeholder="Pérez"
+                          value={signupData.lastName}
+                          onChange={(e) => setSignupData({ ...signupData, lastName: e.target.value })}
+                          className="pl-10 rounded-xl border-2 border-gray-200 focus:border-primary"
+                          disabled={isLoading}
+                        />
+                      </div>
                     </div>
                   </div>
 
